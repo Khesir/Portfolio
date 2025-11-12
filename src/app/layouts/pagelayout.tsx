@@ -2,7 +2,7 @@ import {Banner} from '../../components/banner-section';
 import {Outlet} from 'react-router-dom';
 import {Layout} from './baselayout';
 import {ModeToggle} from '@/components/providers/mode-toggle';
-import {EnvironmentToggle} from '@/components/providers/environment-toggle';
+// import {EnvironmentToggle} from '@/components/providers/environment-toggle';
 import {useEffect, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 
