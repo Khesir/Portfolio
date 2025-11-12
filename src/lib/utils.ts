@@ -6,8 +6,13 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-export function dateParser(isoString: string): string {
+export function dateParser(isoString: string | null | undefined | boolean): string {
 	try {
+		// Handle null, undefined, false, or empty strings
+		if (!isoString || typeof isoString !== 'string') {
+			return 'Invalid Date';
+		}
+
 		// Parse the ISO string into a Date object
 		const date = parseISO(isoString);
 

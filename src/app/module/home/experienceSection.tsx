@@ -3,29 +3,30 @@ import {fetchExperiences} from '@/app/api/experience';
 import {Badge} from '@/components/ui/badge';
 import {Card, CardContent, CardFooter} from '@/components/ui/card';
 import {Dialog, DialogContent, DialogTitle} from '@/components/ui/dialog';
-import {Popover, PopoverTrigger} from '@/components/ui/popover';
 import {Skeleton} from '@/components/ui/skeleton';
 import {dateParser} from '@/lib/utils';
 import {motion} from 'framer-motion';
-import {ArrowUpRight, RefreshCw} from 'lucide-react';
+import {ArrowUpRight, RefreshCw, Briefcase, Calendar, MapPin} from 'lucide-react';
 import {useEffect, useState} from 'react';
 import {toast} from 'sonner';
+import {useEnvironment} from '@/hooks/use-environment-store';
 
 import {MarkDownComponent} from '@/app/_components/readPage/readingPage';
 import {Link} from 'react-router-dom';
 import {ScrollArea} from '@/components/ui/scroll-area';
+
 const containerVariants = {
 	initial: {},
 	animate: {
 		transition: {
-			staggerChildren: 0.3,
+			staggerChildren: 0.15,
 		},
 	},
 };
 
 const cardVariants = {
-	initial: {opacity: 0, y: 30},
-	animate: {opacity: 1, y: 0, transition: {duration: 0.3}},
+	initial: {opacity: 0, x: -30},
+	animate: {opacity: 1, x: 0, transition: {duration: 0.4}},
 };
 
 export function ExperienceSection({
@@ -38,6 +39,7 @@ export function ExperienceSection({
 	const [experiences, setExperiences] = useState<any>([]);
 	const [res, setRes] = useState(null);
 	const [loading, setLoading] = useState(false);
+	const { refreshKey } = useEnvironment();
 
 	// Dialog Control
 	const [open, setOpen] = useState(false);
@@ -60,15 +62,18 @@ export function ExperienceSection({
 			setLoading(false);
 		}
 	};
+
 	useEffect(() => {
 		fetchData();
-	}, []);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [refreshKey]);
+
 	if (res) {
 		return (
 			<div className="flex flex-col w-full gap-3 dark:bg-slate-800 dark:border-gray-700">
 				{displayHeader && (
 					<div className="flex justify-between">
-						<p className="font-semibold text-2xl mb-2">Recent Experiences</p>
+						<p className="font-semibold text-2xl mb-2">Work Experience</p>
 					</div>
 				)}
 				<Card
@@ -83,27 +88,27 @@ export function ExperienceSection({
 			</div>
 		);
 	}
+
 	if (loading || !experiences) {
 		return (
 			<>
 				{displayHeader && (
-					<div className="flex justify-between">
-						<p className="font-semibold text-2xl mb-2">Recent Experiences</p>
-						<div className="flex flex-col items-end pt-2">
-							<Link
-								to={'/projects'}
-								className="font-semibold text-md hover:underline text-blue-600 dark:text-blue-400/60"
-							>
-								See more
-							</Link>
-						</div>
+					<div className="flex justify-between items-center mb-6">
+						<h2 className="font-bold text-3xl text-slate-900 dark:text-white">
+							Work Experience
+						</h2>
+						<Link
+							to={'/experiences'}
+							className="font-semibold text-sm hover:underline text-purple-600 dark:text-purple-400 flex items-center gap-1 group"
+						>
+							View all
+							<ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+						</Link>
 					</div>
 				)}
-				<div className="flex flex-col gap-3 3xl:mx-28">
-					<Skeleton className="h-[150px] shadow-lg w-full rounded-3xl bg-slate-500 dark:bg-slate-900" />
-					<Skeleton className="h-[150px] shadow-lg w-full rounded-3xl bg-slate-500 dark:bg-slate-900" />
-					<Skeleton className="h-[150px] shadow-lg w-full rounded-3xl bg-slate-500 dark:bg-slate-900" />
-					<Skeleton className="h-[150px] shadow-lg w-full rounded-3xl bg-slate-500 dark:bg-slate-900" />
+				<div className="flex flex-col gap-4">
+					<Skeleton className="h-[200px] w-full rounded-2xl bg-slate-300 dark:bg-slate-900" />
+					<Skeleton className="h-[200px] w-full rounded-2xl bg-slate-300 dark:bg-slate-900" />
 				</div>
 			</>
 		);
@@ -112,174 +117,227 @@ export function ExperienceSection({
 	if (experiences.length === 0 && !loading) {
 		return <div> No Data Available</div>;
 	}
+
 	return (
-		<div className="flex flex-col w-full gap-3 dark:bg-slate-800 dark:border-gray-700 mb-5">
+		<div className="flex flex-col w-full gap-6 dark:bg-slate-800 dark:border-gray-700 mb-10">
 			{displayHeader && (
-				<div className="flex justify-between">
-					<p className="font-semibold text-2xl mb-2">Recent Experiences</p>
-					<div className="flex flex-col items-end pt-2">
-						<Link
-							to={'/experiences'}
-							className="font-semibold text-md hover:underline text-blue-600 dark:text-blue-400/60"
-						>
-							See more
-						</Link>
-					</div>
+				<div className="flex justify-between items-center">
+					<Link to={'/experiences'} className="group">
+						<h2 className="font-bold text-3xl text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+							Work Experience
+						</h2>
+					</Link>
+					<Link
+						to={'/experiences'}
+						className="font-semibold text-sm hover:underline text-purple-600 dark:text-purple-400 flex items-center gap-1 group"
+					>
+						View all
+						<ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+					</Link>
 				</div>
 			)}
+
 			<motion.div
 				variants={containerVariants}
 				initial="initial"
 				animate="animate"
-				className="flex flex-col gap-3 2xl:mx-28"
+				className="relative flex flex-col gap-4"
 			>
+				{/* Timeline Line */}
+				<div className="absolute left-8 top-0 bottom-0 w-0.5 bg-slate-300 dark:bg-slate-700" />
+
 				{experiences.map((d: any, i: number) => (
 					<motion.div
 						key={i}
 						variants={cardVariants}
 						onClick={() => openDialog(i)}
-						className="group shadow-lg h-[130px] w-full duration-200 dark:hover:border-white hover:border-slate-500 dark:bg-slate-900 border dark:border-none relative flex rounded-3xl items-start justify-start overflow-hidden  cursor-pointer"
+						className="group relative cursor-pointer"
 					>
-						{/* Image */}
-						<div className="relative overflow-hidden rounded-3xl h-[100%] w-[130px]">
-							<img
-								src={
-									d.properties.Image.files[0]?.file.url ||
-									'/img/placeholder-2.jpg'
-								}
-								className="w-full h-full my-auto items-center object-contain pointer-events-none"
-							/>
-						</div>
-						{/* Middle text */}
-						<div className="h-full flex flex-col justify-between ml-3 p-3">
-							<div className="flex flex-col">
-								<div className="flex gap-3">
-									<div
-										className={`text-[1.1rem] font-semibold text-black dark:text-white ${location.pathname === '/' ? 'text-sm' : 'text-lg'}`}
-									>
-										{d.properties.Position.title[0]?.plain_text}
+						{/* Timeline Dot */}
+						<div className="absolute left-6 top-8 w-5 h-5 rounded-full bg-purple-500 dark:bg-purple-400 border-4 border-white dark:border-slate-800 shadow-lg z-10 group-hover:scale-125 transition-transform" />
+
+						{/* Card */}
+						<div className="ml-16 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-md border border-slate-200 dark:border-slate-700 hover:shadow-lg hover:scale-[1.01] transition-all duration-300">
+							<div className="flex gap-4">
+								{/* Company Logo */}
+								<div className="flex-shrink-0">
+									<div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+										<img
+											src={
+												d.properties.Image.files[0]?.file.url ||
+												'/img/placeholder-2.jpg'
+											}
+											alt={d.properties.CompanyName.rich_text[0].plain_text}
+											className="w-full h-full object-contain p-1.5"
+										/>
 									</div>
-									<Popover>
-										<PopoverTrigger>
-											<ArrowUpRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1" />
-										</PopoverTrigger>
-									</Popover>
 								</div>
-								<div>
-									<p className="font-semibold text-xs text-slate-500 dark:text-slate-400">
-										{d.properties.CompanyName.rich_text[0].plain_text} -{' '}
-										{d.properties.JobType.select.name}
-									</p>
-								</div>
-								<div>
-									<p className="font-semibold text-xs text-slate-500 dark:text-slate-400">
-										{dateParser(d.properties['Duration'].date.start)} -{' '}
-										{d.properties['Duration']?.date?.end
-											? dateParser(d.properties['Duration'].date.end)
-											: 'Present'}
-									</p>
-								</div>
-							</div>
-							<div className="font-semibold text-sm flex items-center">
-								<div className="text-xs mr-2">Highlighted Skill:</div>
-								<div className="flex gap-1 flex-wrap">
-									{d.highlightSkills
-										.slice(0, 3)
-										.map((data: any, index: any) => (
-											<Badge key={index}>
-												{data.properties['Name'].title[0].plain_text}
+
+								{/* Content */}
+								<div className="flex-1 space-y-2">
+									{/* Header */}
+									<div className="flex justify-between items-start">
+										<div>
+											<div className="flex items-center gap-2">
+												<h3 className="text-lg font-bold text-slate-900 dark:text-white">
+													{d.properties.Position.title[0]?.plain_text}
+												</h3>
+												<ArrowUpRight className="w-4 h-4 text-purple-600 dark:text-purple-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+											</div>
+											<p className="text-sm font-semibold text-purple-600 dark:text-purple-400">
+												{d.properties.CompanyName.rich_text[0].plain_text}
+											</p>
+										</div>
+									</div>
+
+									{/* Meta Info */}
+									<div className="flex flex-wrap gap-3 text-xs text-slate-600 dark:text-slate-400">
+										<div className="flex items-center gap-1">
+											<Calendar className="w-3.5 h-3.5" />
+											<span>
+												{dateParser(d.properties['Duration'].date.start)} -{' '}
+												{d.properties['Duration']?.date?.end
+													? dateParser(d.properties['Duration'].date.end)
+													: 'Present'}
+											</span>
+										</div>
+										<div className="flex items-center gap-1">
+											<Briefcase className="w-3.5 h-3.5" />
+											<span>{d.properties.JobType.select.name}</span>
+										</div>
+										{d.properties.EmploymentType && (
+											<div className="flex items-center gap-1">
+												<MapPin className="w-3.5 h-3.5" />
+												<span>{d.properties.EmploymentType.select.name}</span>
+											</div>
+										)}
+									</div>
+
+									{/* Skills */}
+									<div className="flex flex-wrap gap-1.5">
+										{d.highlightSkills.slice(0, 4).map((skill: any, index: any) => (
+											<Badge
+												key={index}
+												variant="secondary"
+												className="px-2 py-0.5 text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+											>
+												{skill.properties['Name'].title[0].plain_text}
 											</Badge>
 										))}
-									{d.highlightSkills.length > 3 && (
-										<Badge>+{d.highlightSkills.length - 3} more</Badge>
-									)}
+										{d.highlightSkills.length > 4 && (
+											<Badge variant="secondary" className="px-2 py-0.5 text-xs">
+												+{d.highlightSkills.length - 4} more
+											</Badge>
+										)}
+									</div>
 								</div>
 							</div>
 						</div>
 					</motion.div>
 				))}
 			</motion.div>
+
+			{/* Dialog */}
 			<Dialog open={open} onOpenChange={setOpen}>
-				<DialogContent className="dark:text-white sm:max-w-[90%] xl:max-w-[50%] dark:bg-slate-800">
-					<DialogTitle>
+				<DialogContent className="dark:text-white sm:max-w-[90%] xl:max-w-[60%] dark:bg-slate-800 max-h-[85vh]">
+					<DialogTitle className="text-2xl font-bold">
 						{selectedExperience !== null &&
 							selectedExperience !== undefined &&
 							experiences[selectedExperience]?.properties?.Position?.title?.[0]
-								?.plain_text}{' '}
-						(
-						{dateParser(
-							selectedExperience !== null &&
-								selectedExperience !== undefined &&
-								experiences[selectedExperience]?.properties['Duration'].date
-									.start,
-						)}{' '}
-						-{' '}
-						{selectedExperience !== null &&
-						selectedExperience !== undefined &&
-						experiences[selectedExperience]?.properties['Duration']?.date?.end
-							? dateParser(
-									selectedExperience !== null &&
-										selectedExperience !== undefined &&
-										experiences[selectedExperience]?.properties['Duration'].date
-											.end,
-								)
-							: 'Present'}
-						)
-					</DialogTitle>
-					<div className="font-semibold text-sm flex items-center">
-						<div className="text-xs mr-2">Highlighted Skill:</div>
-						<div className="flex gap-1 flex-wrap">
-							{selectedExperience !== null &&
-								selectedExperience !== undefined &&
-								experiences[selectedExperience]?.highlightSkills?.map(
-									(data: any, index: any) => (
-										<Badge key={index}>
-											{data.properties['Name'].title[0].plain_text}
-										</Badge>
-									),
-								)}
-						</div>
-					</div>
-					<div className="flex flex-col gap-2">
-						<div>
-							Company Name:{' '}
-							{selectedExperience !== null &&
-								selectedExperience !== undefined &&
-								experiences[selectedExperience]?.properties.CompanyName
-									.rich_text[0].plain_text}
-						</div>
-						<div>
-							Postion:{' '}
-							{selectedExperience !== null &&
-								selectedExperience !== undefined &&
-								experiences[selectedExperience]?.properties.Position?.title?.[0]
-									?.plain_text}
-						</div>
-						<div>
-							Work Environment:{' '}
-							{selectedExperience !== null &&
-								selectedExperience !== undefined &&
-								experiences[selectedExperience]?.properties.JobType.select.name}
-						</div>
-						<div>
-							Employment Type:{' '}
-							{selectedExperience !== null &&
-								selectedExperience !== undefined &&
-								experiences[selectedExperience]?.properties.EmploymentType
-									?.select.name}
-						</div>
-					</div>
-					<div className="border"></div>
-					<ScrollArea className="max-h-[500px] dark:bg-slate-700 rounded-md px-3">
-						<MarkDownComponent
-							markdown={
-								(selectedExperience !== null &&
+								?.plain_text}
+						<span className="text-base font-normal text-slate-600 dark:text-slate-400 ml-3">
+							(
+							{dateParser(
+								selectedExperience !== null &&
 									selectedExperience !== undefined &&
-									experiences[selectedExperience]?.properties.pageMd) ||
-								'Not set yet'
-							}
-						/>
-					</ScrollArea>
+									experiences[selectedExperience]?.properties['Duration'].date
+										.start,
+							)}{' '}
+							-{' '}
+							{selectedExperience !== null &&
+							selectedExperience !== undefined &&
+							experiences[selectedExperience]?.properties['Duration']?.date?.end
+								? dateParser(
+										selectedExperience !== null &&
+											selectedExperience !== undefined &&
+											experiences[selectedExperience]?.properties['Duration'].date
+												.end,
+									)
+								: 'Present'}
+							)
+						</span>
+					</DialogTitle>
+
+					<div className="space-y-4">
+						{/* Company Info */}
+						<div className="grid grid-cols-2 gap-4 p-4 bg-slate-100 dark:bg-slate-900 rounded-lg">
+							<div>
+								<p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Company</p>
+								<p className="font-semibold">
+									{selectedExperience !== null &&
+										selectedExperience !== undefined &&
+										experiences[selectedExperience]?.properties.CompanyName
+											.rich_text[0].plain_text}
+								</p>
+							</div>
+							<div>
+								<p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Work Environment</p>
+								<p className="font-semibold">
+									{selectedExperience !== null &&
+										selectedExperience !== undefined &&
+										experiences[selectedExperience]?.properties.JobType.select.name}
+								</p>
+							</div>
+							<div>
+								<p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Position</p>
+								<p className="font-semibold">
+									{selectedExperience !== null &&
+										selectedExperience !== undefined &&
+										experiences[selectedExperience]?.properties.Position?.title?.[0]
+											?.plain_text}
+								</p>
+							</div>
+							<div>
+								<p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Employment Type</p>
+								<p className="font-semibold">
+									{selectedExperience !== null &&
+										selectedExperience !== undefined &&
+										experiences[selectedExperience]?.properties.EmploymentType
+											?.select.name}
+								</p>
+							</div>
+						</div>
+
+						{/* Skills */}
+						<div>
+							<p className="text-sm font-semibold mb-2">Highlighted Skills</p>
+							<div className="flex gap-2 flex-wrap">
+								{selectedExperience !== null &&
+									selectedExperience !== undefined &&
+									experiences[selectedExperience]?.highlightSkills?.map(
+										(data: any, index: any) => (
+											<Badge key={index} variant="secondary" className="px-3 py-1">
+												{data.properties['Name'].title[0].plain_text}
+											</Badge>
+										),
+									)}
+							</div>
+						</div>
+
+						{/* Markdown Content */}
+						<div className="border-t pt-4">
+							<ScrollArea className="max-h-[400px] pr-4">
+								<MarkDownComponent
+									markdown={
+										(selectedExperience !== null &&
+											selectedExperience !== undefined &&
+											experiences[selectedExperience]?.properties.pageMd) ||
+										'No description available.'
+									}
+								/>
+							</ScrollArea>
+						</div>
+					</div>
 				</DialogContent>
 			</Dialog>
 		</div>

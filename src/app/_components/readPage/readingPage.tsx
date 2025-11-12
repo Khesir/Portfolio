@@ -19,6 +19,12 @@ import {fetchBlogsByID} from '@/app/api/blogs';
 import rehypeSanitize from 'rehype-sanitize';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {xonokai as Xonokai} from 'react-syntax-highlighter/dist/esm/styles/prism';
+import {useEnvironment} from '@/hooks/use-environment-store';
+import {motion} from 'framer-motion';
+import {Calendar, Clock, ArrowLeft} from 'lucide-react';
+import {Button} from '@/components/ui/Button';
+import {useNavigate} from 'react-router-dom';
+import {Badge} from '@/components/ui/badge';
 
 interface ReadpageProps {
 	name: string;
@@ -28,6 +34,8 @@ export function ReadPage({name}: ReadpageProps) {
 	const {setImageUrl} = useCustomBanner();
 	const location = useLocation();
 	const {setPathname} = usePathname();
+	const { refreshKey } = useEnvironment();
+	const navigate = useNavigate();
 
 	const [searchParams] = useSearchParams();
 	const [markdown, setMarkdown] = useState('');
@@ -68,19 +76,29 @@ export function ReadPage({name}: ReadpageProps) {
 		};
 
 		fetchData();
-	}, [name, searchParams, setImageUrl]);
+	}, [name, searchParams, setImageUrl, refreshKey]);
 
 	if (error) {
-		return <div className="font-bold text-3xl dark:text-white">{error}</div>;
+		return (
+			<div className="min-h-[400px] flex items-center justify-center">
+				<div className="text-center">
+					<p className="font-bold text-3xl dark:text-white mb-4">{error}</p>
+					<Button onClick={() => navigate(-1)}>Go Back</Button>
+				</div>
+			</div>
+		);
 	}
 
 	if (!data || (!markdown && loading)) {
-		const skeletons = generateRandomSkeletons(10); // Change the count to your desired number of skeletons
+		const skeletons = generateRandomSkeletons(10);
 		return (
-			<div className="flex flex-col gap-3">
-				<Skeleton className="h-6 w-[400px] dark:bg-slate-700" />
-				<Skeleton className="h-[50px] w-full dark:bg-slate-700" />
-				<Skeleton className="h-6 w-[300px] dark:bg-slate-700" />
+			<div className="flex flex-col gap-6">
+				<Skeleton className="h-8 w-[400px] dark:bg-slate-700" />
+				<Skeleton className="h-[300px] w-full rounded-2xl dark:bg-slate-700" />
+				<div className="flex gap-3">
+					<Skeleton className="h-6 w-[150px] dark:bg-slate-700" />
+					<Skeleton className="h-6 w-[150px] dark:bg-slate-700" />
+				</div>
 				<div className="gap-5 flex flex-col">
 					{skeletons.map((skeleton, index) => (
 						<Skeleton
@@ -89,7 +107,7 @@ export function ReadPage({name}: ReadpageProps) {
 								height: `${skeleton.height}px`,
 								width: `${skeleton.width}px`,
 							}}
-							className={`dark:bg-slate-700`}
+							className="dark:bg-slate-700"
 						/>
 					))}
 				</div>
@@ -97,35 +115,97 @@ export function ReadPage({name}: ReadpageProps) {
 		);
 	}
 
+	const tags = name === 'projects'
+		? data.properties?.['Languages']?.multi_select || []
+		: data.properties?.['Tags']?.multi_select || [];
+
 	return (
-		<>
-			<div>
-				<div className="flex flex-col gap-3">
-					<Breadcrumbs />
-					<h1 className="font-bold text-3xl dark:text-white">
+		<motion.div
+			initial={{opacity: 0, y: 20}}
+			animate={{opacity: 1, y: 0}}
+			transition={{duration: 0.5}}
+		>
+			{/* Header Section */}
+			<div className="mb-8">
+				<Button
+					variant="ghost"
+					size="sm"
+					onClick={() => navigate(-1)}
+					className="mb-4 -ml-2"
+				>
+					<ArrowLeft className="w-4 h-4 mr-2" />
+					Back
+				</Button>
+
+				<Breadcrumbs />
+
+				{/* Title and Meta */}
+				<div className="mt-6 space-y-4">
+					<h1 className="font-bold text-4xl md:text-5xl text-slate-900 dark:text-white leading-tight">
 						{data?.properties?.Name?.title[0].plain_text}
 					</h1>
-					<div className="flex gap-2 font-semibold text-md hover:underline text-blue-600 dark:text-blue-400">
-						<span>
-							{data.properties['Released Date']?.date?.start
-								? dateParser(data?.properties['Released Date'].date.start)
-								: 'In progress'}
-						</span>
-						<span>/</span>
-						<span>
-							Read Time:{' '}
-							{data?.properties['Min']?.number
-								? data?.properties['Min']?.number
-								: 'Not set'}{' '}
-							mins
-						</span>
+
+					{/* Meta Information */}
+					<div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+						{data.properties['Released Date']?.date?.start && (
+							<div className="flex items-center gap-2">
+								<Calendar className="w-4 h-4" />
+								<span>{dateParser(data.properties['Released Date'].date.start)}</span>
+							</div>
+						)}
+						{data?.properties['Min']?.number && (
+							<div className="flex items-center gap-2">
+								<Clock className="w-4 h-4" />
+								<span>{data.properties['Min'].number} min read</span>
+							</div>
+						)}
 					</div>
+
+					{/* Tags */}
+					{tags.length > 0 && (
+						<div className="flex flex-wrap gap-2">
+							{tags.map((tag: any, index: number) => (
+								<Badge
+									key={index}
+									variant="secondary"
+									className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+								>
+									{tag.name}
+								</Badge>
+							))}
+						</div>
+					)}
 				</div>
-				<div className="prose dark:prose-invert prose-gray max-w-full flex flex-col">
+
+				{/* Hero Image */}
+				{data.properties?.Image?.files?.[0]?.file?.url && (
+					<div className="mt-8 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg">
+						<img
+							src={data.properties.Image.files[0].file.url}
+							alt={data?.properties?.Name?.title[0].plain_text}
+							className="w-full h-[400px] object-cover"
+						/>
+					</div>
+				)}
+			</div>
+
+			{/* Content Section */}
+			<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-8 md:p-12">
+				<div className="prose dark:prose-invert prose-gray max-w-none prose-lg">
 					<MarkDownComponent markdown={markdown} />
 				</div>
 			</div>
-		</>
+
+			{/* Back to top button */}
+			<div className="mt-8 text-center">
+				<Button
+					variant="outline"
+					onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+				>
+					Back to Top
+				</Button>
+			</div>
+		</motion.div>
 	);
 }
 
@@ -146,14 +226,13 @@ export const isVideoLink = (url: string | string[] | undefined) => {
 		(url.includes('youtube.com') ||
 			url.includes('vimeo.com') ||
 			videoExtensions.test(url))
-	); // Checks for video file extensions
+	);
 };
 
 export const VideoComponent = ({src}: {src: string}) => {
-	// Check if the source is a video file
 	if (src.match(/\.(mp4|m4p|webm|ogv|mov)(\?.*)?$/i)) {
 		return (
-			<div className="video-container">
+			<div className="video-container rounded-xl overflow-hidden my-6">
 				<video width="100%" height="315" controls>
 					<source src={src} type={`video/${src.split('.').pop()}`} />
 					Your browser does not support the video tag.
@@ -162,14 +241,13 @@ export const VideoComponent = ({src}: {src: string}) => {
 		);
 	}
 
-	// Otherwise, assume it's a YouTube link
 	const videoId = getId(src);
 
 	return (
-		<div className="video-container">
+		<div className="video-container rounded-xl overflow-hidden my-6 shadow-lg">
 			<iframe
 				width="100%"
-				height="315"
+				height="500"
 				src={`//www.youtube.com/embed/${videoId}`}
 				title="Video player"
 				frameBorder="0"
@@ -179,6 +257,7 @@ export const VideoComponent = ({src}: {src: string}) => {
 		</div>
 	);
 };
+
 export function getId(url: string) {
 	const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
 	const match = url.match(regExp);
@@ -188,59 +267,66 @@ export function getId(url: string) {
 
 export const generateRandomSkeletons = (count: number) => {
 	return Array.from({length: count}, () => ({
-		width: Math.floor(Math.random() * 600) + 100, // Random width between 100px and 700px
-		height: Math.floor(Math.random() * 100) + 20, // Random height between 20px and 120px
+		width: Math.floor(Math.random() * 600) + 100,
+		height: Math.floor(Math.random() * 100) + 20,
 	}));
 };
+
 export function MarkDownComponent({markdown}: {markdown: string}) {
 	return (
 		<ReactMarkdown
-			className="w-full prose dark:prose-invert max-w-none" // Tailwind + better styling
-			rehypePlugins={[rehypeRaw, rehypeSanitize]} // Enable raw HTML rendering
-			remarkPlugins={[remarkGfm]} // Enable GitHub-flavored markdown features
+			className="w-full prose dark:prose-invert max-w-none"
+			rehypePlugins={[rehypeRaw, rehypeSanitize]}
+			remarkPlugins={[remarkGfm]}
 			components={{
 				h1: ({children}) => (
-					<h1 className="text-3xl font-bold my-4">{children}</h1>
+					<h1 className="text-3xl font-bold my-6 text-slate-900 dark:text-white">{children}</h1>
 				),
 				h2: ({children}) => (
-					<h2 className="text-2xl font-semibold my-3">{children}</h2>
+					<h2 className="text-2xl font-semibold my-5 text-slate-900 dark:text-white">{children}</h2>
 				),
 				h3: ({children}) => (
-					<h3 className="text-xl font-semibold my-2">{children}</h3>
+					<h3 className="text-xl font-semibold my-4 text-slate-900 dark:text-white">{children}</h3>
 				),
-				p: ({children}) => <p className="my-2 leading-relaxed">{children}</p>,
+				p: ({children}) => <p className="my-4 leading-relaxed text-slate-700 dark:text-slate-300">{children}</p>,
+				ul: ({children}) => <ul className="my-4 space-y-2">{children}</ul>,
+				ol: ({children}) => <ol className="my-4 space-y-2">{children}</ol>,
+				li: ({children}) => <li className="leading-relaxed">{children}</li>,
+				blockquote: ({children}) => (
+					<blockquote className="border-l-4 border-blue-500 pl-4 my-4 italic text-slate-600 dark:text-slate-400">
+						{children}
+					</blockquote>
+				),
 				a: ({href, children}) => {
-					// Check if the link text is 'video' and the link is a video URL
 					if (isVideoLink(href)) {
 						return href ? <VideoComponent src={href} /> : null;
 					}
 					if (isTweetLink(href)) {
 						const tweetId = href ? getTweetId(href) : null;
 						return tweetId ? (
-							<div className="w-full mx-auto">
+							<div className="w-full mx-auto my-6">
 								<Tweet tweetId={tweetId} />
 							</div>
 						) : null;
 					}
-					// Otherwise, return a normal link
 					return (
-						<a href={href} target="_blank" rel="noopener noreferrer">
+						<a
+							href={href}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+						>
 							{children}
 						</a>
 					);
 				},
 				img: ({src, alt}) => {
 					return (
-						<div className="w-full h-[400px] overflow-hidden flex items-center justify-center">
+						<div className="w-full my-8 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg">
 							<img
 								src={src}
 								alt={alt}
-								style={{
-									maxWidth: '100%', // Allow the image to be as wide as the container
-									maxHeight: '100%', // Allow the image to be as tall as the container
-									objectFit: 'contain', // Maintain aspect ratio
-								}}
-								className="rounded-lg shadow-md" // Additional styling
+								className="w-full h-auto object-contain"
 							/>
 						</div>
 					);
@@ -260,11 +346,13 @@ export function MarkDownComponent({markdown}: {markdown: string}) {
 				}) {
 					const match = /language-(\w+)/.exec(className || '');
 					return !inline && match ? (
-						<SyntaxHighlighter style={Xonokai} language={match[1]} {...props}>
-							{String(children).replace(/\n$/, '')}
-						</SyntaxHighlighter>
+						<div className="my-6 rounded-xl overflow-hidden shadow-lg">
+							<SyntaxHighlighter style={Xonokai} language={match[1]} {...props}>
+								{String(children).replace(/\n$/, '')}
+							</SyntaxHighlighter>
+						</div>
 					) : (
-						<code className={className} {...props}>
+						<code className="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded text-sm font-mono" {...props}>
 							{children}
 						</code>
 					);

@@ -1,4 +1,3 @@
-import {Card, CardContent} from '@/components/ui/card';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {usePathname} from '@/hooks/use-pathname-store';
 import {useEffect, useState} from 'react';
@@ -14,11 +13,10 @@ import {Icon} from '@iconify/react';
 import {motion} from 'framer-motion';
 
 // Iconify icon names for the respective languages
+const goIcon = 'devicon:go';
 const csharpIcon = 'devicon:csharp';
-const typescriptIcon = 'devicon:typescript';
-const pythonIcon = 'devicon:python';
 const cplusplusIcon = 'devicon:cplusplus';
-const luaIcon = 'devicon:lua';
+const typescriptIcon = 'devicon:typescript';
 export default function Homepage() {
 	const {setPathname} = usePathname();
 	const location = useLocation();
@@ -101,115 +99,218 @@ export default function Homepage() {
 		}
 	};
 	return (
-		<div className="dark:text-white flex flex-col gap-3 mt-5">
+		<div className="dark:text-white flex flex-col gap-8 mt-5">
+			{/* About Me Section */}
 			<motion.div
-				className="shadow-lg sm:border rounded-3xl w-full flex flex-col md:flex-row items-center justify-center overflow-hidden dark:bg-slate-800 dark:border-gray-700"
-				initial={{y: -100, opacity: 0}}
+				className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg overflow-hidden"
+				initial={{y: -50, opacity: 0}}
 				whileInView={{y: 0, opacity: 1}}
 				viewport={{once: true, amount: 0.3}}
 				transition={{type: 'spring', stiffness: 60, damping: 15}}
 			>
-				<div className="w-[250px] h-[250px]">
-					<div className="w-full overflow-hidden rounded-3xl border">
-						<img
-							src={'/img/profile3.jpg'}
-							className="w-full h-full object-cover pointer-events-none"
-						/>
+				<div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
+					{/* Profile Image */}
+					<div className="flex-shrink-0">
+						<div className="w-48 h-48 md:w-56 md:h-56 mx-auto md:mx-0">
+							<img
+								src={'/img/profile3.jpg'}
+								alt="Khesir Profile"
+								className="w-full h-full object-cover rounded-2xl border-4 border-slate-200 dark:border-slate-700 shadow-md"
+							/>
+						</div>
+					</div>
+
+					{/* Content */}
+					<div className="flex-1 flex flex-col justify-center space-y-4">
+						<div>
+							<h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-1">
+								Khesir (AJ)
+							</h2>
+							<p className="text-lg text-blue-600 dark:text-blue-400 font-semibold">
+								Software Engineer
+							</p>
+						</div>
+
+						<div className="space-y-3 text-slate-700 dark:text-slate-300">
+							<p className="leading-relaxed">
+								👋 Hey there! I'm AJ (also known as Khesir), a Software Engineer
+								with a passion for backend development and game engineering.
+							</p>
+							<p className="leading-relaxed">
+								🚀 I specialize in building scalable architectures for games and
+								software platforms, turning complex problems into elegant
+								solutions.
+							</p>
+						</div>
+
+						{/* Tech Stack */}
+						<div>
+							<p className="text-sm text-slate-600 dark:text-slate-400 mb-2 font-medium">
+								Tech Stack
+							</p>
+							<div className="flex gap-3 flex-wrap">
+								<div className="flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
+									<Icon icon={goIcon} className="w-6 h-6" />
+									<span className="text-sm font-medium">Go</span>
+								</div>
+								<div className="flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
+									<Icon icon={csharpIcon} className="w-6 h-6" />
+									<span className="text-sm font-medium">C#</span>
+								</div>
+								<div className="flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
+									<Icon icon={cplusplusIcon} className="w-6 h-6" />
+									<span className="text-sm font-medium">C++</span>
+								</div>
+								<div className="flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
+									<Icon icon={typescriptIcon} className="w-6 h-6" />
+									<span className="text-sm font-medium">TypeScript</span>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-
-				<CardContent className="flex-[3] w-full ">
-					<div className="text-xl block font-semibold">Khesir (AJ)</div>
-					<div>Software Engineer</div>
-					<div className="mt-5">
-						Yo! Nice to meet you — I’m Aj (also known as Khesir), a Software
-						Engineer specializing in backend and game development.
-					</div>
-
-					<div className="mt-2">
-						I focus on building scalable architectures for both games and
-						software platforms.
-					</div>
-
-					<div className="space-x-3 md:flex mt-3 hidden">
-						<Icon icon={typescriptIcon} className="w-8 h-8" />
-						<Icon icon={pythonIcon} className="w-8 h-8" />
-						<Icon icon={csharpIcon} className="w-8 h-8" />
-						<Icon icon={cplusplusIcon} className="w-8 h-8" />
-						<Icon icon={luaIcon} className="w-8 h-8" />
-					</div>
-				</CardContent>
 			</motion.div>
 			{/* <iframe
 				frameBorder="0"
 				className="w-full h-[180px] 3xl:h-[180px] rounded-3xl"
 				src="https://git-graph.vercel.app/embed/khesir?showColorLegend=false&showWeekdayLabels=false&showMonthLabels=true&showTotalCount=false&blockMargin=2&blockRadius=5&blockSize=17&fontSize=15&weekStart=6&year=2025"
 			></iframe> */}
+			{/* CTA Section */}
 			<motion.div
-				className="shadow-lg border flex justify-between items-center p-5 rounded-3xl mb-5 dark:bg-slate-800 dark:border-gray-700"
-				initial={{y: 100, opacity: 0}}
+				className="bg-blue-50 dark:bg-blue-900/10 border-2 border-blue-200 dark:border-blue-800 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-center gap-4"
+				initial={{y: 50, opacity: 0}}
 				whileInView={{y: 0, opacity: 1}}
 				viewport={{once: true, amount: 0.3}}
 				transition={{type: 'spring', stiffness: 60, damping: 15}}
 			>
-				<span className="font-semibold">Interested more about me?</span>
-				<Button size="sm" onClick={() => navigate('about')}>
-					Click here
+				<div className="text-center sm:text-left">
+					<p className="font-bold text-lg text-slate-900 dark:text-white">
+						Want to know more about me?
+					</p>
+					<p className="text-sm text-slate-600 dark:text-slate-400">
+						Check out my full story, skills, and journey
+					</p>
+				</div>
+				<Button
+					size="lg"
+					onClick={() => navigate('about')}
+					className="whitespace-nowrap"
+				>
+					View Full Profile →
 				</Button>
 			</motion.div>
 			<TopProjects />
 			<ExperienceSection pageSize={4} displayHeader={true} />
+			{/* Contact Section */}
 			<motion.div
 				id="contact"
-				className="shadow-lg sm:border rounded-3xl w-full flex flex-col md:flex-row items-center justify-center overflow-hidden dark:bg-slate-800 dark:border-gray-700 p-5"
+				className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg overflow-hidden"
 				initial={{y: 100, opacity: 0}}
 				whileInView={{y: 0, opacity: 1}}
 				viewport={{once: true, amount: 0.3}}
 				transition={{type: 'spring', stiffness: 60, damping: 15}}
 			>
-				<div>
-					<div className="text-xl font-semibold flex justify-center">
-						Contact Me
+				<div className="p-6 md:p-8">
+					{/* Header */}
+					<div className="text-center mb-8">
+						<h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+							Get in Touch
+						</h2>
+						<p className="text-slate-600 dark:text-slate-400">
+							Have a project in mind? Let's collaborate!
+						</p>
 					</div>
-					<div className="flex flex-col md:flex-row justify-between">
-						<div className=" flex flex-1 flex-col gap-3 p-5">
-							<div className="grid w-full gap-3">
-								<Label htmlFor="email">Email</Label>
+
+					<div className="grid md:grid-cols-2 gap-8">
+						{/* Contact Form */}
+						<div className="space-y-5">
+							<div className="space-y-2">
+								<Label htmlFor="email" className="text-sm font-semibold">
+									Email Address
+								</Label>
 								<Input
-									placeholder="Email"
+									placeholder="your.email@example.com"
 									id="email"
 									value={email}
 									onChange={(e) => setEmail(e.target.value)}
 									type="email"
 									disabled={loading}
 									required
+									className="h-11"
 								/>
 								{emailError && (
 									<span className="text-red-500 text-xs">{emailError}</span>
 								)}
 							</div>
-							<div className="grid w-full gap-3">
-								<Label htmlFor="message">Message</Label>
+
+							<div className="space-y-2">
+								<Label htmlFor="message" className="text-sm font-semibold">
+									Your Message
+								</Label>
 								<Textarea
-									placeholder="Type your message here."
+									placeholder="Tell me about your project or idea..."
 									id="message"
 									value={message}
 									onChange={(e) => setMessage(e.target.value)}
 									disabled={loading}
 									required
+									className="min-h-[150px] resize-none"
 								/>
 								{messageError && (
 									<span className="text-red-500 text-xs">{messageError}</span>
 								)}
 							</div>
-							<Button onClick={onSubmit}>Submit</Button>
+
+							<Button
+								onClick={onSubmit}
+								disabled={loading}
+								className="w-full h-11 text-base"
+								size="lg"
+							>
+								{loading ? 'Sending...' : 'Send Message'}
+							</Button>
 						</div>
-						<Card className="flex-1 mt-5 flex flex-col justify-center text-center dark:bg-slate-800 dark:border-gray-700">
-							<CardContent className="text-[1.1rem]  rounded-3xl font-semibold">
-								Have an idea in mind? Let’s make it happen! Just fill out the
-								contact form on the left — I’ll get back to you as soon as I can
-							</CardContent>
-						</Card>
+
+						{/* Info Card */}
+						<div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 flex flex-col justify-center space-y-6">
+							<div className="space-y-3">
+								<h3 className="font-bold text-lg text-slate-900 dark:text-white">
+									💡 Let's Build Something Great
+								</h3>
+								<p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+									Whether you have a project idea, need technical consultation,
+									or just want to say hello — I'm always excited to connect with
+									fellow developers and creators.
+								</p>
+							</div>
+
+							<div className="space-y-3">
+								<div className="flex items-start gap-3">
+									<div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+										<span className="text-white text-xs">✓</span>
+									</div>
+									<p className="text-sm text-slate-700 dark:text-slate-300">
+										Quick response time (usually within 24 hours)
+									</p>
+								</div>
+								<div className="flex items-start gap-3">
+									<div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+										<span className="text-white text-xs">✓</span>
+									</div>
+									<p className="text-sm text-slate-700 dark:text-slate-300">
+										Open to freelance projects and collaborations
+									</p>
+								</div>
+								<div className="flex items-start gap-3">
+									<div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+										<span className="text-white text-xs">✓</span>
+									</div>
+									<p className="text-sm text-slate-700 dark:text-slate-300">
+										Available for technical consultations
+									</p>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</motion.div>

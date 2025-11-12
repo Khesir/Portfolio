@@ -4,12 +4,15 @@ import {dateParser} from '@/lib/utils';
 import {useState, useEffect} from 'react';
 import {useLocation} from 'react-router-dom';
 import {fetchBlogs} from '../api/blogs';
+import {useEnvironment} from '@/hooks/use-environment-store';
 
 export function BlogList() {
 	const [projects, setProjects] = useState([]);
 	const [res, setRes] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const location = useLocation();
+	const { refreshKey } = useEnvironment();
+
 	useEffect(() => {
 		const fetchData = async () => {
 			setLoading(true);
@@ -24,7 +27,7 @@ export function BlogList() {
 		};
 
 		fetchData();
-	}, []);
+	}, [refreshKey]);
 	if (loading) {
 		return (
 			<div className="flex flex-col gap-5">

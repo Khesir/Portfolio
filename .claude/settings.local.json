@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree /F \"C:\\Users\\ajriz\\Documents\\Projects\\Portfolio\\src\")",
+      "Bash(npm run build:*)",
+      "Bash(curl:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
