@@ -4,7 +4,14 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {Button} from '@/components/ui/Button';
 import {Icon} from '@iconify/react';
 import {motion} from 'framer-motion';
-import {Mail, Github, FileText, MapPin, Briefcase, GraduationCap} from 'lucide-react';
+import {
+	Mail,
+	Github,
+	FileText,
+	MapPin,
+	Briefcase,
+	GraduationCap,
+} from 'lucide-react';
 import {ExperienceSection} from '@/app/module/home/experienceSection';
 
 // Iconify icon names
@@ -12,6 +19,8 @@ const goIcon = 'devicon:go';
 const csharpIcon = 'devicon:csharp';
 const cplusplusIcon = 'devicon:cplusplus';
 const typescriptIcon = 'devicon:typescript';
+const dartIcon = 'devicon:dart';
+const flutterIcon = 'devicon:flutter';
 const reactIcon = 'devicon:react';
 const nextjsIcon = 'devicon:nextjs';
 const nodejsIcon = 'devicon:nodejs';
@@ -56,9 +65,14 @@ export default function AboutMe() {
 						{/* Header Content */}
 						<div className="flex-1 space-y-4">
 							<div>
-								<h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
-									Khesir (AJ)
-								</h1>
+								<div className="flex items-center justify-between mb-2">
+									<h1 className="text-4xl font-bold text-slate-900 dark:text-white">
+										Khesir (AJ)
+									</h1>
+									<div className="hidden md:block text-xs text-slate-500 dark:text-slate-500">
+										Last updated: November 2025
+									</div>
+								</div>
 								<p className="text-xl text-blue-600 dark:text-blue-400 font-semibold mb-3">
 									Software Engineer
 								</p>
@@ -75,6 +89,14 @@ export default function AboutMe() {
 										<GraduationCap className="w-4 h-4" />
 										<span>Backend & Game Engineering</span>
 									</div>
+								</div>
+								{/* Last Updated - Mobile */}
+								<div className="md:hidden mt-3 text-xs text-slate-500 dark:text-slate-500">
+									Last updated:{' '}
+									{new Date().toLocaleDateString('en-US', {
+										month: 'long',
+										year: 'numeric',
+									})}
 								</div>
 							</div>
 
@@ -96,7 +118,9 @@ export default function AboutMe() {
 								<Button
 									variant="outline"
 									className="flex items-center gap-2"
-									onClick={() => window.open('https://github.com/khesir', '_blank')}
+									onClick={() =>
+										window.open('https://github.com/khesir', '_blank')
+									}
 								>
 									<Github className="w-4 h-4" />
 									GitHub
@@ -136,21 +160,25 @@ export default function AboutMe() {
 				</h2>
 				<div className="space-y-4 text-slate-700 dark:text-slate-300">
 					<p className="leading-relaxed">
-						Software Engineer with a strong focus on <strong>backend development</strong> and{' '}
-						<strong>game engineering</strong>. I specialize in building scalable architectures
-						for both software platforms and games, with expertise in designing robust systems
-						that handle complex logic and high performance requirements.
+						Software Engineer with a strong focus on{' '}
+						<strong>backend development</strong> and{' '}
+						<strong>game engineering</strong>. I specialize in building scalable
+						architectures for both software platforms and games, with expertise
+						in designing robust systems that handle complex logic and high
+						performance requirements.
 					</p>
 					<p className="leading-relaxed">
-						While I have full-stack capabilities, my passion lies in backend architecture,
-						system design, and game development. I'm deeply invested in writing clean,
-						maintainable code that emphasizes scalability, proper data structures, and sound
-						engineering principles.
+						While I have full-stack capabilities, my passion lies in backend
+						architecture, system design, and game development. I'm deeply
+						invested in writing clean, maintainable code that emphasizes
+						scalability, proper data structures, and sound engineering
+						principles.
 					</p>
 					<p className="leading-relaxed">
-						I approach every project by asking critical questions: "Is this scalable?", "Is
-						this implementation logically sound?", and "Will this make sense long-term?" This
-						mindset helps me deliver solutions that stand the test of time.
+						I approach every project by asking critical questions: "Is this
+						scalable?", "Is this implementation logically sound?", and "Will
+						this make sense long-term?" This mindset helps me deliver solutions
+						that stand the test of time.
 					</p>
 				</div>
 			</motion.div>
@@ -210,6 +238,28 @@ export default function AboutMe() {
 									</p>
 								</div>
 							</div>
+							<div className="flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
+								<Icon icon={dartIcon} className="w-8 h-8" />
+								<div>
+									<p className="font-semibold text-sm">Dart</p>
+									<p className="text-xs text-slate-600 dark:text-slate-400">
+										Mobile Development
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					{/* Mobile Development */}
+					<div>
+						<h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
+							Mobile Development
+						</h3>
+						<div className="flex flex-wrap gap-3">
+							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
+								<Icon icon={flutterIcon} className="w-6 h-6" />
+								<span className="text-sm font-medium">Flutter</span>
+							</div>
 						</div>
 					</div>
 
@@ -258,7 +308,9 @@ export default function AboutMe() {
 							</div>
 							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
 								<Icon icon={luaIcon} className="w-6 h-6" />
-								<span className="text-sm font-medium">Lua (Love2D, Modding)</span>
+								<span className="text-sm font-medium">
+									Lua (Love2D, Modding)
+								</span>
 							</div>
 						</div>
 					</div>
@@ -288,11 +340,15 @@ export default function AboutMe() {
 							</li>
 							<li className="flex items-start gap-2">
 								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Database design, optimization, and scaling strategies</span>
+								<span>
+									Database design, optimization, and scaling strategies
+								</span>
 							</li>
 							<li className="flex items-start gap-2">
 								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Authentication, authorization, and security best practices</span>
+								<span>
+									Authentication, authorization, and security best practices
+								</span>
 							</li>
 							<li className="flex items-start gap-2">
 								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
@@ -336,7 +392,9 @@ export default function AboutMe() {
 							</li>
 							<li className="flex items-start gap-2">
 								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Object-oriented and functional programming paradigms</span>
+								<span>
+									Object-oriented and functional programming paradigms
+								</span>
 							</li>
 							<li className="flex items-start gap-2">
 								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>

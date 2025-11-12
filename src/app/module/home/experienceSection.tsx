@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {fetchExperiences} from '@/app/api/experience';
 import {Badge} from '@/components/ui/badge';
-import {Card, CardContent, CardFooter} from '@/components/ui/card';
 import {Dialog, DialogContent, DialogTitle} from '@/components/ui/dialog';
 import {Skeleton} from '@/components/ui/skeleton';
 import {dateParser} from '@/lib/utils';
@@ -36,7 +35,7 @@ export function ExperienceSection({
 	pageSize: number;
 	displayHeader: boolean;
 }) {
-	const [experiences, setExperiences] = useState<any>([]);
+	const [experiences, setExperiences] = useState<any[]>([]);
 	const [res, setRes] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const { refreshKey } = useEnvironment();
@@ -54,10 +53,11 @@ export function ExperienceSection({
 		setLoading(true);
 		try {
 			const res = await fetchExperiences(pageSize);
-			setExperiences(res);
+			setExperiences(Array.isArray(res) ? res : []);
 		} catch (e: any) {
 			toast.error(e instanceof Error ? e.message : String(e));
 			setRes(e.toString());
+			setExperiences([]); // Ensure experiences is always an array
 		} finally {
 			setLoading(false);
 		}
@@ -70,21 +70,41 @@ export function ExperienceSection({
 
 	if (res) {
 		return (
-			<div className="flex flex-col w-full gap-3 dark:bg-slate-800 dark:border-gray-700">
+			<div className="flex flex-col w-full gap-3">
 				{displayHeader && (
-					<div className="flex justify-between">
-						<p className="font-semibold text-2xl mb-2">Work Experience</p>
+					<div className="flex justify-between items-center">
+						<h2 className="font-bold text-3xl text-slate-900 dark:text-white">
+							Work Experience
+						</h2>
 					</div>
 				)}
-				<Card
-					className="flex justify-between rounded-3xl pt-5 hover:dark:bg-slate-800 hover:bg-slate-300 transition-all"
+				<motion.div
+					initial={{opacity: 0, y: 20}}
+					animate={{opacity: 1, y: 0}}
+					className="bg-white dark:bg-slate-900 border-2 border-red-200 dark:border-red-800 rounded-2xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all"
 					onClick={() => fetchData()}
 				>
-					<CardContent>Something went wrong while fetching data</CardContent>
-					<CardFooter>
-						<RefreshCw />
-					</CardFooter>
-				</Card>
+					<div className="flex items-start gap-4">
+						<div className="flex-shrink-0 w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+							<RefreshCw className="w-6 h-6 text-red-600 dark:text-red-400 animate-pulse" />
+						</div>
+						<div className="flex-1">
+							<h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">
+								Failed to Load Experiences
+							</h3>
+							<p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+								Unable to fetch work experience data. This might be due to network issues or API unavailability.
+							</p>
+							<div className="text-xs text-red-600 dark:text-red-400 font-mono bg-red-50 dark:bg-red-900/20 p-3 rounded-lg mb-3 break-all">
+								Error: {res}
+							</div>
+							<p className="text-sm text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-2">
+								<span>Click to retry</span>
+								<ArrowUpRight className="w-4 h-4" />
+							</p>
+						</div>
+					</div>
+				</motion.div>
 			</div>
 		);
 	}
@@ -106,16 +126,40 @@ export function ExperienceSection({
 						</Link>
 					</div>
 				)}
-				<div className="flex flex-col gap-4">
-					<Skeleton className="h-[200px] w-full rounded-2xl bg-slate-300 dark:bg-slate-900" />
-					<Skeleton className="h-[200px] w-full rounded-2xl bg-slate-300 dark:bg-slate-900" />
-				</div>
+				<motion.div
+					initial={{opacity: 0}}
+					animate={{opacity: 1}}
+					className="flex flex-col gap-4"
+				>
+					{[1, 2].map((i) => (
+						<div key={i} className="relative flex flex-col gap-4">
+							<div className="ml-16 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-md border border-slate-200 dark:border-slate-700">
+								<div className="flex gap-4">
+									<Skeleton className="w-16 h-16 rounded-lg bg-slate-300 dark:bg-slate-700" />
+									<div className="flex-1 space-y-3">
+										<Skeleton className="h-5 w-3/4 bg-slate-300 dark:bg-slate-700" />
+										<Skeleton className="h-4 w-1/2 bg-slate-300 dark:bg-slate-700" />
+										<div className="flex gap-2">
+											<Skeleton className="h-6 w-16 rounded-full bg-slate-300 dark:bg-slate-700" />
+											<Skeleton className="h-6 w-16 rounded-full bg-slate-300 dark:bg-slate-700" />
+											<Skeleton className="h-6 w-16 rounded-full bg-slate-300 dark:bg-slate-700" />
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					))}
+				</motion.div>
 			</>
 		);
 	}
 
 	if (experiences.length === 0 && !loading) {
-		return <div> No Data Available</div>;
+		return (
+			<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-8 text-center">
+				<p className="text-slate-600 dark:text-slate-400">No work experiences available yet</p>
+			</div>
+		);
 	}
 
 	return (

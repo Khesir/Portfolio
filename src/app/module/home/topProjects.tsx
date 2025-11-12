@@ -13,13 +13,12 @@ import {
 	ChevronRight,
 } from 'lucide-react';
 import {motion} from 'framer-motion';
-import {Card, CardContent, CardFooter} from '@/components/ui/card';
 import {toast} from 'sonner';
 import {useEnvironment} from '@/hooks/use-environment-store';
 import {Button} from '@/components/ui/Button';
 
 export function TopProjects() {
-	const [projects, setProjects] = useState([]);
+	const [projects, setProjects] = useState<any[]>([]);
 	const [res, setRes] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [currentIndex, setCurrentIndex] = useState(0);
@@ -31,10 +30,11 @@ export function TopProjects() {
 		setLoading(true);
 		try {
 			const data = await fetchProjects();
-			setProjects(data);
+			setProjects(Array.isArray(data) ? data : []);
 		} catch (e: any) {
 			toast.error(e instanceof Error ? e.message : String(e));
 			setRes(e.toString());
+			setProjects([]); // Ensure projects is always an array
 		} finally {
 			setLoading(false);
 		}
@@ -55,54 +55,151 @@ export function TopProjects() {
 	const goToProject = (index: number) => {
 		setCurrentIndex(index);
 	};
-	if (projects.length === 0) {
-		return <div>Empty</div>;
-	}
+
 	if (res) {
 		return (
-			<div className="flex flex-col w-full gap-3 dark:bg-slate-800 dark:border-gray-700">
-				<div className="flex justify-between">
-					<Link to={'/projects'}>
-						<p className="font-semibold text-2xl mb-2">Projects</p>
+			<div className="flex flex-col w-full gap-6 dark:bg-slate-800 dark:border-gray-700 mb-10">
+				{/* Header */}
+				<div className="flex justify-between items-center">
+					<Link to={'/projects'} className="group">
+						<h2 className="font-bold text-3xl text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+							Featured Projects
+						</h2>
+					</Link>
+					<Link
+						to={'/projects'}
+						className="font-semibold text-sm hover:underline text-blue-600 dark:text-blue-400 flex items-center gap-1 group"
+					>
+						View all
+						<ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
 					</Link>
 				</div>
-				<Card
-					className="flex justify-between pt-5 hover:dark:bg-slate-800 hover:bg-slate-300 transition-all"
+
+				{/* Error Card */}
+				<motion.div
+					initial={{opacity: 0, y: 20}}
+					animate={{opacity: 1, y: 0}}
+					className="bg-white dark:bg-slate-900 border-2 border-red-200 dark:border-red-800 rounded-2xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all"
 					onClick={() => fetchData()}
 				>
-					<CardContent>Something went wrong while fetching data</CardContent>
-					<CardFooter>
-						<RefreshCw />
-					</CardFooter>
-				</Card>
+					<div className="flex items-start gap-4">
+						<div className="flex-shrink-0 w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+							<RefreshCw className="w-6 h-6 text-red-600 dark:text-red-400 animate-pulse" />
+						</div>
+						<div className="flex-1">
+							<h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">
+								Failed to Load Projects
+							</h3>
+							<p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+								Unable to fetch featured projects. This might be due to network
+								issues or API unavailability.
+							</p>
+							<div className="text-xs text-red-600 dark:text-red-400 font-mono bg-red-50 dark:bg-red-900/20 p-3 rounded-lg mb-3 break-all">
+								Error: {res}
+							</div>
+							<p className="text-sm text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-2">
+								<span>Click to retry</span>
+								<ArrowUpRight className="w-4 h-4" />
+							</p>
+						</div>
+					</div>
+				</motion.div>
 			</div>
 		);
 	}
 	if (loading || !projects) {
 		return (
-			<>
-				<div className="flex justify-between mb-6">
-					<Link to={'/projects'}>
-						<p className="font-semibold text-2xl">Featured Projects</p>
+			<div className="flex flex-col w-full gap-6 dark:bg-slate-800 dark:border-gray-700 mb-10">
+				{/* Header */}
+				<div className="flex justify-between items-center">
+					<Link to={'/projects'} className="group">
+						<h2 className="font-bold text-3xl text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+							Featured Projects
+						</h2>
 					</Link>
-					<div className="flex flex-col items-end pt-2">
-						<Link
-							to={'/projects'}
-							className="font-semibold text-md hover:underline text-blue-600 dark:text-blue-400/60"
-						>
-							View all
-						</Link>
+					<Link
+						to={'/projects'}
+						className="font-semibold text-sm hover:underline text-blue-600 dark:text-blue-400 flex items-center gap-1 group"
+					>
+						View all
+						<ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+					</Link>
+				</div>
+
+				{/* Loading Skeleton */}
+				<motion.div
+					initial={{opacity: 0}}
+					animate={{opacity: 1}}
+					className="relative h-[450px] flex items-center justify-center"
+				>
+					<div className="w-[580px] h-[370px] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
+						{/* Image Skeleton */}
+						<Skeleton className="h-[220px] w-full bg-slate-300 dark:bg-slate-700" />
+						{/* Content Skeleton */}
+						<div className="p-5 space-y-3">
+							<div>
+								<Skeleton className="h-6 w-3/4 bg-slate-300 dark:bg-slate-700 mb-2" />
+								<Skeleton className="h-4 w-1/2 bg-slate-300 dark:bg-slate-700" />
+							</div>
+							<div className="flex gap-2">
+								<Skeleton className="h-6 w-20 rounded-full bg-slate-300 dark:bg-slate-700" />
+								<Skeleton className="h-6 w-20 rounded-full bg-slate-300 dark:bg-slate-700" />
+								<Skeleton className="h-6 w-20 rounded-full bg-slate-300 dark:bg-slate-700" />
+							</div>
+						</div>
 					</div>
+				</motion.div>
+
+				{/* Skeleton Pagination Dots */}
+				<div className="flex justify-center gap-2 mt-4">
+					{[1, 2, 3].map((i) => (
+						<Skeleton
+							key={i}
+							className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600"
+						/>
+					))}
 				</div>
-				<div className="relative h-[450px] flex items-center justify-center">
-					<Skeleton className="h-[370px] w-[580px] rounded-3xl bg-slate-500 dark:bg-slate-900" />
-				</div>
-			</>
+			</div>
 		);
 	}
 
 	if (projects.length === 0 && !loading) {
-		return <div> No Data Available</div>;
+		return (
+			<div className="flex flex-col w-full gap-6 dark:bg-slate-800 dark:border-gray-700 mb-10">
+				{/* Header */}
+				<div className="flex justify-between items-center">
+					<Link to={'/projects'} className="group">
+						<h2 className="font-bold text-3xl text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+							Featured Projects
+						</h2>
+					</Link>
+					<Link
+						to={'/projects'}
+						className="font-semibold text-sm hover:underline text-blue-600 dark:text-blue-400 flex items-center gap-1 group"
+					>
+						View all
+						<ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+					</Link>
+				</div>
+
+				{/* Empty State */}
+				<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-12 text-center">
+					<div className="flex flex-col items-center gap-4">
+						<div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+							<Github className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+						</div>
+						<div>
+							<h3 className="font-bold text-xl text-slate-900 dark:text-white mb-2">
+								No Projects Yet
+							</h3>
+							<p className="text-slate-600 dark:text-slate-400">
+								Featured projects will appear here once they are added.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
 	}
 
 	return (
@@ -124,10 +221,10 @@ export function TopProjects() {
 			</div>
 
 			{/* Carousel Container */}
-			<div className="relative h-[450px] flex items-center justify-center">
+			<div className="relative h-[450px] flex items-center justify-center overflow-hidden">
 				{/* Fade Gradient Overlays */}
-				<div className="absolute left-0 top-0 bottom-0 w-48 bg-gradient-to-r from-white dark:from-slate-800 to-transparent z-25 pointer-events-none" />
-				<div className="absolute right-0 top-0 bottom-0 w-48 bg-gradient-to-l from-white dark:from-slate-800 to-transparent z-25 pointer-events-none" />
+				<div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white dark:from-slate-800 to-transparent z-20 pointer-events-none" />
+				<div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white dark:from-slate-800 to-transparent z-20 pointer-events-none" />
 
 				{/* Navigation Buttons */}
 				<Button

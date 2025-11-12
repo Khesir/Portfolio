@@ -17,6 +17,8 @@ const goIcon = 'devicon:go';
 const csharpIcon = 'devicon:csharp';
 const cplusplusIcon = 'devicon:cplusplus';
 const typescriptIcon = 'devicon:typescript';
+const dartIcon = 'devicon:dart';
+// const flutterIcon = 'devicon:flutter';
 export default function Homepage() {
 	const {setPathname} = usePathname();
 	const location = useLocation();
@@ -133,8 +135,9 @@ export default function Homepage() {
 
 						<div className="space-y-3 text-slate-700 dark:text-slate-300">
 							<p className="leading-relaxed">
-								👋 Hey there! I'm AJ (also known as Khesir), a Software Engineer
-								with a passion for backend development and game engineering.
+								👋 Hey there! I&apos;m AJ (also known as Khesir), a Software
+								Engineer with a passion for backend development and game
+								engineering.
 							</p>
 							<p className="leading-relaxed">
 								🚀 I specialize in building scalable architectures for games and
@@ -165,6 +168,14 @@ export default function Homepage() {
 									<Icon icon={typescriptIcon} className="w-6 h-6" />
 									<span className="text-sm font-medium">TypeScript</span>
 								</div>
+								<div className="flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
+									<Icon icon={dartIcon} className="w-6 h-6" />
+									<span className="text-sm font-medium">Dart</span>
+								</div>
+								{/* <div className="flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
+									<Icon icon={flutterIcon} className="w-6 h-6" />
+									<span className="text-sm font-medium">Flutter</span>
+								</div> */}
 							</div>
 						</div>
 					</div>
@@ -217,7 +228,7 @@ export default function Homepage() {
 							Get in Touch
 						</h2>
 						<p className="text-slate-600 dark:text-slate-400">
-							Have a project in mind? Let's collaborate!
+							Have a project in mind? Let&apos;s collaborate!
 						</p>
 					</div>
 

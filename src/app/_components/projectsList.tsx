@@ -24,7 +24,7 @@ const cardVariants = {
 };
 
 export function ProjectList() {
-	const [projects, setProjects] = useState([]);
+	const [projects, setProjects] = useState<any[]>([]);
 	const [res, setRes] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
@@ -35,9 +35,10 @@ export function ProjectList() {
 			setLoading(true);
 			try {
 				const data = await fetchProjects();
-				setProjects(data);
+				setProjects(Array.isArray(data) ? data : []);
 			} catch (e: any) {
 				setRes(e.toString());
+				setProjects([]); // Ensure projects is always an array
 			} finally {
 				setLoading(false);
 			}
@@ -46,24 +47,65 @@ export function ProjectList() {
 		fetchData();
 	}, [refreshKey]);
 
-	if (loading || !projects) {
+	if (res) {
 		return (
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				{[...Array(6)].map((_, i) => (
-					<Skeleton
-						key={i}
-						className="h-[380px] w-full rounded-2xl bg-slate-300 dark:bg-slate-800"
-					/>
-				))}
-			</div>
+			<motion.div
+				initial={{opacity: 0, y: 20}}
+				animate={{opacity: 1, y: 0}}
+				className="bg-white dark:bg-slate-900 border-2 border-red-200 dark:border-red-800 rounded-2xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all"
+				onClick={() => window.location.reload()}
+			>
+				<div className="flex items-start gap-4">
+					<div className="flex-shrink-0 w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+						<ArrowUpRight className="w-6 h-6 text-red-600 dark:text-red-400 animate-pulse" />
+					</div>
+					<div className="flex-1">
+						<h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">
+							Failed to Load Projects
+						</h3>
+						<p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+							Unable to fetch project data. This might be due to network issues or API unavailability.
+						</p>
+						<div className="text-xs text-red-600 dark:text-red-400 font-mono bg-red-50 dark:bg-red-900/20 p-3 rounded-lg mb-3 break-all">
+							Error: {res}
+						</div>
+						<p className="text-sm text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-2">
+							<span>Click to retry</span>
+							<ArrowUpRight className="w-4 h-4" />
+						</p>
+					</div>
+				</div>
+			</motion.div>
 		);
 	}
 
-	if (res) {
+	if (loading || !projects) {
 		return (
-			<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-8 text-center">
-				<p className="text-red-600 dark:text-red-400">{res}</p>
-			</div>
+			<motion.div
+				initial={{opacity: 0}}
+				animate={{opacity: 1}}
+				className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+			>
+				{[...Array(6)].map((_, i) => (
+					<div
+						key={i}
+						className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md overflow-hidden"
+					>
+						{/* Image skeleton */}
+						<Skeleton className="h-[200px] w-full bg-slate-300 dark:bg-slate-700" />
+						{/* Content skeleton */}
+						<div className="p-5 space-y-3">
+							<Skeleton className="h-6 w-3/4 bg-slate-300 dark:bg-slate-700" />
+							<Skeleton className="h-4 w-1/2 bg-slate-300 dark:bg-slate-700" />
+							<div className="flex gap-2">
+								<Skeleton className="h-6 w-16 rounded-full bg-slate-300 dark:bg-slate-700" />
+								<Skeleton className="h-6 w-16 rounded-full bg-slate-300 dark:bg-slate-700" />
+								<Skeleton className="h-6 w-16 rounded-full bg-slate-300 dark:bg-slate-700" />
+							</div>
+						</div>
+					</div>
+				))}
+			</motion.div>
 		);
 	}
 
