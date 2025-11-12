@@ -16,8 +16,9 @@ export function Layout({children}: ContentLayoutProps) {
 								Khesir (Aj)
 							</h3>
 							<p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-								Full-stack developer passionate about building scalable applications
-								and solving complex problems with modern technologies.
+								Full-stack developer passionate about building scalable
+								applications and solving complex problems with modern
+								technologies.
 							</p>
 						</div>
 
@@ -101,9 +102,7 @@ export function Layout({children}: ContentLayoutProps) {
 					{/* Bottom Bar */}
 					<div className="pt-8 border-t border-slate-200 dark:border-slate-700">
 						<div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
-							<p>
-								© {new Date().getFullYear()} Khesir (Aj). Made with 💜
-							</p>
+							<p>© {new Date().getFullYear()} Khesir (Aj). Made with 💜</p>
 							<div className="flex gap-6">
 								<a
 									href="https://github.com"

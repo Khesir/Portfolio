@@ -283,8 +283,8 @@ export function ExperienceSection({
 
 			{/* Dialog */}
 			<Dialog open={open} onOpenChange={setOpen}>
-				<DialogContent className="dark:text-white sm:max-w-[90%] xl:max-w-[60%] dark:bg-slate-800 max-h-[85vh]">
-					<DialogTitle className="text-2xl font-bold">
+				<DialogContent className="dark:text-white sm:max-w-[90%] xl:max-w-[60%] dark:bg-slate-800 max-h-[85vh] flex flex-col">
+					<DialogTitle className="text-2xl font-bold flex-shrink-0">
 						{selectedExperience !== null &&
 							selectedExperience !== undefined &&
 							experiences[selectedExperience]?.properties?.Position?.title?.[0]
@@ -312,65 +312,65 @@ export function ExperienceSection({
 						</span>
 					</DialogTitle>
 
-					<div className="space-y-4">
-						{/* Company Info */}
-						<div className="grid grid-cols-2 gap-4 p-4 bg-slate-100 dark:bg-slate-900 rounded-lg">
-							<div>
-								<p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Company</p>
-								<p className="font-semibold">
-									{selectedExperience !== null &&
-										selectedExperience !== undefined &&
-										experiences[selectedExperience]?.properties.CompanyName
-											.rich_text[0].plain_text}
-								</p>
+					<ScrollArea className="flex-1 pr-4">
+						<div className="space-y-4">
+							{/* Company Info */}
+							<div className="grid grid-cols-2 gap-4 p-4 bg-slate-100 dark:bg-slate-900 rounded-lg">
+								<div>
+									<p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Company</p>
+									<p className="font-semibold">
+										{selectedExperience !== null &&
+											selectedExperience !== undefined &&
+											experiences[selectedExperience]?.properties.CompanyName
+												.rich_text[0].plain_text}
+									</p>
+								</div>
+								<div>
+									<p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Work Environment</p>
+									<p className="font-semibold">
+										{selectedExperience !== null &&
+											selectedExperience !== undefined &&
+											experiences[selectedExperience]?.properties.JobType.select.name}
+									</p>
+								</div>
+								<div>
+									<p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Position</p>
+									<p className="font-semibold">
+										{selectedExperience !== null &&
+											selectedExperience !== undefined &&
+											experiences[selectedExperience]?.properties.Position?.title?.[0]
+												?.plain_text}
+									</p>
+								</div>
+								<div>
+									<p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Employment Type</p>
+									<p className="font-semibold">
+										{selectedExperience !== null &&
+											selectedExperience !== undefined &&
+											experiences[selectedExperience]?.properties.EmploymentType
+												?.select.name}
+									</p>
+								</div>
 							</div>
-							<div>
-								<p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Work Environment</p>
-								<p className="font-semibold">
-									{selectedExperience !== null &&
-										selectedExperience !== undefined &&
-										experiences[selectedExperience]?.properties.JobType.select.name}
-								</p>
-							</div>
-							<div>
-								<p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Position</p>
-								<p className="font-semibold">
-									{selectedExperience !== null &&
-										selectedExperience !== undefined &&
-										experiences[selectedExperience]?.properties.Position?.title?.[0]
-											?.plain_text}
-								</p>
-							</div>
-							<div>
-								<p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Employment Type</p>
-								<p className="font-semibold">
-									{selectedExperience !== null &&
-										selectedExperience !== undefined &&
-										experiences[selectedExperience]?.properties.EmploymentType
-											?.select.name}
-								</p>
-							</div>
-						</div>
 
-						{/* Skills */}
-						<div>
-							<p className="text-sm font-semibold mb-2">Highlighted Skills</p>
-							<div className="flex gap-2 flex-wrap">
-								{selectedExperience !== null &&
-									selectedExperience !== undefined &&
-									experiences[selectedExperience]?.highlightSkills?.map(
-										(data: any, index: any) => (
-											<Badge key={index} variant="secondary" className="px-3 py-1">
-												{data.properties['Name'].title[0].plain_text}
-											</Badge>
-										),
-									)}
+							{/* Skills */}
+							<div>
+								<p className="text-sm font-semibold mb-2">Highlighted Skills</p>
+								<div className="flex gap-2 flex-wrap">
+									{selectedExperience !== null &&
+										selectedExperience !== undefined &&
+										experiences[selectedExperience]?.highlightSkills?.map(
+											(data: any, index: any) => (
+												<Badge key={index} variant="secondary" className="px-3 py-1">
+													{data.properties['Name'].title[0].plain_text}
+												</Badge>
+											),
+										)}
+								</div>
 							</div>
-						</div>
 
-						{/* Markdown Content */}
-						<div className="border-t pt-4">
-							<ScrollArea className="max-h-[400px] pr-4">
+							{/* Markdown Content */}
+							<div className="border-t pt-4">
 								<MarkDownComponent
 									markdown={
 										(selectedExperience !== null &&
@@ -379,9 +379,9 @@ export function ExperienceSection({
 										'No description available.'
 									}
 								/>
-							</ScrollArea>
+							</div>
 						</div>
-					</div>
+					</ScrollArea>
 				</DialogContent>
 			</Dialog>
 		</div>

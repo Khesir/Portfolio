@@ -34,7 +34,7 @@ export function BaseLayout() {
 				</div>
 			</div>
 			{/* Environment Toggle - Always Visible */}
-			<motion.div
+			{/* <motion.div
 				key="environment-toggle"
 				className="fixed bottom-5 right-5 bg-green-400 flex justify-center items-center w-[65px] h-[65px] rounded-full z-20 cursor-pointer"
 				initial={{x: '100%', opacity: 0}}
@@ -42,13 +42,13 @@ export function BaseLayout() {
 				transition={{type: 'spring', stiffness: 100, damping: 15, delay: 0.3}}
 			>
 				<EnvironmentToggle />
-			</motion.div>
+			</motion.div> */}
 			{/* Theme Toggle - Scroll Dependent */}
 			<AnimatePresence>
 				{showButton && (
 					<motion.div
 						key="mode-toggle"
-						className="fixed bottom-24 right-5 bg-blue-400 flex justify-center items-center w-[65px] h-[65px] rounded-full z-20 cursor-pointer"
+						className="fixed bottom-5 right-5 bg-blue-400 flex justify-center items-center w-[65px] h-[65px] rounded-full z-20 cursor-pointer"
 						initial={{x: '100%', opacity: 0, rotate: 0}}
 						animate={{x: 0, opacity: 1, rotate: -360}}
 						exit={{x: '100%', opacity: 0, rotate: 360}}

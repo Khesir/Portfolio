@@ -54,9 +54,9 @@ export function BlogPage() {
 					<p className="font-bold text-lg text-slate-900 dark:text-white">
 						Enjoy reading?
 					</p>
-					<p className="text-sm text-slate-600 dark:text-slate-400">
+					{/* <p className="text-sm text-slate-600 dark:text-slate-400">
 						Subscribe to stay updated with my latest posts and projects
-					</p>
+					</p> */}
 				</div>
 				<Button
 					size="lg"
