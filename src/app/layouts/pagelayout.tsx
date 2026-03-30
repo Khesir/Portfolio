@@ -1,5 +1,5 @@
 import {Banner} from '../../components/banner-section';
-import {Outlet} from 'react-router-dom';
+import {Outlet, useLocation} from 'react-router-dom';
 import {Layout} from './baselayout';
 import {ModeToggle} from '@/components/providers/mode-toggle';
 // import {EnvironmentToggle} from '@/components/providers/environment-toggle';
@@ -8,6 +8,11 @@ import {AnimatePresence, motion} from 'framer-motion';
 
 export function BaseLayout() {
 	const [showButton, setShowButton] = useState(false);
+	const {pathname} = useLocation();
+
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, [pathname]);
 
 	useEffect(() => {
 		const handleScroll = () => {

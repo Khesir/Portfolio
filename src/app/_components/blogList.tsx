@@ -49,13 +49,18 @@ export function BlogList() {
 
 	if (loading) {
 		return (
-			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-				{[...Array(4)].map((_, i) => (
-					<Skeleton
-						key={i}
-						className="h-[250px] w-full rounded-2xl bg-slate-300 dark:bg-slate-800"
-					/>
-				))}
+			<div className="flex flex-col gap-4">
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					{[...Array(4)].map((_, i) => (
+						<Skeleton
+							key={i}
+							className="h-[250px] w-full rounded-2xl bg-slate-300 dark:bg-slate-800"
+						/>
+					))}
+				</div>
+				<p className="text-center text-sm text-slate-400 dark:text-slate-500">
+					Fetching for the first time — subsequent visits load instantly from cache.
+				</p>
 			</div>
 		);
 	}

@@ -114,7 +114,7 @@ export default function SkillSetPage() {
 										</p>
 										<li className="font-semibold">Backend</li>
 										<p className="text-slate-600">
-											Express, Nest.js, Flask, Go-Httprouter, Socket.io
+											Express, Nest.js, Flask, Socket.io
 										</p>
 										<li className="font-semibold">Database</li>
 										<p className="text-slate-600">MongoDB, Mysql, Posgress</p>

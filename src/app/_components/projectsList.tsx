@@ -81,31 +81,34 @@ export function ProjectList() {
 
 	if (loading || !projects) {
 		return (
-			<motion.div
-				initial={{opacity: 0}}
-				animate={{opacity: 1}}
-				className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-			>
-				{[...Array(6)].map((_, i) => (
-					<div
-						key={i}
-						className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md overflow-hidden"
-					>
-						{/* Image skeleton */}
-						<Skeleton className="h-[200px] w-full bg-slate-300 dark:bg-slate-700" />
-						{/* Content skeleton */}
-						<div className="p-5 space-y-3">
-							<Skeleton className="h-6 w-3/4 bg-slate-300 dark:bg-slate-700" />
-							<Skeleton className="h-4 w-1/2 bg-slate-300 dark:bg-slate-700" />
-							<div className="flex gap-2">
-								<Skeleton className="h-6 w-16 rounded-full bg-slate-300 dark:bg-slate-700" />
-								<Skeleton className="h-6 w-16 rounded-full bg-slate-300 dark:bg-slate-700" />
-								<Skeleton className="h-6 w-16 rounded-full bg-slate-300 dark:bg-slate-700" />
+			<div className="flex flex-col gap-4">
+				<motion.div
+					initial={{opacity: 0}}
+					animate={{opacity: 1}}
+					className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+				>
+					{[...Array(6)].map((_, i) => (
+						<div
+							key={i}
+							className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md overflow-hidden"
+						>
+							<Skeleton className="h-[200px] w-full bg-slate-300 dark:bg-slate-700" />
+							<div className="p-5 space-y-3">
+								<Skeleton className="h-6 w-3/4 bg-slate-300 dark:bg-slate-700" />
+								<Skeleton className="h-4 w-1/2 bg-slate-300 dark:bg-slate-700" />
+								<div className="flex gap-2">
+									<Skeleton className="h-6 w-16 rounded-full bg-slate-300 dark:bg-slate-700" />
+									<Skeleton className="h-6 w-16 rounded-full bg-slate-300 dark:bg-slate-700" />
+									<Skeleton className="h-6 w-16 rounded-full bg-slate-300 dark:bg-slate-700" />
+								</div>
 							</div>
 						</div>
-					</div>
-				))}
-			</motion.div>
+					))}
+				</motion.div>
+				<p className="text-center text-sm text-slate-400 dark:text-slate-500">
+					Fetching for the first time — subsequent visits load instantly from cache.
+				</p>
+			</div>
 		);
 	}
 

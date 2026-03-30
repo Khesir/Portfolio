@@ -15,11 +15,9 @@ import {
 import {ExperienceSection} from '@/app/module/home/experienceSection';
 
 // Iconify icon names
-const goIcon = 'devicon:go';
 const csharpIcon = 'devicon:csharp';
 const cplusplusIcon = 'devicon:cplusplus';
 const typescriptIcon = 'devicon:typescript';
-const dartIcon = 'devicon:dart';
 const flutterIcon = 'devicon:flutter';
 const reactIcon = 'devicon:react';
 const nextjsIcon = 'devicon:nextjs';
@@ -55,7 +53,7 @@ export default function AboutMe() {
 						<div className="flex-shrink-0">
 							<div className="w-48 h-48 rounded-2xl overflow-hidden border-4 border-slate-200 dark:border-slate-700 shadow-md">
 								<img
-									src="/img/profile3.jpg"
+									src="/img/profile2.jpg"
 									alt="Khesir (AJ)"
 									className="w-full h-full object-cover"
 								/>
@@ -203,15 +201,6 @@ export default function AboutMe() {
 						</h3>
 						<div className="flex flex-wrap gap-3">
 							<div className="flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={goIcon} className="w-8 h-8" />
-								<div>
-									<p className="font-semibold text-sm">Go</p>
-									<p className="text-xs text-slate-600 dark:text-slate-400">
-										Backend Services
-									</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
 								<Icon icon={csharpIcon} className="w-8 h-8" />
 								<div>
 									<p className="font-semibold text-sm">C#</p>
@@ -238,15 +227,6 @@ export default function AboutMe() {
 									</p>
 								</div>
 							</div>
-							<div className="flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={dartIcon} className="w-8 h-8" />
-								<div>
-									<p className="font-semibold text-sm">Dart</p>
-									<p className="text-xs text-slate-600 dark:text-slate-400">
-										Mobile Development
-									</p>
-								</div>
-							</div>
 						</div>
 					</div>
 
@@ -259,6 +239,10 @@ export default function AboutMe() {
 							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
 								<Icon icon={flutterIcon} className="w-6 h-6" />
 								<span className="text-sm font-medium">Flutter</span>
+							</div>
+							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
+								<Icon icon="devicon:react" className="w-6 h-6" />
+								<span className="text-sm font-medium">React Native</span>
 							</div>
 						</div>
 					</div>

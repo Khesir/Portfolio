@@ -191,9 +191,21 @@ export function ReadPage({name}: ReadpageProps) {
 
 			{/* Content Section */}
 			<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-8 md:p-12">
-				<div className="prose dark:prose-invert prose-gray max-w-none prose-lg">
-					<MarkDownComponent markdown={markdown} />
-				</div>
+				{markdown ? (
+					<div className="prose dark:prose-invert prose-gray max-w-none prose-lg">
+						<MarkDownComponent markdown={markdown} />
+					</div>
+				) : (
+					<div className="text-center space-y-3 py-8">
+						<p className="text-4xl">🚧</p>
+						<h2 className="font-bold text-xl text-slate-900 dark:text-white">
+							Content coming soon
+						</h2>
+						<p className="text-sm text-slate-500 dark:text-slate-400">
+							This {name === 'projects' ? 'project' : 'post'} doesn&apos;t have a write-up yet. Check back later!
+						</p>
+					</div>
+				)}
 			</div>
 
 			{/* Back to top button */}

@@ -5,7 +5,7 @@ import {
 	Layers,
 	LayoutIcon,
 	PenLine,
-	// UserCircle,
+	UserCircle,
 } from 'lucide-react';
 import {
 	TbBrandCSharp,
@@ -32,6 +32,12 @@ export const navdata = [
 		emoji: Home,
 	},
 	{
+		name: 'About',
+		isActive: false,
+		link: '/about',
+		emoji: UserCircle,
+	},
+	{
 		name: 'Services',
 		isActive: false,
 		link: '/services',
@@ -50,13 +56,6 @@ export const navdata = [
 		emoji: PenLine,
 	},
 ];
-//
-// {
-// 	name: 'About',
-// 	isActive: true,
-// 	link: '/about',
-// 	emoji: UserCircle,
-// },
 
 export const Experties = [
 	{
