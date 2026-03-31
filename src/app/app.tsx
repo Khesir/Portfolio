@@ -1,6 +1,7 @@
 import {BrowserRouter, Route, Routes as Router} from 'react-router-dom';
 
 import SandBoxPage from './sandbox/SandBoxPage';
+import CmsApp from './cms/CmsApp';
 import {GuestchatPage} from './module/guestChat/guestchatPage';
 import {ReadPage} from './_components/readPage/readingPage';
 import {BaseLayout} from '@/app/layouts/pagelayout';
@@ -37,6 +38,7 @@ export default function App() {
 					/> */}
 				</Route>
 				<Route path="sandbox" element={<SandBoxPage />} />
+				<Route path="cms/*" element={<CmsApp />} />
 				<Route path="*" />
 				<Route path="skillset" element={<SkillSetPage />} />
 			</Router>
