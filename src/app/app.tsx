@@ -11,6 +11,7 @@ import SkillSetPage from './module/skillset/skillset';
 import {BlogPage} from './module/blogs/blogPage';
 import Homepage from './module/home/homePage';
 import {ProgressPage} from './module/progress/progress';
+import {PostsPage} from './module/posts/postsPage';
 import {ProjectPage} from './module/projects/projectPage';
 import {ExperiencePage} from './module/experiences/experiencePage';
 
@@ -27,6 +28,7 @@ export default function App() {
 					<Route index element={<Homepage />} />
 					<Route path="services" element={<ServicePage />} />
 					<Route path="experiences" element={<ExperiencePage />} />
+					<Route path="posts" element={<PostsPage />} />
 					<Route path="blogs/view/:title" element={<ReadPage name="blogs" />} />
 					<Route
 						path="projects/view/:title"

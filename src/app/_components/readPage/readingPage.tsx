@@ -25,6 +25,9 @@ import {Calendar, Clock, ArrowLeft} from 'lucide-react';
 import {Button} from '@/components/ui/Button';
 import {useNavigate} from 'react-router-dom';
 import {Badge} from '@/components/ui/badge';
+import {EngagementBar} from '@/components/EngagementBar';
+import {StickyHeart} from '@/components/StickyHeart';
+import type {EngagementType} from '@/app/api/cms';
 
 interface ReadpageProps {
 	name: string;
@@ -119,12 +122,25 @@ export function ReadPage({name}: ReadpageProps) {
 		? data.properties?.['Languages']?.multi_select || []
 		: data.properties?.['Tags']?.multi_select || [];
 
+	const engagementType: EngagementType = name === 'projects' ? 'project' : 'blog';
+	const itemId = searchParams.get('id') ?? '';
+	const hideViews = data.properties?.['Hide Views']?.checkbox ?? false;
+	const hideHearts = data.properties?.['Hide Hearts']?.checkbox ?? false;
+
 	return (
 		<motion.div
 			initial={{opacity: 0, y: 20}}
 			animate={{opacity: 1, y: 0}}
 			transition={{duration: 0.5}}
 		>
+			{/* Sticky heart — zero-height anchor, floats just outside the right edge */}
+			{itemId && (
+				<div className="sticky top-[45vh] h-0 overflow-visible hidden md:block">
+					<div className="absolute right-0 translate-x-[calc(100%+1rem)] -translate-y-1/2">
+						<StickyHeart type={engagementType} id={itemId} hideHearts={hideHearts} />
+					</div>
+				</div>
+			)}
 			{/* Header Section */}
 			<div className="mb-8">
 				<Button
@@ -158,6 +174,9 @@ export function ReadPage({name}: ReadpageProps) {
 								<Clock className="w-4 h-4" />
 								<span>{data.properties['Min'].number} min read</span>
 							</div>
+						)}
+						{itemId && (
+							<EngagementBar type={engagementType} id={itemId} trackOnMount hideViews={hideViews} hideHearts={hideHearts} />
 						)}
 					</div>
 

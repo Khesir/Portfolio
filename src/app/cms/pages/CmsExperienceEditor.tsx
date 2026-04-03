@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 import TagInput from '../components/TagInput';
 import MarkdownEditor from '../components/MarkdownEditor';
 import DraftToggle from '../components/DraftToggle';
+import EngagementToggles from '../components/EngagementToggles';
+import ImageUpload from '../components/ImageUpload';
 
 const JOB_TYPES: CreateExperienceDto['jobType'][] = ['Remote', 'Hybrid', 'Onsite'];
 const EMPLOYMENT_TYPES: CreateExperienceDto['employmentType'][] = [
@@ -36,6 +38,8 @@ export default function CmsExperienceEditor() {
   const [pageMd, setPageMd] = useState('');
   const [highlightSkills, setHighlightSkills] = useState<string[]>([]);
   const [draft, setDraft] = useState(true);
+  const [hideViews, setHideViews] = useState(false);
+  const [hideHearts, setHideHearts] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loadingData, setLoadingData] = useState(isEdit);
 
@@ -63,6 +67,8 @@ export default function CmsExperienceEditor() {
             .filter(Boolean)
         );
         setDraft(props?.Draft?.checkbox ?? false);
+        setHideViews(props?.['Hide Views']?.checkbox ?? false);
+        setHideHearts(props?.['Hide Hearts']?.checkbox ?? false);
       })
       .finally(() => setLoadingData(false));
   }, [id, isEdit]);
@@ -82,6 +88,8 @@ export default function CmsExperienceEditor() {
         pageMd: pageMd || undefined,
         highlightSkills,
         draft,
+        hideViews,
+        hideHearts,
       };
       if (isEdit && id) {
         await cmsUpdateExperience(id, payload);
@@ -106,7 +114,10 @@ export default function CmsExperienceEditor() {
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">{isEdit ? 'Edit Experience' : 'New Experience'}</h1>
-        <DraftToggle draft={draft} onChange={setDraft} />
+        <div className="flex items-center gap-2">
+          <EngagementToggles hideViews={hideViews} hideHearts={hideHearts} onChangeViews={setHideViews} onChangeHearts={setHideHearts} />
+          <DraftToggle draft={draft} onChange={setDraft} />
+        </div>
       </div>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="max-w-3xl space-y-5">
@@ -155,8 +166,8 @@ export default function CmsExperienceEditor() {
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label>Company Logo URL</Label>
-            <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." />
+            <Label>Company Logo</Label>
+            <ImageUpload value={imageUrl} onChange={setImageUrl} />
           </div>
           <div className="space-y-1.5">
             <Label>Highlight Skills</Label>

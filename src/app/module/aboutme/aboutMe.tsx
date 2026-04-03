@@ -4,34 +4,52 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {Button} from '@/components/ui/Button';
 import {Icon} from '@iconify/react';
 import {motion} from 'framer-motion';
-import {
-	Mail,
-	Github,
-	FileText,
-	MapPin,
-	Briefcase,
-	GraduationCap,
-} from 'lucide-react';
+import {MapPin, Briefcase} from 'lucide-react';
 import {ExperienceSection} from '@/app/module/home/experienceSection';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import {
+	useHomeConfig,
+	useAboutConfig,
+	iconLabel,
+	getStatusStyle,
+} from '@/hooks/use-home-config';
+import type {BannerButton} from '@/app/api/cms';
 
-// Iconify icon names
-const csharpIcon = 'devicon:csharp';
-const cplusplusIcon = 'devicon:cplusplus';
-const typescriptIcon = 'devicon:typescript';
-const flutterIcon = 'devicon:flutter';
-const reactIcon = 'devicon:react';
-const nextjsIcon = 'devicon:nextjs';
-const nodejsIcon = 'devicon:nodejs';
-const dockerIcon = 'devicon:docker';
-const postgresIcon = 'devicon:postgresql';
-const mongoIcon = 'devicon:mongodb';
-const luaIcon = 'devicon:lua';
-const unityIcon = 'devicon:unity';
+function AboutBtn({btn}: {btn: BannerButton}) {
+	const navigate = useNavigate();
+	const handleClick = () => {
+		if (btn.action === 'contact') {
+			navigate('/');
+			setTimeout(() => {
+				document
+					.getElementById('contact')
+					?.scrollIntoView({behavior: 'smooth'});
+			}, 100);
+		} else if (btn.to) {
+			navigate(btn.to);
+		} else if (btn.href) {
+			window.open(btn.href, '_blank', 'noopener noreferrer');
+		}
+	};
+	return (
+		<Button
+			variant={btn.variant === 'secondary' ? 'outline' : 'default'}
+			className="flex items-center gap-2"
+			onClick={handleClick}
+		>
+			{btn.icon && <Icon icon={btn.icon} className="w-4 h-4" />}
+			{btn.label}
+		</Button>
+	);
+}
 
 export default function AboutMe() {
 	const {setPathname} = usePathname();
 	const navigate = useNavigate();
 	const location = useLocation();
+	const {config: home} = useHomeConfig();
+	const {config: about} = useAboutConfig();
 
 	useEffect(() => {
 		setPathname(location.pathname);
@@ -53,8 +71,12 @@ export default function AboutMe() {
 						<div className="flex-shrink-0">
 							<div className="w-48 h-48 rounded-2xl overflow-hidden border-4 border-slate-200 dark:border-slate-700 shadow-md">
 								<img
-									src="/img/profile2.jpg"
-									alt="Khesir (AJ)"
+									src={
+										about.profileImageUrl ||
+										home.profileImageUrl ||
+										'/img/profile2.jpg'
+									}
+									alt={home.name || 'Profile'}
 									className="w-full h-full object-cover"
 								/>
 							</div>
@@ -64,358 +86,185 @@ export default function AboutMe() {
 						<div className="flex-1 space-y-4">
 							<div>
 								<div className="flex items-center justify-between mb-2">
-									<h1 className="text-4xl font-bold text-slate-900 dark:text-white">
-										Khesir (AJ)
-									</h1>
-									<div className="hidden md:block text-xs text-slate-500 dark:text-slate-500">
-										Last updated: November 2025
+									<div>
+										<h1 className="text-4xl font-bold text-slate-900 dark:text-white">
+											{home.name || 'Khesir (AJ)'}
+										</h1>
 									</div>
+									{about.lastUpdatedAt && (
+										<div className="hidden md:block text-xs text-slate-500 dark:text-slate-500 shrink-0">
+											Last updated:{' '}
+											{new Date(about.lastUpdatedAt).toLocaleDateString(
+												'en-US',
+												{
+													month: 'long',
+													year: 'numeric',
+												},
+											)}
+										</div>
+									)}
 								</div>
-								<p className="text-xl text-blue-600 dark:text-blue-400 font-semibold mb-3">
-									Software Engineer
-								</p>
+								{home.role && (
+									<p className="text-xl text-blue-600 dark:text-blue-400 font-semibold mb-3">
+										{home.role}
+									</p>
+								)}
 								<div className="flex flex-wrap gap-3 text-sm text-slate-600 dark:text-slate-400">
-									<div className="flex items-center gap-1.5">
-										<MapPin className="w-4 h-4" />
-										<span>Remote / Flexible</span>
-									</div>
-									<div className="flex items-center gap-1.5">
-										<Briefcase className="w-4 h-4" />
-										<span>Full-Stack Developer</span>
-									</div>
-									<div className="flex items-center gap-1.5">
-										<GraduationCap className="w-4 h-4" />
-										<span>Backend & Game Engineering</span>
-									</div>
-								</div>
-								{/* Last Updated - Mobile */}
-								<div className="md:hidden mt-3 text-xs text-slate-500 dark:text-slate-500">
-									Last updated:{' '}
-									{new Date().toLocaleDateString('en-US', {
-										month: 'long',
-										year: 'numeric',
-									})}
+									{about.location && (
+										<div className="flex items-center gap-1.5">
+											<MapPin className="w-4 h-4" />
+											<span>{about.location}</span>
+										</div>
+									)}
+									{home.role && (
+										<div className="flex items-center gap-1.5">
+											<Briefcase className="w-4 h-4" />
+											<span>{home.role}</span>
+										</div>
+									)}
 								</div>
 							</div>
 
 							{/* Quick Actions */}
-							<div className="flex flex-wrap gap-3">
-								<Button
-									className="flex items-center gap-2"
-									onClick={() => {
-										navigate('/');
-										setTimeout(() => {
-											const el = document.getElementById('contact');
-											if (el) el.scrollIntoView({behavior: 'smooth'});
-										}, 100);
-									}}
-								>
-									<Mail className="w-4 h-4" />
-									Contact Me
-								</Button>
-								<Button
-									variant="outline"
-									className="flex items-center gap-2"
-									onClick={() =>
-										window.open('https://github.com/khesir', '_blank')
-									}
-								>
-									<Github className="w-4 h-4" />
-									GitHub
-								</Button>
-								<Button
-									variant="outline"
-									className="flex items-center gap-2"
-									onClick={() => navigate('/blogs')}
-								>
-									<FileText className="w-4 h-4" />
-									Blogs
-								</Button>
-							</div>
+							{about.aboutButtons.length > 0 && (
+								<div className="flex flex-wrap gap-3">
+									{about.aboutButtons.map((btn, i) => (
+										<AboutBtn key={i} btn={btn} />
+									))}
+								</div>
+							)}
 
-							{/* Status Badge */}
-							<div className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg w-fit">
-								<div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-								<span className="text-sm font-medium text-green-700 dark:text-green-400">
-									Available for Opportunities
-								</span>
-							</div>
+							{/* Status badge */}
+							{(() => {
+								const style = getStatusStyle(home.status.type);
+								return (
+									<div
+										className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg w-fit border ${style.pill}`}
+									>
+										{home.status.type === 'custom' && home.status.emoji ? (
+											<span>{home.status.emoji}</span>
+										) : (
+											<span className={`w-2 h-2 rounded-full ${style.dot}`} />
+										)}
+										<span className="text-sm font-medium">
+											{home.status.type === 'custom'
+												? home.status.message || 'Custom'
+												: home.status.message || style.text}
+										</span>
+									</div>
+								);
+							})()}
 						</div>
 					</div>
 				</div>
 			</motion.div>
 
 			{/* Professional Summary */}
-			<motion.div
-				className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-8"
-				initial={{y: 50, opacity: 0}}
-				whileInView={{y: 0, opacity: 1}}
-				viewport={{once: true, amount: 0.3}}
-				transition={{type: 'spring', stiffness: 60, damping: 15}}
-			>
-				<h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-					Professional Summary
-				</h2>
-				<div className="space-y-4 text-slate-700 dark:text-slate-300">
-					<p className="leading-relaxed">
-						Software Engineer with a strong focus on{' '}
-						<strong>backend development</strong> and{' '}
-						<strong>game engineering</strong>. I specialize in building scalable
-						architectures for both software platforms and games, with expertise
-						in designing robust systems that handle complex logic and high
-						performance requirements.
-					</p>
-					<p className="leading-relaxed">
-						While I have full-stack capabilities, my passion lies in backend
-						architecture, system design, and game development. I'm deeply
-						invested in writing clean, maintainable code that emphasizes
-						scalability, proper data structures, and sound engineering
-						principles.
-					</p>
-					<p className="leading-relaxed">
-						I approach every project by asking critical questions: "Is this
-						scalable?", "Is this implementation logically sound?", and "Will
-						this make sense long-term?" This mindset helps me deliver solutions
-						that stand the test of time.
-					</p>
-				</div>
-			</motion.div>
+			{about.professionalSummary && (
+				<motion.div
+					className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-8"
+					initial={{y: 50, opacity: 0}}
+					whileInView={{y: 0, opacity: 1}}
+					viewport={{once: true, amount: 0.3}}
+					transition={{type: 'spring', stiffness: 60, damping: 15}}
+				>
+					<h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+						Professional Summary
+					</h2>
+					<div className="prose prose-slate dark:prose-invert max-w-none">
+						<ReactMarkdown remarkPlugins={[remarkGfm]}>
+							{about.professionalSummary}
+						</ReactMarkdown>
+					</div>
+				</motion.div>
+			)}
 
-			{/* Tech Stack Section */}
-			<motion.div
-				className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-8"
-				initial={{y: 50, opacity: 0}}
-				whileInView={{y: 0, opacity: 1}}
-				viewport={{once: true, amount: 0.3}}
-				transition={{type: 'spring', stiffness: 60, damping: 15}}
-			>
-				<h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
-					Technical Skills
-				</h2>
+			{/* Tech Stack */}
+			{home.languages.length > 0 && (
+				<motion.div
+					className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-8"
+					initial={{y: 50, opacity: 0}}
+					whileInView={{y: 0, opacity: 1}}
+					viewport={{once: true, amount: 0.3}}
+					transition={{type: 'spring', stiffness: 60, damping: 15}}
+				>
+					<h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
+						Tech Stack
+					</h2>
+					<div className="flex flex-wrap gap-3">
+						{home.languages.map((entry, i) => (
+							<div
+								key={i}
+								className="flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg"
+							>
+								<Icon icon={entry.icon} className="w-8 h-8" />
+								<p className="font-semibold text-sm">
+									{entry.label || iconLabel(entry.icon)}
+								</p>
+							</div>
+						))}
+					</div>
+				</motion.div>
+			)}
 
-				<div className="space-y-6">
-					{/* Core Languages */}
-					<div>
-						<h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
-							Core Languages
-						</h3>
-						<div className="flex flex-wrap gap-3">
-							<div className="flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={csharpIcon} className="w-8 h-8" />
-								<div>
-									<p className="font-semibold text-sm">C#</p>
-									<p className="text-xs text-slate-600 dark:text-slate-400">
-										Game Development
-									</p>
+			{/* Technical Skills */}
+			{about.technicalSkills.length > 0 && (
+				<motion.div
+					className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-8"
+					initial={{y: 50, opacity: 0}}
+					whileInView={{y: 0, opacity: 1}}
+					viewport={{once: true, amount: 0.3}}
+					transition={{type: 'spring', stiffness: 60, damping: 15}}
+				>
+					<h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
+						Technical Skills
+					</h2>
+					<div className="space-y-6">
+						{about.technicalSkills.map((cat, i) => (
+							<div key={i}>
+								<h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
+									{cat.category}
+								</h3>
+								<div className="flex flex-wrap gap-2">
+									{cat.items.map((item) => (
+										<span
+											key={item}
+											className="px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300"
+										>
+											{item}
+										</span>
+									))}
 								</div>
 							</div>
-							<div className="flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={cplusplusIcon} className="w-8 h-8" />
-								<div>
-									<p className="font-semibold text-sm">C++</p>
-									<p className="text-xs text-slate-600 dark:text-slate-400">
-										Systems Programming
-									</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={typescriptIcon} className="w-8 h-8" />
-								<div>
-									<p className="font-semibold text-sm">TypeScript</p>
-									<p className="text-xs text-slate-600 dark:text-slate-400">
-										Full-Stack Development
-									</p>
-								</div>
-							</div>
-						</div>
+						))}
 					</div>
-
-					{/* Mobile Development */}
-					<div>
-						<h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
-							Mobile Development
-						</h3>
-						<div className="flex flex-wrap gap-3">
-							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={flutterIcon} className="w-6 h-6" />
-								<span className="text-sm font-medium">Flutter</span>
-							</div>
-							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon="devicon:react" className="w-6 h-6" />
-								<span className="text-sm font-medium">React Native</span>
-							</div>
-						</div>
-					</div>
-
-					{/* Frontend & Backend */}
-					<div>
-						<h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
-							Frameworks & Tools
-						</h3>
-						<div className="flex flex-wrap gap-3">
-							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={reactIcon} className="w-6 h-6" />
-								<span className="text-sm font-medium">React</span>
-							</div>
-							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={nextjsIcon} className="w-6 h-6" />
-								<span className="text-sm font-medium">Next.js</span>
-							</div>
-							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={nodejsIcon} className="w-6 h-6" />
-								<span className="text-sm font-medium">Node.js</span>
-							</div>
-							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={dockerIcon} className="w-6 h-6" />
-								<span className="text-sm font-medium">Docker</span>
-							</div>
-							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={postgresIcon} className="w-6 h-6" />
-								<span className="text-sm font-medium">PostgreSQL</span>
-							</div>
-							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={mongoIcon} className="w-6 h-6" />
-								<span className="text-sm font-medium">MongoDB</span>
-							</div>
-						</div>
-					</div>
-
-					{/* Game Development */}
-					<div>
-						<h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
-							Game Development
-						</h3>
-						<div className="flex flex-wrap gap-3">
-							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={unityIcon} className="w-6 h-6" />
-								<span className="text-sm font-medium">Unity</span>
-							</div>
-							<div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
-								<Icon icon={luaIcon} className="w-6 h-6" />
-								<span className="text-sm font-medium">
-									Lua (Love2D, Modding)
-								</span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</motion.div>
+				</motion.div>
+			)}
 
 			{/* Core Competencies */}
-			<motion.div
-				className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-8"
-				initial={{y: 50, opacity: 0}}
-				whileInView={{y: 0, opacity: 1}}
-				viewport={{once: true, amount: 0.3}}
-				transition={{type: 'spring', stiffness: 60, damping: 15}}
-			>
-				<h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
-					Core Competencies
-				</h2>
-				<div className="grid md:grid-cols-2 gap-6">
-					<div className="space-y-3">
-						<h3 className="font-semibold text-lg text-slate-900 dark:text-white">
-							Backend Engineering
-						</h3>
-						<ul className="space-y-2 text-slate-700 dark:text-slate-300">
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>RESTful API design and microservices architecture</span>
-							</li>
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>
-									Database design, optimization, and scaling strategies
-								</span>
-							</li>
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>
-									Authentication, authorization, and security best practices
-								</span>
-							</li>
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Performance optimization and caching strategies</span>
-							</li>
-						</ul>
+			{about.coreCompetencies.length > 0 && (
+				<motion.div
+					className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-8"
+					initial={{y: 50, opacity: 0}}
+					whileInView={{y: 0, opacity: 1}}
+					viewport={{once: true, amount: 0.3}}
+					transition={{type: 'spring', stiffness: 60, damping: 15}}
+				>
+					<h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
+						Core Competencies
+					</h2>
+					<div className="flex flex-wrap gap-2">
+						{about.coreCompetencies.map((c) => (
+							<span
+								key={c}
+								className="px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 rounded-lg text-sm font-medium"
+							>
+								{c}
+							</span>
+						))}
 					</div>
-
-					<div className="space-y-3">
-						<h3 className="font-semibold text-lg text-slate-900 dark:text-white">
-							Game Development
-						</h3>
-						<ul className="space-y-2 text-slate-700 dark:text-slate-300">
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Game architecture and systems design</span>
-							</li>
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Gameplay mechanics and state management</span>
-							</li>
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Unity engine development and Lua scripting</span>
-							</li>
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Game modding and custom game engines</span>
-							</li>
-						</ul>
-					</div>
-
-					<div className="space-y-3">
-						<h3 className="font-semibold text-lg text-slate-900 dark:text-white">
-							Software Engineering
-						</h3>
-						<ul className="space-y-2 text-slate-700 dark:text-slate-300">
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Data structures and algorithm implementation</span>
-							</li>
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>
-									Object-oriented and functional programming paradigms
-								</span>
-							</li>
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Clean code principles and design patterns</span>
-							</li>
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Git version control and collaborative development</span>
-							</li>
-						</ul>
-					</div>
-
-					<div className="space-y-3">
-						<h3 className="font-semibold text-lg text-slate-900 dark:text-white">
-							DevOps & Deployment
-						</h3>
-						<ul className="space-y-2 text-slate-700 dark:text-slate-300">
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Docker containerization and orchestration</span>
-							</li>
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>CI/CD pipeline setup and automation</span>
-							</li>
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Cloud deployment and server management</span>
-							</li>
-							<li className="flex items-start gap-2">
-								<span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
-								<span>Monitoring, logging, and error tracking</span>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</motion.div>
+				</motion.div>
+			)}
 
 			{/* Work Experience */}
 			<motion.div
@@ -440,7 +289,8 @@ export default function AboutMe() {
 						Interested in working together?
 					</p>
 					<p className="text-sm text-slate-600 dark:text-slate-400">
-						I'm always open to discussing new opportunities and collaborations
+						I&apos;m always open to discussing new opportunities and
+						collaborations
 					</p>
 				</div>
 				<Button

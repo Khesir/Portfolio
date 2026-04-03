@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 import TagInput from '../components/TagInput';
 import MarkdownEditor from '../components/MarkdownEditor';
 import DraftToggle from '../components/DraftToggle';
+import EngagementToggles from '../components/EngagementToggles';
+import ImageUpload from '../components/ImageUpload';
 
 export default function CmsProjectEditor() {
   const { id } = useParams();
@@ -23,6 +25,8 @@ export default function CmsProjectEditor() {
   const [deployment, setDeployment] = useState('');
   const [markdown, setMarkdown] = useState('');
   const [draft, setDraft] = useState(true);
+  const [hideViews, setHideViews] = useState(false);
+  const [hideHearts, setHideHearts] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loadingData, setLoadingData] = useState(isEdit);
 
@@ -40,6 +44,8 @@ export default function CmsProjectEditor() {
         setDeployment(props?.Deployment?.url ?? '');
         setMarkdown(res?.markdown ?? '');
         setDraft(props?.Draft?.checkbox ?? false);
+        setHideViews(props?.['Hide Views']?.checkbox ?? false);
+        setHideHearts(props?.['Hide Hearts']?.checkbox ?? false);
       })
       .finally(() => setLoadingData(false));
   }, [id, isEdit]);
@@ -48,7 +54,7 @@ export default function CmsProjectEditor() {
     e.preventDefault();
     setSaving(true);
     try {
-      const payload = { name, releasedDate, imageUrl, languages, url, deployment, markdown, draft };
+      const payload = { name, releasedDate, imageUrl, languages, url, deployment, markdown, draft, hideViews, hideHearts };
       if (isEdit && id) {
         await cmsUpdateProject(id, payload);
         toast.success(draft ? 'Project saved as draft' : 'Project published');
@@ -72,7 +78,10 @@ export default function CmsProjectEditor() {
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">{isEdit ? 'Edit Project' : 'New Project'}</h1>
-        <DraftToggle draft={draft} onChange={setDraft} />
+        <div className="flex items-center gap-2">
+          <EngagementToggles hideViews={hideViews} hideHearts={hideHearts} onChangeViews={setHideViews} onChangeHearts={setHideHearts} />
+          <DraftToggle draft={draft} onChange={setDraft} />
+        </div>
       </div>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="max-w-3xl space-y-5">
@@ -85,8 +94,8 @@ export default function CmsProjectEditor() {
             <Input type="date" value={releasedDate} onChange={(e) => setReleasedDate(e.target.value)} />
           </div>
           <div className="space-y-1.5">
-            <Label>Cover Image URL</Label>
-            <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." />
+            <Label>Cover Image</Label>
+            <ImageUpload value={imageUrl} onChange={setImageUrl} />
           </div>
           <div className="space-y-1.5">
             <Label>Languages / Tech Stack</Label>
