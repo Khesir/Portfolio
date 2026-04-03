@@ -132,6 +132,8 @@ const loadService = makeLoader(
 	DEFAULT_SERVICE,
 );
 
+export const prefetchAll = () => Promise.all([loadHome(), loadAbout(), loadService()]);
+
 export function useHomeConfig() {
 	const [config, setConfig] = useState<HomeConfig>(_homeCache ?? DEFAULT_HOME);
 	const [loading, setLoading] = useState(!_homeCache);

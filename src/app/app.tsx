@@ -1,4 +1,5 @@
 import {BrowserRouter, Route, Routes as Router} from 'react-router-dom';
+import {LoadingScreen} from '@/components/LoadingScreen';
 
 import SandBoxPage from './sandbox/SandBoxPage';
 import CmsApp from './cms/CmsApp';
@@ -18,6 +19,7 @@ import {ExperiencePage} from './module/experiences/experiencePage';
 export default function App() {
 	return (
 		<BrowserRouter>
+		<LoadingScreen>
 			<Router>
 				<Route element={<BaseLayout />}>
 					<Route path="progress-report" element={<ProgressPage />} />
@@ -44,6 +46,7 @@ export default function App() {
 				<Route path="*" />
 				<Route path="skillset" element={<SkillSetPage />} />
 			</Router>
+		</LoadingScreen>
 		</BrowserRouter>
 	);
 }
