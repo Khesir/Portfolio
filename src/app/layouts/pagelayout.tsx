@@ -2,7 +2,7 @@ import {Banner} from '../../components/banner-section';
 import {Outlet, useLocation} from 'react-router-dom';
 import {Layout} from './baselayout';
 import {ModeToggle} from '@/components/providers/mode-toggle';
-// import {EnvironmentToggle} from '@/components/providers/environment-toggle';
+import {EnvironmentToggle} from '@/components/providers/environment-toggle';
 import {useEffect, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 
@@ -39,15 +39,15 @@ export function BaseLayout() {
 				</div>
 			</div>
 			{/* Environment Toggle - Always Visible */}
-			{/* <motion.div
+			<motion.div
 				key="environment-toggle"
-				className="fixed bottom-5 right-5 bg-green-400 flex justify-center items-center w-[65px] h-[65px] rounded-full z-20 cursor-pointer"
-				initial={{x: '100%', opacity: 0}}
+				className="fixed bottom-5 left-5 bg-amber-400 dark:bg-amber-500 flex justify-center items-center w-[65px] h-[65px] rounded-full z-20 cursor-pointer shadow-lg"
+				initial={{x: '-100%', opacity: 0}}
 				animate={{x: 0, opacity: 1}}
 				transition={{type: 'spring', stiffness: 100, damping: 15, delay: 0.3}}
 			>
 				<EnvironmentToggle />
-			</motion.div> */}
+			</motion.div>
 			{/* Theme Toggle - Scroll Dependent */}
 			<AnimatePresence>
 				{showButton && (

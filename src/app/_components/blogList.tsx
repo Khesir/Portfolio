@@ -11,11 +11,7 @@ import {Badge} from '@/components/ui/badge';
 
 const containerVariants = {
 	initial: {},
-	animate: {
-		transition: {
-			staggerChildren: 0.08,
-		},
-	},
+	animate: {transition: {staggerChildren: 0.08}},
 };
 
 const cardVariants = {
@@ -28,7 +24,7 @@ export function BlogList() {
 	const [res, setRes] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
-	const { refreshKey } = useEnvironment();
+	const {refreshKey} = useEnvironment();
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -43,7 +39,6 @@ export function BlogList() {
 				setLoading(false);
 			}
 		};
-
 		fetchData();
 	}, [refreshKey]);
 
@@ -52,10 +47,7 @@ export function BlogList() {
 			<div className="flex flex-col gap-4">
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					{[...Array(4)].map((_, i) => (
-						<Skeleton
-							key={i}
-							className="h-[250px] w-full rounded-2xl bg-slate-300 dark:bg-slate-800"
-						/>
+						<Skeleton key={i} className="h-[250px] w-full rounded-2xl bg-slate-300 dark:bg-slate-800" />
 					))}
 				</div>
 				<p className="text-center text-sm text-slate-400 dark:text-slate-500">
@@ -82,90 +74,69 @@ export function BlogList() {
 	}
 
 	return (
-		<motion.div
-			variants={containerVariants}
-			initial="initial"
-			animate="animate"
-			className="grid grid-cols-1 md:grid-cols-2 gap-6"
-		>
-			{blogs.map((d: any, i) => (
-				<motion.div
-					key={i}
-					variants={cardVariants}
-					className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer hover:scale-[1.02]"
-					onClick={() =>
-						navigate(
-							`/blogs/view/${d.properties.Name.title[0].plain_text.replace(/\s+/g, '-')}?id=${d.id}`,
-						)
-					}
-				>
-					{/* Blog Image - if available */}
-					{d.properties?.Image?.files?.[0]?.file?.url && (
-						<div className="relative h-[180px] overflow-hidden bg-slate-100 dark:bg-slate-800">
-							<img
-								src={d.properties.Image.files[0].file.url}
-								alt={d.properties.Name.title[0].plain_text}
-								className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-							/>
-							<div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-						</div>
-					)}
+		<motion.div variants={containerVariants} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-2 gap-6">
+			{blogs.map((d: any, i) => {
+				const id = d._id ?? d.id;
+				const name = d.name ?? 'Untitled';
+				const tags: string[] = d.tags ?? [];
 
-					{/* Blog Content */}
-					<div className="p-6 space-y-3">
-						{/* Title */}
-						<h3 className="text-xl font-bold text-slate-900 dark:text-white line-clamp-2 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
-							{d.properties.Name.title[0].plain_text}
-						</h3>
-
-						{/* Meta Information */}
-						<div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
-							<div className="flex items-center gap-1.5">
-								<Calendar className="w-4 h-4" />
-								<span>
-									{d.properties['Released Date']?.date?.start
-										? dateParser(d.properties['Released Date'].date.start)
-										: 'Draft'}
-								</span>
-							</div>
-							{d.properties['Min']?.number && (
-								<div className="flex items-center gap-1.5">
-									<Clock className="w-4 h-4" />
-									<span>{d.properties['Min'].number} min read</span>
-								</div>
-							)}
-						</div>
-
-						{/* Tags */}
-						{d.properties?.['Tags']?.multi_select?.length > 0 && (
-							<div className="flex flex-wrap gap-1.5">
-								{d.properties['Tags'].multi_select.slice(0, 3).map(
-									(tag: any, index: number) => (
-										<Badge
-											key={index}
-											variant="secondary"
-											className="px-2 py-0.5 text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
-										>
-											{tag.name}
-										</Badge>
-									),
-								)}
-								{d.properties['Tags'].multi_select.length > 3 && (
-									<Badge variant="secondary" className="px-2 py-0.5 text-xs">
-										+{d.properties['Tags'].multi_select.length - 3}
-									</Badge>
-								)}
+				return (
+					<motion.div
+						key={i}
+						variants={cardVariants}
+						className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer hover:scale-[1.02]"
+						onClick={() => navigate(`/blogs/view/${name.replace(/\s+/g, '-')}?id=${id}`)}
+					>
+						{d.imageUrl && (
+							<div className="relative h-[180px] overflow-hidden bg-slate-100 dark:bg-slate-800">
+								<img
+									src={d.imageUrl}
+									alt={name}
+									className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+								/>
+								<div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 							</div>
 						)}
 
-						{/* Read More */}
-						<div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-semibold text-sm pt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-							<span>Read article</span>
-							<ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+						<div className="p-6 space-y-3">
+							<h3 className="text-xl font-bold text-slate-900 dark:text-white line-clamp-2 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+								{name}
+							</h3>
+
+							<div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+								<div className="flex items-center gap-1.5">
+									<Calendar className="w-4 h-4" />
+									<span>{d.releasedDate ? dateParser(d.releasedDate) : 'Draft'}</span>
+								</div>
+								{d.minRead && (
+									<div className="flex items-center gap-1.5">
+										<Clock className="w-4 h-4" />
+										<span>{d.minRead} min read</span>
+									</div>
+								)}
+							</div>
+
+							{tags.length > 0 && (
+								<div className="flex flex-wrap gap-1.5">
+									{tags.slice(0, 3).map((tag, index) => (
+										<Badge key={index} variant="secondary" className="px-2 py-0.5 text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
+											{tag}
+										</Badge>
+									))}
+									{tags.length > 3 && (
+										<Badge variant="secondary" className="px-2 py-0.5 text-xs">+{tags.length - 3}</Badge>
+									)}
+								</div>
+							)}
+
+							<div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-semibold text-sm pt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+								<span>Read article</span>
+								<ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+							</div>
 						</div>
-					</div>
-				</motion.div>
-			))}
+					</motion.div>
+				);
+			})}
 		</motion.div>
 	);
 }

@@ -25,6 +25,9 @@ import {Calendar, Clock, ArrowLeft} from 'lucide-react';
 import {Button} from '@/components/ui/Button';
 import {useNavigate} from 'react-router-dom';
 import {Badge} from '@/components/ui/badge';
+import {EngagementBar} from '@/components/EngagementBar';
+import {StickyHeart} from '@/components/StickyHeart';
+import type {EngagementType} from '@/app/api/cms';
 
 interface ReadpageProps {
 	name: string;
@@ -65,8 +68,8 @@ export function ReadPage({name}: ReadpageProps) {
 						break;
 				}
 				if (response === null) return;
-				setMarkdown(response.markdown);
-				setData(response.data);
+				setMarkdown(response.markdown ?? '');
+				setData(response);
 			} catch (err) {
 				console.error(err);
 				setError('Failed to load content');
@@ -115,9 +118,14 @@ export function ReadPage({name}: ReadpageProps) {
 		);
 	}
 
-	const tags = name === 'projects'
-		? data.properties?.['Languages']?.multi_select || []
-		: data.properties?.['Tags']?.multi_select || [];
+	const tags: string[] = name === 'projects'
+		? data.languages ?? []
+		: data.tags ?? [];
+
+	const engagementType: EngagementType = name === 'projects' ? 'project' : 'blog';
+	const itemId = searchParams.get('id') ?? '';
+	const hideViews = data.hideViews ?? false;
+	const hideHearts = data.hideHearts ?? false;
 
 	return (
 		<motion.div
@@ -125,6 +133,14 @@ export function ReadPage({name}: ReadpageProps) {
 			animate={{opacity: 1, y: 0}}
 			transition={{duration: 0.5}}
 		>
+			{/* Sticky heart — zero-height anchor, floats just outside the right edge */}
+			{itemId && (
+				<div className="sticky top-[45vh] h-0 overflow-visible hidden md:block">
+					<div className="absolute right-0 translate-x-[calc(100%+1rem)] -translate-y-1/2">
+						<StickyHeart type={engagementType} id={itemId} hideHearts={hideHearts} />
+					</div>
+				</div>
+			)}
 			{/* Header Section */}
 			<div className="mb-8">
 				<Button
@@ -142,35 +158,38 @@ export function ReadPage({name}: ReadpageProps) {
 				{/* Title and Meta */}
 				<div className="mt-6 space-y-4">
 					<h1 className="font-bold text-4xl md:text-5xl text-slate-900 dark:text-white leading-tight">
-						{data?.properties?.Name?.title[0].plain_text}
+						{data?.name}
 					</h1>
 
 					{/* Meta Information */}
 					<div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
-						{data.properties['Released Date']?.date?.start && (
+						{data.releasedDate && (
 							<div className="flex items-center gap-2">
 								<Calendar className="w-4 h-4" />
-								<span>{dateParser(data.properties['Released Date'].date.start)}</span>
+								<span>{dateParser(data.releasedDate)}</span>
 							</div>
 						)}
-						{data?.properties['Min']?.number && (
+						{data?.minRead && (
 							<div className="flex items-center gap-2">
 								<Clock className="w-4 h-4" />
-								<span>{data.properties['Min'].number} min read</span>
+								<span>{data.minRead} min read</span>
 							</div>
+						)}
+						{itemId && (
+							<EngagementBar type={engagementType} id={itemId} trackOnMount hideViews={hideViews} hideHearts={hideHearts} />
 						)}
 					</div>
 
 					{/* Tags */}
 					{tags.length > 0 && (
 						<div className="flex flex-wrap gap-2">
-							{tags.map((tag: any, index: number) => (
+							{tags.map((tag: string, index: number) => (
 								<Badge
 									key={index}
 									variant="secondary"
 									className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
 								>
-									{tag.name}
+									{tag}
 								</Badge>
 							))}
 						</div>
@@ -178,11 +197,11 @@ export function ReadPage({name}: ReadpageProps) {
 				</div>
 
 				{/* Hero Image */}
-				{data.properties?.Image?.files?.[0]?.file?.url && (
+				{data.imageUrl && (
 					<div className="mt-8 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg">
 						<img
-							src={data.properties.Image.files[0].file.url}
-							alt={data?.properties?.Name?.title[0].plain_text}
+							src={data.imageUrl}
+							alt={data?.name}
 							className="w-full h-[400px] object-cover"
 						/>
 					</div>
