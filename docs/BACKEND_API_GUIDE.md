@@ -472,6 +472,113 @@ Returns the about page configuration.
 
 ---
 
+## Analytics
+
+Both analytics endpoints are CMS-only (auth required). The backend proxies Vercel's Analytics API so the frontend never exposes the Vercel token.
+
+**Required backend env vars:** `VERCEL_TOKEN`, `VERCEL_PROJECT_ID`
+
+---
+
+### `GET /api/analytics`
+**Auth required: yes**
+
+Proxies Vercel Analytics and returns aggregated visit data for the last 7 days.
+
+**Response `200`:**
+```json
+{
+  "totalVisits": 4821,
+  "todayVisits": 37,
+  "chart": [
+    { "date": "2026-03-28", "visits": 52 },
+    { "date": "2026-03-29", "visits": 38 }
+  ]
+}
+```
+
+**Implementation (Express/NestJS):**
+```ts
+// GET /api/analytics
+router.get('/analytics', requireAuth, async (req, res) => {
+  const projectId = process.env.VERCEL_PROJECT_ID;
+  const headers = { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` };
+
+  const today = new Date().toISOString().split('T')[0];
+  const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
+
+  const { data } = await axios.get(
+    'https://vercel.com/api/web/insights/stats/pageviews',
+    { params: { projectId, from: sevenDaysAgo, to: today, granularity: 'day' }, headers }
+  );
+
+  // Vercel returns data.data — array of { key: "YYYY-MM-DD", total: number }
+  const chart = data.data.map((d) => ({ date: d.key, visits: d.total }));
+  const totalVisits = chart.reduce((sum, d) => sum + d.visits, 0);
+  const todayVisits = chart.find((d) => d.date === today)?.visits ?? 0;
+
+  res.json({ totalVisits, todayVisits, chart });
+});
+```
+
+> **Note:** Vercel's pageview endpoint shape may vary. Check the [Vercel Analytics API docs](https://vercel.com/docs/analytics/api) for the exact response shape for your plan. The field names above (`d.key`, `d.total`) are illustrative — adjust to match what Vercel actually returns.
+
+---
+
+### `GET /api/analytics/blogs`
+**Auth required: yes**
+
+Joins your blog list with the `engagement` table to return per-blog view and heart counts. Relies on the same `engagement` table used by `GET /api/interactions/:type/:id`.
+
+**Response `200`:**
+```json
+[
+  {
+    "id": "string",
+    "title": "string",
+    "publishedAt": "YYYY-MM-DD",
+    "views": 241,
+    "hearts": 18
+  }
+]
+```
+
+**Implementation (Express/NestJS with PostgreSQL):**
+```ts
+// GET /api/analytics/blogs
+router.get('/analytics/blogs', requireAuth, async (req, res) => {
+  // Fetch all blogs from your data source (Notion, DB, etc.)
+  const blogs = await fetchAllBlogs(); // your existing blog-fetch logic
+
+  // Bulk-fetch engagement rows for all blog IDs in one query
+  const blogIds = blogs.map((b) => b.id);
+  const { rows } = await db.query(
+    `SELECT entity_id, views, hearts
+     FROM engagement
+     WHERE entity_type = 'blog' AND entity_id = ANY($1)`,
+    [blogIds]
+  );
+
+  const engagementMap = Object.fromEntries(rows.map((r) => [r.entity_id, r]));
+
+  const result = blogs.map((blog) => {
+    const title = blog.properties['Name']?.title?.[0]?.plain_text ?? '';
+    const publishedAt = blog.properties['Released Date']?.date?.start ?? '';
+    const eng = engagementMap[blog.id] ?? { views: 0, hearts: 0 };
+    return { id: blog.id, title, publishedAt, views: eng.views, hearts: eng.hearts };
+  });
+
+  // Sort by publishedAt descending (most recent first)
+  result.sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1));
+
+  res.json(result);
+});
+```
+
+> **Note:** The `engagement` table schema is defined in the Engagement section above. If a blog has never been viewed it won't have a row — the `?? { views: 0, hearts: 0 }` fallback handles that.
+
+---
+
 ## Error Response Shape
 
 All errors must return JSON in this shape:

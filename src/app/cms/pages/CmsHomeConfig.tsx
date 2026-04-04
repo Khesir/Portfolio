@@ -118,7 +118,6 @@ function HomePreview({
 	bannerButtons,
 }: {
 	name: string;
-	title: string;
 	role: string;
 	description: string;
 	status: StatusConfig;
@@ -159,12 +158,7 @@ function HomePreview({
 						{role}
 					</p>
 				)}
-				{title && (
-					<p className="text-sm text-slate-700 dark:text-slate-300">
-						👋 {title}
-					</p>
-				)}
-				{description && (
+{description && (
 					<p className="text-xs text-slate-600 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">
 						{description}
 					</p>
@@ -499,7 +493,6 @@ export default function CmsHomeConfig() {
 					</DialogHeader>
 					<HomePreview
 						name={name}
-						title={title}
 						role={role}
 						description={description}
 						status={status}

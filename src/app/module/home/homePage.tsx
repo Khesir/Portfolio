@@ -2,6 +2,7 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {usePathname} from '@/hooks/use-pathname-store';
 import {useEffect} from 'react';
 import {TopProjects} from '@/app/module/home/topProjects';
+import {RecentPosts} from '@/app/module/home/recentPosts';
 import {Button} from '@/components/ui/Button';
 import {Icon} from '@iconify/react';
 import {motion} from 'framer-motion';
@@ -27,15 +28,6 @@ export default function Homepage() {
 				viewport={{once: true, amount: 0.3}}
 				transition={{type: 'spring', stiffness: 60, damping: 15}}
 			>
-				{config.bannerImageUrl && (
-					<div className="h-28 w-full overflow-hidden">
-						<img
-							src={config.bannerImageUrl}
-							alt="Banner"
-							className="w-full h-full object-cover"
-						/>
-					</div>
-				)}
 				<div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
 					{/* Profile Image */}
 					<div className="flex-shrink-0">
@@ -52,8 +44,8 @@ export default function Homepage() {
 					<div className="flex-1 flex flex-col justify-center space-y-4">
 						<div>
 							<h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-1">
-							{config.name || 'Khesir (AJ)'}
-						</h2>
+								{config.name || 'Khesir (AJ)'}
+							</h2>
 							{config.role && (
 								<p className="text-lg text-blue-600 dark:text-blue-400 font-semibold">
 									{config.role}
@@ -120,6 +112,8 @@ export default function Homepage() {
 			</motion.div>
 
 			<TopProjects />
+
+			<RecentPosts />
 
 			{/* Contact Section */}
 			<motion.div

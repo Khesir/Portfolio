@@ -68,8 +68,8 @@ export function ReadPage({name}: ReadpageProps) {
 						break;
 				}
 				if (response === null) return;
-				setMarkdown(response.markdown);
-				setData(response.data);
+				setMarkdown(response.markdown ?? '');
+				setData(response);
 			} catch (err) {
 				console.error(err);
 				setError('Failed to load content');
@@ -118,14 +118,14 @@ export function ReadPage({name}: ReadpageProps) {
 		);
 	}
 
-	const tags = name === 'projects'
-		? data.properties?.['Languages']?.multi_select || []
-		: data.properties?.['Tags']?.multi_select || [];
+	const tags: string[] = name === 'projects'
+		? data.languages ?? []
+		: data.tags ?? [];
 
 	const engagementType: EngagementType = name === 'projects' ? 'project' : 'blog';
 	const itemId = searchParams.get('id') ?? '';
-	const hideViews = data.properties?.['Hide Views']?.checkbox ?? false;
-	const hideHearts = data.properties?.['Hide Hearts']?.checkbox ?? false;
+	const hideViews = data.hideViews ?? false;
+	const hideHearts = data.hideHearts ?? false;
 
 	return (
 		<motion.div
@@ -158,21 +158,21 @@ export function ReadPage({name}: ReadpageProps) {
 				{/* Title and Meta */}
 				<div className="mt-6 space-y-4">
 					<h1 className="font-bold text-4xl md:text-5xl text-slate-900 dark:text-white leading-tight">
-						{data?.properties?.Name?.title[0].plain_text}
+						{data?.name}
 					</h1>
 
 					{/* Meta Information */}
 					<div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
-						{data.properties['Released Date']?.date?.start && (
+						{data.releasedDate && (
 							<div className="flex items-center gap-2">
 								<Calendar className="w-4 h-4" />
-								<span>{dateParser(data.properties['Released Date'].date.start)}</span>
+								<span>{dateParser(data.releasedDate)}</span>
 							</div>
 						)}
-						{data?.properties['Min']?.number && (
+						{data?.minRead && (
 							<div className="flex items-center gap-2">
 								<Clock className="w-4 h-4" />
-								<span>{data.properties['Min'].number} min read</span>
+								<span>{data.minRead} min read</span>
 							</div>
 						)}
 						{itemId && (
@@ -183,13 +183,13 @@ export function ReadPage({name}: ReadpageProps) {
 					{/* Tags */}
 					{tags.length > 0 && (
 						<div className="flex flex-wrap gap-2">
-							{tags.map((tag: any, index: number) => (
+							{tags.map((tag: string, index: number) => (
 								<Badge
 									key={index}
 									variant="secondary"
 									className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
 								>
-									{tag.name}
+									{tag}
 								</Badge>
 							))}
 						</div>
@@ -197,11 +197,11 @@ export function ReadPage({name}: ReadpageProps) {
 				</div>
 
 				{/* Hero Image */}
-				{data.properties?.Image?.files?.[0]?.file?.url && (
+				{data.imageUrl && (
 					<div className="mt-8 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg">
 						<img
-							src={data.properties.Image.files[0].file.url}
-							alt={data?.properties?.Name?.title[0].plain_text}
+							src={data.imageUrl}
+							alt={data?.name}
 							className="w-full h-[400px] object-cover"
 						/>
 					</div>

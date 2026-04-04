@@ -1,11 +1,13 @@
 import axios from 'axios';
 import {ApiCache} from '@/lib/apiCache';
 import {useEnvironment} from '@/hooks/use-environment-store';
+import {useCmsAuth} from '@/hooks/use-cms-auth-store';
 
 const API = import.meta.env.VITE_API_URL;
 
 function authHeader() {
-	return {Authorization: `Bearer ${import.meta.env.VITE_CMS_PASSWORD}`};
+	const password = useCmsAuth.getState().password || import.meta.env.VITE_CMS_PASSWORD;
+	return {Authorization: `Bearer ${password}`};
 }
 
 function devSkip(action: string): null {
@@ -141,6 +143,7 @@ export interface PostDto {
 	createdAt: string;
 	hideViews: boolean;
 	hideHearts: boolean;
+	pinned: boolean;
 }
 
 export interface CreatePostDto {
@@ -150,6 +153,7 @@ export interface CreatePostDto {
 	draft?: boolean;
 	hideViews?: boolean;
 	hideHearts?: boolean;
+	pinned?: boolean;
 }
 
 export interface ServiceDto {
@@ -247,6 +251,12 @@ export interface UpdateServiceConfigDto {
 //   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
 //   Response 200: {}
 
+export const fetchBlogsCms = async () => {
+	if (useEnvironment.getState().isDevelopment()) return [];
+	const res = await axios.get(`${API}/blogs/cms`, {headers: authHeader()});
+	return res.data;
+};
+
 export const cmsCreateBlog = async (payload: CreateBlogDto) => {
 	if (useEnvironment.getState().isDevelopment()) return devSkip('createBlog');
 	const res = await axios.post(`${API}/blogs`, payload, {headers: authHeader()});
@@ -301,6 +311,12 @@ export const cmsDeleteBlog = async (id: string) => {
 //   DELETE /api/projects/:id
 //   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
 //   Response 200: {}
+
+export const fetchProjectsCms = async () => {
+	if (useEnvironment.getState().isDevelopment()) return [];
+	const res = await axios.get(`${API}/projects/cms`, {headers: authHeader()});
+	return res.data;
+};
 
 export const cmsCreateProject = async (payload: CreateProjectDto) => {
 	if (useEnvironment.getState().isDevelopment()) return devSkip('createProject');
@@ -357,6 +373,12 @@ export const cmsDeleteProject = async (id: string) => {
 //   DELETE /api/experiences/:id
 //   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
 //   Response 200: {}
+
+export const fetchExperiencesCms = async () => {
+	if (useEnvironment.getState().isDevelopment()) return [];
+	const res = await axios.get(`${API}/experiences/cms`, {headers: authHeader()});
+	return res.data;
+};
 
 export const cmsCreateExperience = async (payload: CreateExperienceDto) => {
 	if (useEnvironment.getState().isDevelopment()) return devSkip('createExperience');
@@ -417,11 +439,23 @@ export const cmsDeleteExperience = async (id: string) => {
 export const fetchPosts = async (): Promise<PostDto[]> => {
 	if (useEnvironment.getState().isDevelopment())
 		return [
-			{id: '1', content: 'Just shipped the new CMS dashboard with Vercel analytics integration. Really happy with how the chart turned out.', tags: ['update', 'cms'], draft: false, createdAt: '2026-04-03T10:00:00Z', hideViews: false, hideHearts: false},
-			{id: '2', content: 'Working on a new game project in Unity. Procedural generation is surprisingly fun to implement. More updates soon.', imageUrl: '', tags: ['gamedev', 'unity'], draft: false, createdAt: '2026-04-01T14:30:00Z', hideViews: false, hideHearts: false},
-			{id: '3', content: 'PostgreSQL + full-text search is criminally underrated. You can avoid a whole search service for most use cases.', tags: ['postgres', 'backend'], draft: false, createdAt: '2026-03-28T09:00:00Z', hideViews: false, hideHearts: false},
+			{id: '1', content: 'Just shipped the new CMS dashboard with Vercel analytics integration. Really happy with how the chart turned out.', tags: ['update', 'cms'], draft: false, createdAt: '2026-04-03T10:00:00Z', hideViews: false, hideHearts: false, pinned: false},
+			{id: '2', content: 'Working on a new game project in Unity. Procedural generation is surprisingly fun to implement. More updates soon.', imageUrl: '', tags: ['gamedev', 'unity'], draft: false, createdAt: '2026-04-01T14:30:00Z', hideViews: false, hideHearts: false, pinned: false},
+			{id: '3', content: 'PostgreSQL + full-text search is criminally underrated. You can avoid a whole search service for most use cases.', tags: ['postgres', 'backend'], draft: false, createdAt: '2026-03-28T09:00:00Z', hideViews: false, hideHearts: false, pinned: false},
 		];
 	const res = await axios.get(`${API}/posts`);
+	return res.data;
+};
+
+export const fetchPostsByID = async (id: string): Promise<PostDto | null> => {
+	if (useEnvironment.getState().isDevelopment()) return null;
+	const res = await axios.get(`${API}/posts/${id}`, {headers: authHeader()});
+	return res.data.result as PostDto;
+};
+
+export const fetchPostsCms = async (): Promise<PostDto[]> => {
+	if (useEnvironment.getState().isDevelopment()) return [];
+	const res = await axios.get(`${API}/posts/cms`, {headers: authHeader()});
 	return res.data;
 };
 

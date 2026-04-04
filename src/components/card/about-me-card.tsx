@@ -19,7 +19,7 @@ function StatusBadge({status}: {status: StatusConfig}) {
 			<span>
 				{status.type === 'custom'
 					? status.message || 'Custom Status'
-					: style.text}
+					: status.message || style.text}
 			</span>
 		</div>
 	);

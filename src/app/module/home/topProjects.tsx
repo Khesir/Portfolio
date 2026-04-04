@@ -93,9 +93,6 @@ export function TopProjects() {
 						/>
 					))}
 				</div>
-				<p className="text-center text-sm text-slate-400 dark:text-slate-500">
-					Fetching for the first time — subsequent visits load instantly from cache.
-				</p>
 			</div>
 		);
 	}
@@ -106,7 +103,9 @@ export function TopProjects() {
 				<Header />
 				<div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-12 text-center">
 					<Github className="w-8 h-8 text-blue-600 dark:text-blue-400 mx-auto mb-3" />
-					<h3 className="font-bold text-lg text-slate-900 dark:text-white">No Projects Yet</h3>
+					<h3 className="font-bold text-lg text-slate-900 dark:text-white">
+						No Projects Yet
+					</h3>
 					<p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
 						Featured projects will appear here once added.
 					</p>
@@ -118,68 +117,58 @@ export function TopProjects() {
 	return (
 		<div className="flex flex-col w-full gap-4 mb-10">
 			<Header />
-
-			{/* Gallery Grid */}
 			<div className="grid grid-cols-2 md:grid-cols-3 gap-3">
 				{projects.map((project: any) => {
-					const name = project.properties.Name.title[0].plain_text;
-					const imageUrl =
-						project.properties.Image.files[0]?.file?.url ?? '/img/profile3.jpg';
-					const githubUrl = project.properties.URL.url;
-					const deployUrl = project.properties.Deployment?.url;
-					const releasedDate = project.properties['Released Date']?.date?.start;
-					const techs = project.relatedData ?? [];
+					const id = project._id ?? project.id;
+					const name = project.name ?? 'Untitled';
+					const imageUrl = project.imageUrl || '/img/profile3.jpg';
+					const githubUrl = project.url;
+					const deployUrl = project.deployment;
+					const releasedDate = project.releasedDate;
+					const languages: string[] = project.languages ?? [];
 
 					return (
 						<div
-							key={project.id}
+							key={id}
 							className="relative h-52 rounded-xl overflow-hidden cursor-pointer group border border-slate-200 dark:border-slate-700"
 							onClick={() =>
-								navigate(
-									`/projects/view/${name.replace(/\s+/g, '-')}?id=${project.id}`,
-								)
+								navigate(`/projects/view/${name.replace(/\s+/g, '-')}?id=${id}`)
 							}
 						>
-							{/* Image fills entire card */}
 							<img
 								src={imageUrl}
 								alt={name}
 								className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
 							/>
-
-							{/* Persistent bottom overlay */}
 							<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-							{/* Bottom content */}
 							<div className="absolute bottom-0 left-0 right-0 p-3 space-y-1.5">
 								<p className="text-white font-bold text-base leading-tight">
 									{name}
 								</p>
 								<div className="flex flex-wrap gap-1">
-									{techs.slice(0, 3).map((tech: any, idx: number) => (
+									{languages.slice(0, 3).map((lang, idx) => (
 										<Badge
 											key={idx}
 											className="text-xs px-2 py-0.5 bg-white/15 text-white border-0 backdrop-blur-sm"
 										>
-											{tech.properties['Name'].title[0].plain_text}
+											{lang}
 										</Badge>
 									))}
-									{techs.length > 3 && (
+									{languages.length > 3 && (
 										<Badge className="text-xs px-2 py-0.5 bg-white/15 text-white border-0 backdrop-blur-sm">
-											+{techs.length - 3}
+											+{languages.length - 3}
 										</Badge>
 									)}
 								</div>
 							</div>
 
-							{/* Top-right: date */}
 							<div className="absolute top-2 left-2">
 								<span className="text-xs text-white/80 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">
 									{releasedDate ? dateParser(releasedDate) : 'In progress'}
 								</span>
 							</div>
 
-							{/* Hover: link buttons */}
 							<div
 								className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
 								onClick={(e) => e.stopPropagation()}

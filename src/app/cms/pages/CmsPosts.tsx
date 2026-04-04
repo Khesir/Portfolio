@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {fetchPosts, cmsDeletePost, PostDto} from '@/app/api/cms';
+import {fetchPostsCms, cmsDeletePost, cmsUpdatePost, PostDto} from '@/app/api/cms';
 import {Button} from '@/components/ui/Button';
 import {toast} from 'sonner';
 import {Skeleton} from '@/components/ui/skeleton';
-import {Eye, EyeOff, Heart, Pencil, Trash2} from 'lucide-react';
+import {Eye, EyeOff, Heart, Pencil, Trash2, Pin} from 'lucide-react';
 
 function timeAgo(iso: string) {
 	const diff = Date.now() - new Date(iso).getTime();
@@ -23,7 +23,7 @@ export default function CmsPosts() {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetchPosts()
+		fetchPostsCms()
 			.then(setPosts)
 			.finally(() => setLoading(false));
 	}, []);
@@ -33,6 +33,14 @@ export default function CmsPosts() {
 		await cmsDeletePost(id);
 		setPosts((prev) => prev.filter((p) => p.id !== id));
 		toast.success('Post deleted');
+	};
+
+	const handleTogglePin = async (post: PostDto) => {
+		await cmsUpdatePost(post.id, {pinned: !post.pinned});
+		setPosts((prev) =>
+			prev.map((p) => (p.id === post.id ? {...p, pinned: !post.pinned} : p)),
+		);
+		toast.success(post.pinned ? 'Post unpinned' : 'Post pinned');
 	};
 
 	return (
@@ -63,8 +71,13 @@ export default function CmsPosts() {
 								</p>
 								<div className="flex items-center gap-3 flex-wrap">
 									<span className="text-xs text-slate-400">{timeAgo(post.createdAt)}</span>
+									{post.pinned && (
+										<span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1">
+											<Pin size={10} className="fill-current" /> Pinned
+										</span>
+									)}
 									{post.draft && (
-										<span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 font-medium">
+										<span className="text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium">
 											Draft
 										</span>
 									)}
@@ -80,6 +93,18 @@ export default function CmsPosts() {
 								</div>
 							</div>
 							<div className="flex items-start gap-1 shrink-0">
+								<button
+									type="button"
+									onClick={() => handleTogglePin(post)}
+									title={post.pinned ? 'Unpin' : 'Pin'}
+									className={`p-1.5 rounded transition-colors ${
+										post.pinned
+											? 'text-amber-500 bg-amber-50 dark:bg-amber-950/30'
+											: 'text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30'
+									}`}
+								>
+									<Pin size={14} className={post.pinned ? 'fill-current' : ''} />
+								</button>
 								<button
 									type="button"
 									onClick={() => navigate(`/cms/posts/${post.id}/edit`)}

@@ -1,4 +1,5 @@
 import {useCustomBanner} from '@/hooks/useCustomBanner';
+import {useHomeConfig} from '@/hooks/use-home-config';
 import {motion} from 'framer-motion';
 import {useEffect} from 'react';
 import {useLocation} from 'react-router-dom';
@@ -10,11 +11,10 @@ export function Background({size = 'h-[300px]'}: BackgroundProps) {
 	const location = useLocation();
 	const pathname = location.pathname;
 
-	// Zustand store
 	const {imageUrl, setImageUrl} = useCustomBanner();
+	const {config} = useHomeConfig();
 
 	useEffect(() => {
-		// Check if the pathname does NOT start with any of the specified paths
 		if (
 			!(
 				pathname.startsWith('/view/blogs') ||
@@ -22,10 +22,9 @@ export function Background({size = 'h-[300px]'}: BackgroundProps) {
 				pathname.startsWith('/view/progress')
 			)
 		) {
-			setImageUrl('/img/banner3.jpg'); // Set the default image if no valid path
+			setImageUrl(config.bannerImageUrl || '/img/banner3.jpg');
 		}
-		// This ensures the default image is set only if the current pathname is not in the specified paths.
-	}, [pathname, setImageUrl]);
+	}, [pathname, config.bannerImageUrl, setImageUrl]);
 
 	return (
 		<motion.div

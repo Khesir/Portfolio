@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {fetchPosts, cmsCreatePost, cmsUpdatePost} from '@/app/api/cms';
+import {fetchPostsByID, cmsCreatePost, cmsUpdatePost} from '@/app/api/cms';
 import {Button} from '@/components/ui/Button';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
@@ -9,6 +9,7 @@ import TagInput from '../components/TagInput';
 import DraftToggle from '../components/DraftToggle';
 import EngagementToggles from '../components/EngagementToggles';
 import ImageUpload from '../components/ImageUpload';
+import {Pin} from 'lucide-react';
 
 export default function CmsPostEditor() {
 	const {id} = useParams();
@@ -21,14 +22,14 @@ export default function CmsPostEditor() {
 	const [draft, setDraft] = useState(false);
 	const [hideViews, setHideViews] = useState(false);
 	const [hideHearts, setHideHearts] = useState(false);
+	const [pinned, setPinned] = useState(false);
 	const [saving, setSaving] = useState(false);
 	const [loadingData, setLoadingData] = useState(isEdit);
 
 	useEffect(() => {
 		if (!isEdit || !id) return;
-		fetchPosts()
-			.then((posts) => {
-				const post = posts.find((p) => p.id === id);
+		fetchPostsByID(id)
+			.then((post) => {
 				if (!post) return;
 				setContent(post.content);
 				setImageUrl(post.imageUrl ?? '');
@@ -36,6 +37,7 @@ export default function CmsPostEditor() {
 				setDraft(post.draft);
 				setHideViews(post.hideViews);
 				setHideHearts(post.hideHearts);
+				setPinned(post.pinned);
 			})
 			.finally(() => setLoadingData(false));
 	}, [id, isEdit]);
@@ -48,7 +50,7 @@ export default function CmsPostEditor() {
 		}
 		setSaving(true);
 		try {
-			const payload = {content, imageUrl, tags, draft, hideViews, hideHearts};
+			const payload = {content, imageUrl, tags, draft, hideViews, hideHearts, pinned};
 			if (isEdit && id) {
 				await cmsUpdatePost(id, payload);
 				toast.success(draft ? 'Post saved as draft' : 'Post published');
@@ -73,6 +75,18 @@ export default function CmsPostEditor() {
 			<div className="flex items-center justify-between mb-6">
 				<h1 className="text-2xl font-semibold">{isEdit ? 'Edit Post' : 'New Post'}</h1>
 				<div className="flex items-center gap-2">
+					<button
+						type="button"
+						onClick={() => setPinned((p) => !p)}
+						title={pinned ? 'Unpin post' : 'Pin post'}
+						className={`p-1.5 rounded transition-colors ${
+							pinned
+								? 'text-amber-500 bg-amber-50 dark:bg-amber-950/30'
+								: 'text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30'
+						}`}
+					>
+						<Pin size={16} className={pinned ? 'fill-current' : ''} />
+					</button>
 					<EngagementToggles
 						hideViews={hideViews}
 						hideHearts={hideHearts}

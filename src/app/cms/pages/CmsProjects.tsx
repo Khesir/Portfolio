@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { fetchProjects } from '@/app/api/projects';
-import { cmsDeleteProject } from '@/app/api/cms';
-import { Button } from '@/components/ui/Button';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {fetchProjectsCms, cmsDeleteProject} from '@/app/api/cms';
+import {Button} from '@/components/ui/Button';
 import CmsTable from '../components/CmsTable';
-import { toast } from 'sonner';
+import {toast} from 'sonner';
 
 export default function CmsProjects() {
   const navigate = useNavigate();
@@ -13,14 +12,14 @@ export default function CmsProjects() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchProjects()
+    fetchProjectsCms()
       .then(setProjects)
       .finally(() => setLoading(false));
   }, []);
 
   const handleDelete = async (id: string) => {
     await cmsDeleteProject(id);
-    setProjects((prev) => prev.filter((p) => p.id !== id));
+    setProjects((prev) => prev.filter((p) => p._id !== id && p.id !== id));
     toast.success('Project deleted');
   };
 
@@ -32,11 +31,11 @@ export default function CmsProjects() {
       </div>
       <CmsTable
         rows={projects}
-        getId={(p) => p.id}
-        getName={(p) => p.properties?.Name?.title?.[0]?.plain_text ?? '—'}
-        getSubtitle={(p) => p.properties?.['Released Date']?.date?.start ?? ''}
+        getId={(p) => p._id ?? p.id}
+        getName={(p) => p.name ?? '—'}
+        getSubtitle={(p) => p.releasedDate ?? ''}
         getBadge={(p) =>
-          p.properties?.Draft?.checkbox ? (
+          p.draft ? (
             <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400">
               Draft
             </span>

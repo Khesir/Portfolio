@@ -18,6 +18,7 @@ const EMPLOYMENT_TYPES: CreateExperienceDto['employmentType'][] = [
   'Part-time',
   'Contract',
   'Freelance',
+  'Internship',
 ];
 
 const selectClass =
@@ -48,27 +49,18 @@ export default function CmsExperienceEditor() {
     fetchExperienceByID(id)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res: any) => {
-        const props = res?.properties ?? {};
-        setPosition(
-          props?.Position?.title?.[0]?.plain_text ??
-          props?.Position?.rich_text?.[0]?.plain_text ?? ''
-        );
-        setCompanyName(props?.CompanyName?.rich_text?.[0]?.plain_text ?? '');
-        setJobType(props?.JobType?.select?.name ?? 'Remote');
-        setEmploymentType(props?.EmploymentType?.select?.name ?? 'Full-time');
-        setDurationStart(props?.Duration?.date?.start ?? '');
-        setDurationEnd(props?.Duration?.date?.end ?? '');
-        setImageUrl(props?.Image?.files?.[0]?.file?.url ?? '');
-        setPageMd(props?.pageMd?.rich_text?.[0]?.plain_text ?? '');
-        setHighlightSkills(
-          (res?.highlightSkills ?? [])
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map((s: any) => s?.properties?.Name?.title?.[0]?.plain_text ?? '')
-            .filter(Boolean)
-        );
-        setDraft(props?.Draft?.checkbox ?? false);
-        setHideViews(props?.['Hide Views']?.checkbox ?? false);
-        setHideHearts(props?.['Hide Hearts']?.checkbox ?? false);
+        setPosition(res?.position ?? '');
+        setCompanyName(res?.companyName ?? '');
+        setJobType(res?.jobType ?? 'Remote');
+        setEmploymentType(res?.employmentType ?? 'Full-time');
+        setDurationStart(res?.durationStart ?? '');
+        setDurationEnd(res?.durationEnd ?? '');
+        setImageUrl(res?.imageUrl ?? '');
+        setPageMd(res?.pageMd ?? '');
+        setHighlightSkills(res?.highlightSkills ?? []);
+        setDraft(res?.draft ?? false);
+        setHideViews(res?.hideViews ?? false);
+        setHideHearts(res?.hideHearts ?? false);
       })
       .finally(() => setLoadingData(false));
   }, [id, isEdit]);

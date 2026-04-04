@@ -35,17 +35,16 @@ export default function CmsProjectEditor() {
     fetchProjectsByID(id)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res: any) => {
-        const props = res?.data?.properties ?? res?.properties ?? {};
-        setName(props?.Name?.title?.[0]?.plain_text ?? '');
-        setReleasedDate(props?.['Released Date']?.date?.start ?? '');
-        setImageUrl(props?.Image?.files?.[0]?.file?.url ?? '');
-        setLanguages(props?.Languages?.multi_select?.map((l: { name: string }) => l.name) ?? []);
-        setUrl(props?.URL?.url ?? '');
-        setDeployment(props?.Deployment?.url ?? '');
+        setName(res?.name ?? '');
+        setReleasedDate(res?.releasedDate ?? '');
+        setImageUrl(res?.imageUrl ?? '');
+        setLanguages(res?.languages ?? []);
+        setUrl(res?.url ?? '');
+        setDeployment(res?.deployment ?? '');
         setMarkdown(res?.markdown ?? '');
-        setDraft(props?.Draft?.checkbox ?? false);
-        setHideViews(props?.['Hide Views']?.checkbox ?? false);
-        setHideHearts(props?.['Hide Hearts']?.checkbox ?? false);
+        setDraft(res?.draft ?? false);
+        setHideViews(res?.hideViews ?? false);
+        setHideHearts(res?.hideHearts ?? false);
       })
       .finally(() => setLoadingData(false));
   }, [id, isEdit]);

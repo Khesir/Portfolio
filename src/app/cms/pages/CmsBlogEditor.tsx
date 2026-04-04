@@ -35,18 +35,15 @@ export default function CmsBlogEditor() {
 		fetchBlogsByID(id)
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			.then((res: any) => {
-				const props = res?.data?.properties ?? res?.properties ?? {};
-				setName(props?.Name?.title?.[0]?.plain_text ?? '');
-				setReleasedDate(props?.['Released Date']?.date?.start ?? '');
-				setImageUrl(props?.Image?.files?.[0]?.file?.url ?? '');
-				setTags(
-					props?.Tags?.multi_select?.map((t: {name: string}) => t.name) ?? [],
-				);
-				setMinRead(props?.Min?.number ?? 5);
+				setName(res?.name ?? '');
+				setReleasedDate(res?.releasedDate ?? '');
+				setImageUrl(res?.imageUrl ?? '');
+				setTags(res?.tags ?? []);
+				setMinRead(res?.minRead ?? 5);
 				setMarkdown(res?.markdown ?? '');
-				setDraft(props?.Draft?.checkbox ?? false);
-				setHideViews(props?.['Hide Views']?.checkbox ?? false);
-				setHideHearts(props?.['Hide Hearts']?.checkbox ?? false);
+				setDraft(res?.draft ?? false);
+				setHideViews(res?.hideViews ?? false);
+				setHideHearts(res?.hideHearts ?? false);
 			})
 			.finally(() => setLoadingData(false));
 	}, [id, isEdit]);

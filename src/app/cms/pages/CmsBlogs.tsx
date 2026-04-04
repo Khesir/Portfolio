@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { fetchBlogs } from '@/app/api/blogs';
-import { cmsDeleteBlog } from '@/app/api/cms';
-import { Button } from '@/components/ui/Button';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {fetchBlogsCms, cmsDeleteBlog} from '@/app/api/cms';
+import {Button} from '@/components/ui/Button';
 import CmsTable from '../components/CmsTable';
-import { toast } from 'sonner';
+import {toast} from 'sonner';
 
 export default function CmsBlogs() {
   const navigate = useNavigate();
@@ -13,14 +12,14 @@ export default function CmsBlogs() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchBlogs()
+    fetchBlogsCms()
       .then(setBlogs)
       .finally(() => setLoading(false));
   }, []);
 
   const handleDelete = async (id: string) => {
     await cmsDeleteBlog(id);
-    setBlogs((prev) => prev.filter((b) => b.id !== id));
+    setBlogs((prev) => prev.filter((b) => b._id !== id && b.id !== id));
     toast.success('Blog deleted');
   };
 
@@ -32,11 +31,11 @@ export default function CmsBlogs() {
       </div>
       <CmsTable
         rows={blogs}
-        getId={(b) => b.id}
-        getName={(b) => b.properties?.Name?.title?.[0]?.plain_text ?? '—'}
-        getSubtitle={(b) => b.properties?.['Released Date']?.date?.start ?? ''}
+        getId={(b) => b._id ?? b.id}
+        getName={(b) => b.name ?? '—'}
+        getSubtitle={(b) => b.releasedDate ?? ''}
         getBadge={(b) =>
-          b.properties?.Draft?.checkbox ? (
+          b.draft ? (
             <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400">
               Draft
             </span>
