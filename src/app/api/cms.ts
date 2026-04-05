@@ -6,7 +6,8 @@ import {useCmsAuth} from '@/hooks/use-cms-auth-store';
 const API = import.meta.env.VITE_API_URL;
 
 function authHeader() {
-	const password = useCmsAuth.getState().password || import.meta.env.VITE_CMS_PASSWORD;
+	const password =
+		useCmsAuth.getState().password || import.meta.env.VITE_CMS_PASSWORD;
 	return {Authorization: `Bearer ${password}`};
 }
 
@@ -76,7 +77,9 @@ export const cmsVerifyAuth = async (password: string): Promise<boolean> => {
 export const cmsUploadImage = async (file: File): Promise<string> => {
 	if (useEnvironment.getState().isDevelopment()) {
 		await new Promise((r) => setTimeout(r, 600));
-		console.info('[CMS dev mode] Image upload mocked — returning placeholder URL');
+		console.info(
+			'[CMS dev mode] Image upload mocked — returning placeholder URL',
+		);
 		return `https://placehold.co/800x450?text=${encodeURIComponent(file.name)}`;
 	}
 	const form = new FormData();
@@ -122,7 +125,12 @@ export interface CreateExperienceDto {
 	position: string;
 	companyName: string;
 	jobType: 'Remote' | 'Hybrid' | 'Onsite';
-	employmentType: 'Full-time' | 'Part-time' | 'Contract' | 'Freelance';
+	employmentType:
+		| 'Full-time'
+		| 'Part-time'
+		| 'Contract'
+		| 'Freelance'
+		| 'Internship';
 	durationStart: string;
 	durationEnd?: string;
 	imageUrl?: string;
@@ -259,14 +267,18 @@ export const fetchBlogsCms = async () => {
 
 export const cmsCreateBlog = async (payload: CreateBlogDto) => {
 	if (useEnvironment.getState().isDevelopment()) return devSkip('createBlog');
-	const res = await axios.post(`${API}/blogs`, payload, {headers: authHeader()});
+	const res = await axios.post(`${API}/blogs`, payload, {
+		headers: authHeader(),
+	});
 	ApiCache.invalidate('blogs:list');
 	return res.data;
 };
 
 export const cmsUpdateBlog = async (id: string, payload: UpdateBlogDto) => {
 	if (useEnvironment.getState().isDevelopment()) return devSkip('updateBlog');
-	const res = await axios.put(`${API}/blogs/${id}`, payload, {headers: authHeader()});
+	const res = await axios.put(`${API}/blogs/${id}`, payload, {
+		headers: authHeader(),
+	});
 	ApiCache.invalidate('blogs:list');
 	ApiCache.invalidate(`blogs:id:${id}`);
 	return res.data;
@@ -319,23 +331,35 @@ export const fetchProjectsCms = async () => {
 };
 
 export const cmsCreateProject = async (payload: CreateProjectDto) => {
-	if (useEnvironment.getState().isDevelopment()) return devSkip('createProject');
-	const res = await axios.post(`${API}/projects`, payload, {headers: authHeader()});
+	if (useEnvironment.getState().isDevelopment())
+		return devSkip('createProject');
+	const res = await axios.post(`${API}/projects`, payload, {
+		headers: authHeader(),
+	});
 	ApiCache.invalidate('projects:list');
 	return res.data;
 };
 
-export const cmsUpdateProject = async (id: string, payload: UpdateProjectDto) => {
-	if (useEnvironment.getState().isDevelopment()) return devSkip('updateProject');
-	const res = await axios.put(`${API}/projects/${id}`, payload, {headers: authHeader()});
+export const cmsUpdateProject = async (
+	id: string,
+	payload: UpdateProjectDto,
+) => {
+	if (useEnvironment.getState().isDevelopment())
+		return devSkip('updateProject');
+	const res = await axios.put(`${API}/projects/${id}`, payload, {
+		headers: authHeader(),
+	});
 	ApiCache.invalidate('projects:list');
 	ApiCache.invalidate(`projects:id:${id}`);
 	return res.data;
 };
 
 export const cmsDeleteProject = async (id: string) => {
-	if (useEnvironment.getState().isDevelopment()) return devSkip('deleteProject');
-	const res = await axios.delete(`${API}/projects/${id}`, {headers: authHeader()});
+	if (useEnvironment.getState().isDevelopment())
+		return devSkip('deleteProject');
+	const res = await axios.delete(`${API}/projects/${id}`, {
+		headers: authHeader(),
+	});
 	ApiCache.invalidate('projects:list');
 	ApiCache.invalidate(`projects:id:${id}`);
 	return res.data;
@@ -376,21 +400,32 @@ export const cmsDeleteProject = async (id: string) => {
 
 export const fetchExperiencesCms = async () => {
 	if (useEnvironment.getState().isDevelopment()) return [];
-	const res = await axios.get(`${API}/experiences/cms`, {headers: authHeader()});
+	const res = await axios.get(`${API}/experiences/cms`, {
+		headers: authHeader(),
+	});
 	return res.data;
 };
 
 export const cmsCreateExperience = async (payload: CreateExperienceDto) => {
-	if (useEnvironment.getState().isDevelopment()) return devSkip('createExperience');
-	const res = await axios.post(`${API}/experiences`, payload, {headers: authHeader()});
+	if (useEnvironment.getState().isDevelopment())
+		return devSkip('createExperience');
+	const res = await axios.post(`${API}/experiences`, payload, {
+		headers: authHeader(),
+	});
 	ApiCache.invalidate('experiences:list:5');
 	ApiCache.invalidate('experiences:list:20');
 	return res.data;
 };
 
-export const cmsUpdateExperience = async (id: string, payload: UpdateExperienceDto) => {
-	if (useEnvironment.getState().isDevelopment()) return devSkip('updateExperience');
-	const res = await axios.put(`${API}/experiences/${id}`, payload, {headers: authHeader()});
+export const cmsUpdateExperience = async (
+	id: string,
+	payload: UpdateExperienceDto,
+) => {
+	if (useEnvironment.getState().isDevelopment())
+		return devSkip('updateExperience');
+	const res = await axios.put(`${API}/experiences/${id}`, payload, {
+		headers: authHeader(),
+	});
 	ApiCache.invalidate('experiences:list:5');
 	ApiCache.invalidate('experiences:list:20');
 	ApiCache.invalidate(`experiences:id:${id}`);
@@ -398,8 +433,11 @@ export const cmsUpdateExperience = async (id: string, payload: UpdateExperienceD
 };
 
 export const cmsDeleteExperience = async (id: string) => {
-	if (useEnvironment.getState().isDevelopment()) return devSkip('deleteExperience');
-	const res = await axios.delete(`${API}/experiences/${id}`, {headers: authHeader()});
+	if (useEnvironment.getState().isDevelopment())
+		return devSkip('deleteExperience');
+	const res = await axios.delete(`${API}/experiences/${id}`, {
+		headers: authHeader(),
+	});
 	ApiCache.invalidate('experiences:list:5');
 	ApiCache.invalidate('experiences:list:20');
 	ApiCache.invalidate(`experiences:id:${id}`);
@@ -439,9 +477,40 @@ export const cmsDeleteExperience = async (id: string) => {
 export const fetchPosts = async (): Promise<PostDto[]> => {
 	if (useEnvironment.getState().isDevelopment())
 		return [
-			{id: '1', content: 'Just shipped the new CMS dashboard with Vercel analytics integration. Really happy with how the chart turned out.', tags: ['update', 'cms'], draft: false, createdAt: '2026-04-03T10:00:00Z', hideViews: false, hideHearts: false, pinned: false},
-			{id: '2', content: 'Working on a new game project in Unity. Procedural generation is surprisingly fun to implement. More updates soon.', imageUrl: '', tags: ['gamedev', 'unity'], draft: false, createdAt: '2026-04-01T14:30:00Z', hideViews: false, hideHearts: false, pinned: false},
-			{id: '3', content: 'PostgreSQL + full-text search is criminally underrated. You can avoid a whole search service for most use cases.', tags: ['postgres', 'backend'], draft: false, createdAt: '2026-03-28T09:00:00Z', hideViews: false, hideHearts: false, pinned: false},
+			{
+				id: '1',
+				content:
+					'Just shipped the new CMS dashboard with Vercel analytics integration. Really happy with how the chart turned out.',
+				tags: ['update', 'cms'],
+				draft: false,
+				createdAt: '2026-04-03T10:00:00Z',
+				hideViews: false,
+				hideHearts: false,
+				pinned: false,
+			},
+			{
+				id: '2',
+				content:
+					'Working on a new game project in Unity. Procedural generation is surprisingly fun to implement. More updates soon.',
+				imageUrl: '',
+				tags: ['gamedev', 'unity'],
+				draft: false,
+				createdAt: '2026-04-01T14:30:00Z',
+				hideViews: false,
+				hideHearts: false,
+				pinned: false,
+			},
+			{
+				id: '3',
+				content:
+					'PostgreSQL + full-text search is criminally underrated. You can avoid a whole search service for most use cases.',
+				tags: ['postgres', 'backend'],
+				draft: false,
+				createdAt: '2026-03-28T09:00:00Z',
+				hideViews: false,
+				hideHearts: false,
+				pinned: false,
+			},
 		];
 	const res = await axios.get(`${API}/posts`);
 	return res.data;
@@ -461,13 +530,20 @@ export const fetchPostsCms = async (): Promise<PostDto[]> => {
 
 export const cmsCreatePost = async (payload: CreatePostDto) => {
 	if (useEnvironment.getState().isDevelopment()) return devSkip('createPost');
-	const res = await axios.post(`${API}/posts`, payload, {headers: authHeader()});
+	const res = await axios.post(`${API}/posts`, payload, {
+		headers: authHeader(),
+	});
 	return res.data;
 };
 
-export const cmsUpdatePost = async (id: string, payload: Partial<CreatePostDto>) => {
+export const cmsUpdatePost = async (
+	id: string,
+	payload: Partial<CreatePostDto>,
+) => {
 	if (useEnvironment.getState().isDevelopment()) return devSkip('updatePost');
-	const res = await axios.put(`${API}/posts/${id}`, payload, {headers: authHeader()});
+	const res = await axios.put(`${API}/posts/${id}`, payload, {
+		headers: authHeader(),
+	});
 	return res.data;
 };
 
@@ -544,8 +620,11 @@ export const fetchHomeConfig = async () => {
 };
 
 export const cmsUpdateHomeConfig = async (payload: UpdateHomeConfigDto) => {
-	if (useEnvironment.getState().isDevelopment()) return devSkip('updateHomeConfig');
-	const res = await axios.put(`${API}/config/home`, payload, {headers: authHeader()});
+	if (useEnvironment.getState().isDevelopment())
+		return devSkip('updateHomeConfig');
+	const res = await axios.put(`${API}/config/home`, payload, {
+		headers: authHeader(),
+	});
 	return res.data;
 };
 
@@ -586,14 +665,27 @@ export const fetchAboutConfig = async () => {
 			profileImageUrl: '',
 			aboutButtons: [
 				{label: 'Contact Me', icon: 'mdi:email', action: 'contact'},
-				{label: 'GitHub', icon: 'mdi:github', href: 'https://github.com/khesir', variant: 'secondary'},
-				{label: 'Blogs', icon: 'mdi:file-document', to: '/blogs', variant: 'secondary'},
+				{
+					label: 'GitHub',
+					icon: 'mdi:github',
+					href: 'https://github.com/khesir',
+					variant: 'secondary',
+				},
+				{
+					label: 'Blogs',
+					icon: 'mdi:file-document',
+					to: '/blogs',
+					variant: 'secondary',
+				},
 			],
 			professionalSummary:
 				'Software engineer focused on **backend development** and **game engineering**.\n\nI specialize in scalable architectures, clean system design, and writing code that makes sense long-term.',
 			technicalSkills: [
 				{category: 'Frontend', items: ['React', 'TypeScript', 'Tailwind']},
-				{category: 'Backend', items: ['Node.js', 'NestJS', 'PostgreSQL', 'Docker']},
+				{
+					category: 'Backend',
+					items: ['Node.js', 'NestJS', 'PostgreSQL', 'Docker'],
+				},
 				{category: 'Game Dev', items: ['Unity', 'C#', 'Lua', 'C++']},
 			],
 			coreCompetencies: [
@@ -609,8 +701,11 @@ export const fetchAboutConfig = async () => {
 };
 
 export const cmsUpdateAboutConfig = async (payload: UpdateAboutConfigDto) => {
-	if (useEnvironment.getState().isDevelopment()) return devSkip('updateAboutConfig');
-	const res = await axios.put(`${API}/config/about`, payload, {headers: authHeader()});
+	if (useEnvironment.getState().isDevelopment())
+		return devSkip('updateAboutConfig');
+	const res = await axios.put(`${API}/config/about`, payload, {
+		headers: authHeader(),
+	});
 	return res.data;
 };
 
@@ -675,9 +770,14 @@ export const fetchServiceConfig = async () => {
 	return res.data;
 };
 
-export const cmsUpdateServiceConfig = async (payload: UpdateServiceConfigDto) => {
-	if (useEnvironment.getState().isDevelopment()) return devSkip('updateServiceConfig');
-	const res = await axios.put(`${API}/config/services`, payload, {headers: authHeader()});
+export const cmsUpdateServiceConfig = async (
+	payload: UpdateServiceConfigDto,
+) => {
+	if (useEnvironment.getState().isDevelopment())
+		return devSkip('updateServiceConfig');
+	const res = await axios.put(`${API}/config/services`, payload, {
+		headers: authHeader(),
+	});
 	return res.data;
 };
 
@@ -731,20 +831,34 @@ export interface EngagementData {
 	hearted: boolean;
 }
 
-export const fetchEngagement = async (type: EngagementType, id: string): Promise<EngagementData> => {
+export const fetchEngagement = async (
+	type: EngagementType,
+	id: string,
+): Promise<EngagementData> => {
 	if (useEnvironment.getState().isDevelopment())
-		return {views: Math.floor(Math.random() * 300) + 10, hearts: Math.floor(Math.random() * 40), hearted: false};
+		return {
+			views: Math.floor(Math.random() * 300) + 10,
+			hearts: Math.floor(Math.random() * 40),
+			hearted: false,
+		};
 	const res = await axios.get(`${API}/interactions/${type}/${id}`);
 	return res.data;
 };
 
-export const trackView = async (type: EngagementType, id: string): Promise<void> => {
+export const trackView = async (
+	type: EngagementType,
+	id: string,
+): Promise<void> => {
 	if (useEnvironment.getState().isDevelopment()) return;
 	await axios.post(`${API}/interactions/${type}/${id}/view`);
 };
 
-export const toggleHeart = async (type: EngagementType, id: string): Promise<{hearted: boolean; hearts: number}> => {
-	if (useEnvironment.getState().isDevelopment()) return {hearted: true, hearts: 1};
+export const toggleHeart = async (
+	type: EngagementType,
+	id: string,
+): Promise<{hearted: boolean; hearts: number}> => {
+	if (useEnvironment.getState().isDevelopment())
+		return {hearted: true, hearts: 1};
 	const res = await axios.post(`${API}/interactions/${type}/${id}/heart`);
 	return res.data;
 };
@@ -816,15 +930,49 @@ export const fetchAnalytics = async (): Promise<AnalyticsData> => {
 	return res.data;
 };
 
-export const fetchBlogEngagementSummary = async (): Promise<BlogEngagementSummary[]> => {
+export const fetchBlogEngagementSummary = async (): Promise<
+	BlogEngagementSummary[]
+> => {
 	if (useEnvironment.getState().isDevelopment())
 		return [
-			{id: '1', title: 'Building Scalable APIs with NestJS', publishedAt: '2026-03-30', views: 241, hearts: 18},
-			{id: '2', title: 'Game Architecture Patterns in Unity', publishedAt: '2026-03-22', views: 189, hearts: 12},
-			{id: '3', title: 'Why I Switched to PostgreSQL', publishedAt: '2026-03-15', views: 134, hearts: 7},
-			{id: '4', title: 'Docker for Solo Developers', publishedAt: '2026-03-08', views: 98, hearts: 5},
-			{id: '5', title: 'TypeScript Tips I Wish I Knew Earlier', publishedAt: '2026-02-28', views: 312, hearts: 31},
+			{
+				id: '1',
+				title: 'Building Scalable APIs with NestJS',
+				publishedAt: '2026-03-30',
+				views: 241,
+				hearts: 18,
+			},
+			{
+				id: '2',
+				title: 'Game Architecture Patterns in Unity',
+				publishedAt: '2026-03-22',
+				views: 189,
+				hearts: 12,
+			},
+			{
+				id: '3',
+				title: 'Why I Switched to PostgreSQL',
+				publishedAt: '2026-03-15',
+				views: 134,
+				hearts: 7,
+			},
+			{
+				id: '4',
+				title: 'Docker for Solo Developers',
+				publishedAt: '2026-03-08',
+				views: 98,
+				hearts: 5,
+			},
+			{
+				id: '5',
+				title: 'TypeScript Tips I Wish I Knew Earlier',
+				publishedAt: '2026-02-28',
+				views: 312,
+				hearts: 31,
+			},
 		];
-	const res = await axios.get(`${API}/analytics/blogs`, {headers: authHeader()});
+	const res = await axios.get(`${API}/analytics/blogs`, {
+		headers: authHeader(),
+	});
 	return res.data;
 };
