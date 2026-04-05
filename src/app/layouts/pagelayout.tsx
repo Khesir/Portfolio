@@ -38,16 +38,18 @@ export function BaseLayout() {
 					<Outlet />
 				</div>
 			</div>
-			{/* Environment Toggle - Always Visible */}
-			<motion.div
-				key="environment-toggle"
-				className="fixed bottom-5 left-5 bg-amber-400 dark:bg-amber-500 flex justify-center items-center w-[65px] h-[65px] rounded-full z-20 cursor-pointer shadow-lg"
-				initial={{x: '-100%', opacity: 0}}
-				animate={{x: 0, opacity: 1}}
-				transition={{type: 'spring', stiffness: 100, damping: 15, delay: 0.3}}
-			>
-				<EnvironmentToggle />
-			</motion.div>
+			{/* Environment Toggle - Dev Only */}
+			{import.meta.env.VITE_MODE !== 'production' && (
+				<motion.div
+					key="environment-toggle"
+					className="fixed bottom-5 left-5 bg-amber-400 dark:bg-amber-500 flex justify-center items-center w-[65px] h-[65px] rounded-full z-20 cursor-pointer shadow-lg"
+					initial={{x: '-100%', opacity: 0}}
+					animate={{x: 0, opacity: 1}}
+					transition={{type: 'spring', stiffness: 100, damping: 15, delay: 0.3}}
+				>
+					<EnvironmentToggle />
+				</motion.div>
+			)}
 			{/* Theme Toggle - Scroll Dependent */}
 			<AnimatePresence>
 				{showButton && (
