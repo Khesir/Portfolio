@@ -63,11 +63,10 @@ export default function CmsLayout() {
 								</p>
 							)}
 							<div className="space-y-0.5">
-								{section.items.map(({to, label, end}) => (
+								{section.items.map(({to, label}) => (
 									<NavLink
 										key={to}
 										to={to}
-										end={end}
 										className={({isActive}) => linkClass(isActive)}
 									>
 										{label}

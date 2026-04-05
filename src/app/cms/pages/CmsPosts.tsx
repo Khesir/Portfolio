@@ -1,10 +1,15 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {fetchPostsCms, cmsDeletePost, cmsUpdatePost, PostDto} from '@/app/api/cms';
+import {
+	fetchPostsCms,
+	cmsDeletePost,
+	cmsUpdatePost,
+	PostDto,
+} from '@/app/api/cms';
 import {Button} from '@/components/ui/Button';
 import {toast} from 'sonner';
 import {Skeleton} from '@/components/ui/skeleton';
-import {Eye, EyeOff, Heart, Pencil, Trash2, Pin} from 'lucide-react';
+import {EyeOff, Heart, Pencil, Trash2, Pin} from 'lucide-react';
 
 function timeAgo(iso: string) {
 	const diff = Date.now() - new Date(iso).getTime();
@@ -14,7 +19,11 @@ function timeAgo(iso: string) {
 	if (h < 24) return `${h}h ago`;
 	const d = Math.floor(h / 24);
 	if (d < 30) return `${d}d ago`;
-	return new Date(iso).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
+	return new Date(iso).toLocaleDateString('en-US', {
+		month: 'short',
+		day: 'numeric',
+		year: 'numeric',
+	});
 }
 
 export default function CmsPosts() {
@@ -70,7 +79,9 @@ export default function CmsPosts() {
 									{post.content}
 								</p>
 								<div className="flex items-center gap-3 flex-wrap">
-									<span className="text-xs text-slate-400">{timeAgo(post.createdAt)}</span>
+									<span className="text-xs text-slate-400">
+										{timeAgo(post.createdAt)}
+									</span>
 									{post.pinned && (
 										<span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1">
 											<Pin size={10} className="fill-current" /> Pinned
@@ -82,13 +93,20 @@ export default function CmsPosts() {
 										</span>
 									)}
 									{post.tags.map((t) => (
-										<span key={t} className="text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">
+										<span
+											key={t}
+											className="text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500"
+										>
 											#{t}
 										</span>
 									))}
 									<div className="flex items-center gap-2 ml-auto">
-										{post.hideViews && <EyeOff size={12} className="text-slate-400" />}
-										{post.hideHearts && <Heart size={12} className="text-slate-400" />}
+										{post.hideViews && (
+											<EyeOff size={12} className="text-slate-400" />
+										)}
+										{post.hideHearts && (
+											<Heart size={12} className="text-slate-400" />
+										)}
 									</div>
 								</div>
 							</div>
@@ -103,7 +121,10 @@ export default function CmsPosts() {
 											: 'text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30'
 									}`}
 								>
-									<Pin size={14} className={post.pinned ? 'fill-current' : ''} />
+									<Pin
+										size={14}
+										className={post.pinned ? 'fill-current' : ''}
+									/>
 								</button>
 								<button
 									type="button"

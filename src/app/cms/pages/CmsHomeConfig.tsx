@@ -106,7 +106,6 @@ function StatusSelector({
 
 function HomePreview({
 	name,
-	title,
 	role,
 	description,
 	status,
@@ -136,46 +135,54 @@ function HomePreview({
 			<div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden space-y-3">
 				{bannerImageUrl && (
 					<div className="h-16 w-full overflow-hidden">
-						<img src={bannerImageUrl} alt="Banner" className="w-full h-full object-cover" />
+						<img
+							src={bannerImageUrl}
+							alt="Banner"
+							className="w-full h-full object-cover"
+						/>
 					</div>
 				)}
 				<div className="px-4 pb-4 space-y-2">
-				<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-2">
-					Profile Card
-				</p>
-				<div className="flex items-center gap-2">
-					<img
-						src={profileImageUrl || '/img/profile2.jpg'}
-						alt="Profile"
-						className="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-slate-700"
-					/>
-					<p className="font-bold text-base text-slate-900 dark:text-white">
-						{name || 'Your Name'}
+					<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-2">
+						Profile Card
 					</p>
-				</div>
-				{role && (
-					<p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
-						{role}
-					</p>
-				)}
-{description && (
-					<p className="text-xs text-slate-600 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">
-						{description}
-					</p>
-				)}
-				{languages.length > 0 && (
-					<div className="flex flex-wrap gap-1.5 pt-1">
-						{languages.map((entry, i) => (
-							<div
-								key={i}
-								className="flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-md"
-							>
-								{entry.icon && <Icon icon={entry.icon} className="w-3.5 h-3.5" />}
-								<span className="text-xs">{entry.label || iconLabel(entry.icon)}</span>
-							</div>
-						))}
+					<div className="flex items-center gap-2">
+						<img
+							src={profileImageUrl || '/img/profile2.jpg'}
+							alt="Profile"
+							className="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-slate-700"
+						/>
+						<p className="font-bold text-base text-slate-900 dark:text-white">
+							{name || 'Your Name'}
+						</p>
 					</div>
-				)}
+					{role && (
+						<p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+							{role}
+						</p>
+					)}
+					{description && (
+						<p className="text-xs text-slate-600 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">
+							{description}
+						</p>
+					)}
+					{languages.length > 0 && (
+						<div className="flex flex-wrap gap-1.5 pt-1">
+							{languages.map((entry, i) => (
+								<div
+									key={i}
+									className="flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-md"
+								>
+									{entry.icon && (
+										<Icon icon={entry.icon} className="w-3.5 h-3.5" />
+									)}
+									<span className="text-xs">
+										{entry.label || iconLabel(entry.icon)}
+									</span>
+								</div>
+							))}
+						</div>
+					)}
 				</div>
 			</div>
 
@@ -275,9 +282,17 @@ export default function CmsHomeConfig() {
 		setSaving(true);
 		try {
 			await cmsUpdateHomeConfig({
-				name, role, contactEmail, description, status,
-				languages, profileImageUrl, bannerImageUrl,
-				bannerTitle, bannerSubtitle, bannerButtons,
+				name,
+				role,
+				contactEmail,
+				description,
+				status,
+				languages,
+				profileImageUrl,
+				bannerImageUrl,
+				bannerTitle,
+				bannerSubtitle,
+				bannerButtons,
 			});
 			toast.success('Home config saved');
 		} catch {
@@ -295,7 +310,9 @@ export default function CmsHomeConfig() {
 		setBannerButtons((prev) => [...prev, {label: '', action: 'contact'}]);
 
 	const updateLang = (i: number, patch: Partial<LanguageEntry>) =>
-		setLanguages((prev) => prev.map((x, j) => (j === i ? {...x, ...patch} : x)));
+		setLanguages((prev) =>
+			prev.map((x, j) => (j === i ? {...x, ...patch} : x)),
+		);
 	const removeLang = (i: number) =>
 		setLanguages((prev) => prev.filter((_, j) => j !== i));
 	const addLang = () =>
@@ -324,8 +341,16 @@ export default function CmsHomeConfig() {
 							Availabanner
 						</h2>
 						<div className="space-y-1.5">
-							<Label>Banner Image <span className="text-slate-400 font-normal text-xs">optional — falls back to default</span></Label>
-							<ImageUpload value={bannerImageUrl} onChange={setBannerImageUrl} />
+							<Label>
+								Banner Image{' '}
+								<span className="text-slate-400 font-normal text-xs">
+									optional — falls back to default
+								</span>
+							</Label>
+							<ImageUpload
+								value={bannerImageUrl}
+								onChange={setBannerImageUrl}
+							/>
 						</div>
 						<div className="grid grid-cols-2 gap-4">
 							<div className="space-y-1.5">
@@ -386,8 +411,16 @@ export default function CmsHomeConfig() {
 							Profile
 						</h2>
 						<div className="space-y-1.5">
-							<Label>Profile Image <span className="text-slate-400 font-normal text-xs">optional — falls back to default</span></Label>
-							<ImageUpload value={profileImageUrl} onChange={setProfileImageUrl} />
+							<Label>
+								Profile Image{' '}
+								<span className="text-slate-400 font-normal text-xs">
+									optional — falls back to default
+								</span>
+							</Label>
+							<ImageUpload
+								value={profileImageUrl}
+								onChange={setProfileImageUrl}
+							/>
 						</div>
 						<div className="grid grid-cols-2 gap-4">
 							<div className="space-y-1.5">
@@ -427,7 +460,9 @@ export default function CmsHomeConfig() {
 								value={description}
 								onChange={(e) => setDescription(e.target.value)}
 								className="min-h-28 resize-y"
-								placeholder={'I build scalable systems...\n\nPassionate about clean architecture.'}
+								placeholder={
+									'I build scalable systems...\n\nPassionate about clean architecture.'
+								}
 							/>
 						</div>
 					</section>
@@ -485,9 +520,9 @@ export default function CmsHomeConfig() {
 			{/* Preview Dialog */}
 			<Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
 				<DialogContent
-				className="overflow-auto resize max-w-none max-h-[90vh]"
-				style={{width: 540, minWidth: 400, minHeight: 340}}
-			>
+					className="overflow-auto resize max-w-none max-h-[90vh]"
+					style={{width: 540, minWidth: 400, minHeight: 340}}
+				>
 					<DialogHeader>
 						<DialogTitle>Home Page Preview</DialogTitle>
 					</DialogHeader>
