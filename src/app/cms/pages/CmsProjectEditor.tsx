@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { Pin } from 'lucide-react';
 import TagInput from '../components/TagInput';
 import MarkdownEditor from '../components/MarkdownEditor';
 import DraftToggle from '../components/DraftToggle';
@@ -27,6 +28,7 @@ export default function CmsProjectEditor() {
   const [draft, setDraft] = useState(true);
   const [hideViews, setHideViews] = useState(false);
   const [hideHearts, setHideHearts] = useState(false);
+  const [pinned, setPinned] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loadingData, setLoadingData] = useState(isEdit);
 
@@ -45,6 +47,7 @@ export default function CmsProjectEditor() {
         setDraft(res?.draft ?? false);
         setHideViews(res?.hideViews ?? false);
         setHideHearts(res?.hideHearts ?? false);
+        setPinned(res?.pinned ?? false);
       })
       .finally(() => setLoadingData(false));
   }, [id, isEdit]);
@@ -53,7 +56,7 @@ export default function CmsProjectEditor() {
     e.preventDefault();
     setSaving(true);
     try {
-      const payload = { name, releasedDate, imageUrl, languages, url, deployment, markdown, draft, hideViews, hideHearts };
+      const payload = { name, releasedDate, imageUrl, languages, url, deployment, markdown, draft, hideViews, hideHearts, pinned };
       if (isEdit && id) {
         await cmsUpdateProject(id, payload);
         toast.success(draft ? 'Project saved as draft' : 'Project published');
@@ -78,6 +81,18 @@ export default function CmsProjectEditor() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">{isEdit ? 'Edit Project' : 'New Project'}</h1>
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setPinned(!pinned)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${
+              pinned
+                ? 'border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-700 dark:bg-blue-950/40 dark:text-blue-400'
+                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800'
+            }`}
+          >
+            <Pin size={14} className={pinned ? 'fill-current' : ''} />
+            {pinned ? 'Featured' : 'Not Featured'}
+          </button>
           <EngagementToggles hideViews={hideViews} hideHearts={hideHearts} onChangeViews={setHideViews} onChangeHearts={setHideHearts} />
           <DraftToggle draft={draft} onChange={setDraft} />
         </div>

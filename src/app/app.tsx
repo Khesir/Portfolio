@@ -15,6 +15,7 @@ import {ProgressPage} from './module/progress/progress';
 import {PostsPage} from './module/posts/postsPage';
 import {ProjectPage} from './module/projects/projectPage';
 import {ExperiencePage} from './module/experiences/experiencePage';
+import {NotFoundPage} from './module/notFound/notFoundPage';
 
 export default function App() {
 	return (
@@ -46,7 +47,7 @@ export default function App() {
 					</Route>
 					<Route path="sandbox" element={<SandBoxPage />} />
 					<Route path="cms/*" element={<CmsApp />} />
-					<Route path="*" />
+					<Route path="*" element={<NotFoundPage />} />
 					<Route path="skillset" element={<SkillSetPage />} />
 				</Router>
 			</LoadingScreen>

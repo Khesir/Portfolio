@@ -11,6 +11,7 @@ interface CmsTableProps<T> {
   getName: (row: T) => string;
   getSubtitle?: (row: T) => string;
   getBadge?: (row: T) => React.ReactNode;
+  getActions?: (row: T) => React.ReactNode;
   editPath: (id: string) => string;
   onDelete: (id: string) => Promise<void>;
   loading?: boolean;
@@ -22,6 +23,7 @@ export default function CmsTable<T>({
   getName,
   getSubtitle,
   getBadge,
+  getActions,
   editPath,
   onDelete,
   loading,
@@ -73,6 +75,7 @@ export default function CmsTable<T>({
               </td>
               <td className="py-3 text-right">
                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {getActions && getActions(row)}
                   <Button
                     size="sm"
                     variant="outline"

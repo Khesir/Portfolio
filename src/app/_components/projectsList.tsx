@@ -3,11 +3,13 @@ import {fetchProjects} from '@/app/api/projects';
 import {Badge} from '@/components/ui/badge';
 import {Skeleton} from '@/components/ui/skeleton';
 import {dateParser} from '@/lib/utils';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef, useCallback} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {ArrowUpRight, Github, Calendar} from 'lucide-react';
 import {motion} from 'framer-motion';
 import {useEnvironment} from '@/hooks/use-environment-store';
+
+const PAGE_SIZE = 6;
 
 const containerVariants = {
 	initial: {},
@@ -20,9 +22,13 @@ const cardVariants = {
 };
 
 export function ProjectList() {
-	const [projects, setProjects] = useState<any[]>([]);
+	const [allProjects, setAllProjects] = useState<any[]>([]);
+	const [displayed, setDisplayed] = useState<any[]>([]);
+	const [page, setPage] = useState(1);
+	const [hasMore, setHasMore] = useState(false);
 	const [res, setRes] = useState(null);
 	const [loading, setLoading] = useState(false);
+	const sentinelRef = useRef<HTMLDivElement>(null);
 	const navigate = useNavigate();
 	const {refreshKey} = useEnvironment();
 
@@ -31,16 +37,42 @@ export function ProjectList() {
 			setLoading(true);
 			try {
 				const data = await fetchProjects();
-				setProjects(Array.isArray(data) ? data : []);
+				const list = Array.isArray(data) ? data : [];
+				setAllProjects(list);
+				setDisplayed(list.slice(0, PAGE_SIZE));
+				setPage(1);
+				setHasMore(list.length > PAGE_SIZE);
 			} catch (e: any) {
 				setRes(e.toString());
-				setProjects([]);
+				setAllProjects([]);
+				setDisplayed([]);
 			} finally {
 				setLoading(false);
 			}
 		};
 		fetchData();
 	}, [refreshKey]);
+
+	const loadMore = useCallback(() => {
+		const nextPage = page + 1;
+		const next = allProjects.slice(0, nextPage * PAGE_SIZE);
+		setDisplayed(next);
+		setPage(nextPage);
+		setHasMore(next.length < allProjects.length);
+	}, [page, allProjects]);
+
+	useEffect(() => {
+		const el = sentinelRef.current;
+		if (!el || !hasMore) return;
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting) loadMore();
+			},
+			{threshold: 0.1},
+		);
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, [hasMore, loadMore]);
 
 	if (res) {
 		return (
@@ -64,7 +96,7 @@ export function ProjectList() {
 		);
 	}
 
-	if (loading || !projects) {
+	if (loading || !displayed) {
 		return (
 			<div className="flex flex-col gap-4">
 				<motion.div initial={{opacity: 0}} animate={{opacity: 1}} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -89,7 +121,7 @@ export function ProjectList() {
 		);
 	}
 
-	if (projects.length === 0 && !loading) {
+	if (displayed.length === 0 && !loading) {
 		return (
 			<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-8 text-center">
 				<p className="text-slate-600 dark:text-slate-400">No projects available yet</p>
@@ -98,8 +130,9 @@ export function ProjectList() {
 	}
 
 	return (
+		<div className="flex flex-col gap-6">
 		<motion.div variants={containerVariants} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			{projects.map((d: any, i) => {
+			{displayed.map((d: any, i) => {
 				const id = d._id ?? d.id;
 				const name = d.name ?? 'Untitled';
 				const languages: string[] = d.languages ?? [];
@@ -160,5 +193,12 @@ export function ProjectList() {
 				);
 			})}
 		</motion.div>
+		{hasMore && <div ref={sentinelRef} className="h-10" />}
+		{!hasMore && displayed.length > 0 && (
+			<p className="text-center text-sm text-slate-400 dark:text-slate-500 pb-2">
+				All {allProjects.length} projects loaded
+			</p>
+		)}
+		</div>
 	);
 }

@@ -118,6 +118,7 @@ export interface CreateProjectDto {
 	draft?: boolean;
 	hideViews?: boolean;
 	hideHearts?: boolean;
+	pinned?: boolean;
 }
 export type UpdateProjectDto = Partial<CreateProjectDto>;
 
@@ -144,6 +145,7 @@ export type UpdateExperienceDto = Partial<CreateExperienceDto>;
 
 export interface PostDto {
 	id: string;
+	_id?: string;
 	content: string;
 	imageUrl?: string;
 	tags: string[];
@@ -337,6 +339,7 @@ export const cmsCreateProject = async (payload: CreateProjectDto) => {
 		headers: authHeader(),
 	});
 	ApiCache.invalidate('projects:list');
+	ApiCache.invalidate('projects:featured');
 	return res.data;
 };
 
@@ -350,6 +353,7 @@ export const cmsUpdateProject = async (
 		headers: authHeader(),
 	});
 	ApiCache.invalidate('projects:list');
+	ApiCache.invalidate('projects:featured');
 	ApiCache.invalidate(`projects:id:${id}`);
 	return res.data;
 };
@@ -361,6 +365,7 @@ export const cmsDeleteProject = async (id: string) => {
 		headers: authHeader(),
 	});
 	ApiCache.invalidate('projects:list');
+	ApiCache.invalidate('projects:featured');
 	ApiCache.invalidate(`projects:id:${id}`);
 	return res.data;
 };

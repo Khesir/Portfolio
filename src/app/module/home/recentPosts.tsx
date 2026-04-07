@@ -79,7 +79,7 @@ export function RecentPosts() {
 			<div className="space-y-3">
 				{posts.map((post) => (
 					<div
-						key={post.id}
+						key={post._id ?? post.id}
 						className={`bg-white dark:bg-slate-900 border rounded-2xl p-5 space-y-2 ${
 							post.pinned
 								? 'border-amber-300 dark:border-amber-700'
