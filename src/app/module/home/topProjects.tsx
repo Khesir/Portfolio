@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {fetchProjects} from '@/app/api/projects';
+import {fetchFeaturedProjects} from '@/app/api/projects';
 import {Badge} from '@/components/ui/badge';
 import {Skeleton} from '@/components/ui/skeleton';
 import {dateParser} from '@/lib/utils';
@@ -20,7 +20,7 @@ export function TopProjects() {
 		setRes(null);
 		setLoading(true);
 		try {
-			const data = await fetchProjects();
+			const data = await fetchFeaturedProjects();
 			setProjects(Array.isArray(data) ? data : []);
 		} catch (e: any) {
 			toast.error(e instanceof Error ? e.message : String(e));
@@ -107,7 +107,7 @@ export function TopProjects() {
 						No Projects Yet
 					</h3>
 					<p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-						Featured projects will appear here once added.
+						Pin projects in the CMS to feature them here.
 					</p>
 				</div>
 			</div>
