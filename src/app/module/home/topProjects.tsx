@@ -21,7 +21,8 @@ export function TopProjects() {
 		setLoading(true);
 		try {
 			const data = await fetchFeaturedProjects();
-			setProjects(Array.isArray(data) ? data : []);
+			const list = Array.isArray(data) ? data : [];
+			setProjects(list.filter((p: any) => p.pinned));
 		} catch (e: any) {
 			toast.error(e instanceof Error ? e.message : String(e));
 			setRes(e.toString());
