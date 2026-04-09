@@ -22,7 +22,7 @@ export function TopProjects() {
 		try {
 			const data = await fetchFeaturedProjects();
 			const list = Array.isArray(data) ? data : [];
-			setProjects(list.filter((p: any) => p.pinned));
+			setProjects(list.filter((p: any) => p.pinned == true));
 		} catch (e: any) {
 			toast.error(e instanceof Error ? e.message : String(e));
 			setRes(e.toString());
