@@ -490,47 +490,15 @@ export const mockProjects = [
 export const mockExperiences = [
   {
     id: 'mock-exp-1',
-    properties: {
-      Position: {
-        title: [
-          {
-            plain_text: 'Senior Fullstack Developer',
-          },
-        ],
-      },
-      CompanyName: {
-        rich_text: [
-          {
-            plain_text: 'Tech Innovations Inc.',
-          },
-        ],
-      },
-      JobType: {
-        select: {
-          name: 'Remote',
-        },
-      },
-      EmploymentType: {
-        select: {
-          name: 'Full-time',
-        },
-      },
-      Duration: {
-        date: {
-          start: '2023-01-15',
-          end: null,
-        },
-      },
-      Image: {
-        files: [
-          {
-            file: {
-              url: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800',
-            },
-          },
-        ],
-      },
-      pageMd: `## Overview
+    position: 'Senior Fullstack Developer',
+    companyName: 'Tech Innovations Inc.',
+    jobType: 'Remote',
+    employmentType: 'Full-time',
+    durationStart: '2023-01-15',
+    durationEnd: null,
+    imageUrl: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800',
+    highlightSkills: ['React', 'TypeScript', 'Node.js', 'AWS'],
+    pageMd: `## Overview
 
 As a Senior Fullstack Developer at Tech Innovations Inc., I lead the development of cutting-edge web applications using modern technologies.
 
@@ -553,97 +521,18 @@ As a Senior Fullstack Developer at Tech Innovations Inc., I lead the development
 - Reduced application load time by 60%
 - Implemented automated testing, increasing coverage to 85%
 - Successfully launched 3 major features ahead of schedule`,
-    },
-    highlightSkills: [
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'React',
-              },
-            ],
-          },
-        },
-      },
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'TypeScript',
-              },
-            ],
-          },
-        },
-      },
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'Node.js',
-              },
-            ],
-          },
-        },
-      },
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'AWS',
-              },
-            ],
-          },
-        },
-      },
-    ],
   },
   {
     id: 'mock-exp-2',
-    properties: {
-      Position: {
-        title: [
-          {
-            plain_text: 'Fullstack Developer',
-          },
-        ],
-      },
-      CompanyName: {
-        rich_text: [
-          {
-            plain_text: 'StartUp Solutions',
-          },
-        ],
-      },
-      JobType: {
-        select: {
-          name: 'Hybrid',
-        },
-      },
-      EmploymentType: {
-        select: {
-          name: 'Full-time',
-        },
-      },
-      Duration: {
-        date: {
-          start: '2021-06-01',
-          end: '2022-12-31',
-        },
-      },
-      Image: {
-        files: [
-          {
-            file: {
-              url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800',
-            },
-          },
-        ],
-      },
-      pageMd: `## Overview
+    position: 'Fullstack Developer',
+    companyName: 'StartUp Solutions',
+    jobType: 'Hybrid',
+    employmentType: 'Full-time',
+    durationStart: '2021-06-01',
+    durationEnd: '2022-12-31',
+    imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800',
+    highlightSkills: ['JavaScript', 'Next.js', 'MongoDB'],
+    pageMd: `## Overview
 
 Developed and maintained multiple client-facing applications in a fast-paced startup environment.
 
@@ -666,42 +555,6 @@ Developed and maintained multiple client-facing applications in a fast-paced sta
 - Built 5 production applications from scratch
 - Improved database query performance by 40%
 - Implemented real-time features using WebSockets`,
-    },
-    highlightSkills: [
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'JavaScript',
-              },
-            ],
-          },
-        },
-      },
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'Next.js',
-              },
-            ],
-          },
-        },
-      },
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'MongoDB',
-              },
-            ],
-          },
-        },
-      },
-    ],
   },
 ];
 

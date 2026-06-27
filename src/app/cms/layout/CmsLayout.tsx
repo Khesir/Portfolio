@@ -1,129 +1,79 @@
+import '@/css/terminal-cms.css';
 import {NavLink, Outlet} from 'react-router-dom';
 import {useCmsAuth} from '@/hooks/use-cms-auth-store';
-import {Button} from '@/components/ui/Button';
 import {useEnvironment} from '@/hooks/use-environment-store';
-import {Globe, Code2} from 'lucide-react';
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from '@/components/ui/tooltip';
 
-const navSections = [
-	{
-		label: null,
-		items: [{to: '/cms', label: 'Dashboard', end: true}],
-	},
-	{
-		label: 'Data',
-		items: [
-			{to: '/cms/blogs', label: 'Blogs'},
-			{to: '/cms/projects', label: 'Projects'},
-			{to: '/cms/experiences', label: 'Experiences'},
-			{to: '/cms/posts', label: 'Posts'},
-		],
-	},
-	{
-		label: 'Pages',
-		items: [
-			{to: '/cms/home-config', label: 'Home'},
-			{to: '/cms/about-config', label: 'About'},
-			{to: '/cms/service-config', label: 'Services'},
-		],
-	},
-];
-
-const linkClass = (isActive: boolean) =>
-	`block px-3 py-2 rounded-lg text-sm transition-colors ${
-		isActive
-			? 'bg-slate-100 dark:bg-slate-800 font-medium text-slate-900 dark:text-slate-100'
-			: 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50'
-	}`;
+const navClass = ({isActive}: {isActive: boolean}) => isActive ? 'on' : undefined;
 
 export default function CmsLayout() {
 	const {logout} = useCmsAuth();
 	const {mode, toggleMode} = useEnvironment();
 
 	return (
-		<div className="h-screen overflow-hidden flex bg-slate-50 dark:bg-slate-950">
-			<aside className="h-screen w-56 shrink-0 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-white dark:bg-slate-900">
-				<div className="p-4 border-b border-slate-200 dark:border-slate-800">
-					<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-						CMS
-					</p>
+		<div className="cms-shell">
+			<div className="grid-bg" />
+			<aside className="cms-aside">
+				<div className="cms-brand">
+					<span className="mk"><img src="/img/Mee.png" alt="" /></span>
+					<span className="nm">khesir<b>.cms</b></span>
+					<span className="badge">admin</span>
 				</div>
-
-				<nav className="flex-1 p-3 space-y-4 overflow-y-auto">
-					{navSections.map((section, i) => (
-						<div key={i}>
-							{section.label && (
-								<p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-									{section.label}
-								</p>
-							)}
-							<div className="space-y-0.5">
-								{section.items.map(({to, label}) => (
-									<NavLink
-										key={to}
-										to={to}
-										className={({isActive}) => linkClass(isActive)}
-									>
-										{label}
-									</NavLink>
-								))}
-							</div>
-						</div>
-					))}
+				<nav className="cms-nav">
+					<div className="cms-group">
+						<NavLink to="/cms" end className={navClass}>
+							<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
+							Dashboard
+						</NavLink>
+					</div>
+					<div className="cms-group">
+						<div className="glabel">Data</div>
+						<NavLink to="/cms/blogs" className={navClass}>
+							<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><line x1="10" y1="9" x2="8" y2="9" /></svg>
+							Blogs
+						</NavLink>
+						<NavLink to="/cms/projects" className={navClass}>
+							<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" /></svg>
+							Projects
+						</NavLink>
+						<NavLink to="/cms/experiences" className={navClass}>
+							<svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>
+							Experiences
+						</NavLink>
+						<NavLink to="/cms/posts" className={navClass}>
+							<svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>
+							Posts
+						</NavLink>
+					</div>
+					<div className="cms-group">
+						<div className="glabel">Pages</div>
+						<NavLink to="/cms/home-config" className={navClass}>
+							<svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+							Home
+						</NavLink>
+						<NavLink to="/cms/about-config" className={navClass}>
+							<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+							About
+						</NavLink>
+						<NavLink to="/cms/service-config" className={navClass}>
+							<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+							Services
+						</NavLink>
+					</div>
 				</nav>
-
-				<div className="p-3 border-t border-slate-200 dark:border-slate-800 space-y-1">
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<button
-									type="button"
-									onClick={toggleMode}
-									className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-										mode === 'development'
-											? 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400'
-											: 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50'
-									}`}
-								>
-									{mode === 'development' ? (
-										<Code2 size={14} />
-									) : (
-										<Globe size={14} />
-									)}
-									{mode === 'development' ? 'Dev mode' : 'Production'}
-								</button>
-							</TooltipTrigger>
-							<TooltipContent side="right">
-								{mode === 'development'
-									? 'Using mock data — click to switch to production'
-									: 'Using real API — click to switch to dev mode'}
-							</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
-
-					<a
-						href="/"
-						className="block px-3 py-2 rounded-lg text-sm text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+				<div className="cms-foot">
+					<button
+						type="button"
+						className={`cms-mode${mode === 'development' ? ' active' : ''}`}
+						onClick={toggleMode}
 					>
-						← Back to Site
-					</a>
-					<Button
-						variant="ghost"
-						size="sm"
-						className="w-full justify-start text-slate-500 hover:text-red-500"
-						onClick={logout}
-					>
-						Logout
-					</Button>
+						<svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>
+						{mode === 'development' ? 'Dev mode' : 'Production'}
+					</button>
+					<a href="/">← Back to site</a>
+					<button type="button" className="logout" onClick={logout}>⏻ Logout</button>
 				</div>
 			</aside>
-
-			<main className="flex-1 p-8 overflow-y-auto">
+			<main className="cms-main">
 				<Outlet />
 			</main>
 		</div>

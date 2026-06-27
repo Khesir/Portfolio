@@ -18,7 +18,7 @@ import {toast} from 'sonner';
 import {fetchBlogsByID} from '@/app/api/blogs';
 import rehypeSanitize from 'rehype-sanitize';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
-import {xonokai as Xonokai} from 'react-syntax-highlighter/dist/esm/styles/prism';
+import {oneDark} from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {useEnvironment} from '@/hooks/use-environment-store';
 import {motion} from 'framer-motion';
 import {Calendar, Clock, ArrowLeft} from 'lucide-react';
@@ -303,65 +303,58 @@ export const generateRandomSkeletons = (count: number) => {
 	}));
 };
 
+function getNodeText(children: React.ReactNode): string {
+	if (typeof children === 'string') return children
+	if (Array.isArray(children)) return children.map(getNodeText).join('')
+	return ''
+}
+
+function slugifyHeading(text: string): string {
+	return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+}
+
 export function MarkDownComponent({markdown}: {markdown: string}) {
+	let h2Count = 0
+
 	return (
 		<ReactMarkdown
-			className="w-full prose dark:prose-invert max-w-none"
 			rehypePlugins={[rehypeRaw, rehypeSanitize]}
 			remarkPlugins={[remarkGfm]}
 			components={{
-				h1: ({children}) => (
-					<h1 className="text-3xl font-bold my-6 text-slate-900 dark:text-white">{children}</h1>
-				),
-				h2: ({children}) => (
-					<h2 className="text-2xl font-semibold my-5 text-slate-900 dark:text-white">{children}</h2>
-				),
-				h3: ({children}) => (
-					<h3 className="text-xl font-semibold my-4 text-slate-900 dark:text-white">{children}</h3>
-				),
-				p: ({children}) => <p className="my-4 leading-relaxed text-slate-700 dark:text-slate-300">{children}</p>,
-				ul: ({children}) => <ul className="my-4 space-y-2">{children}</ul>,
-				ol: ({children}) => <ol className="my-4 space-y-2">{children}</ol>,
-				li: ({children}) => <li className="leading-relaxed">{children}</li>,
-				blockquote: ({children}) => (
-					<blockquote className="border-l-4 border-blue-500 pl-4 my-4 italic text-slate-600 dark:text-slate-400">
-						{children}
-					</blockquote>
-				),
+				h2: ({children}) => {
+					h2Count++
+					const num = String(h2Count).padStart(2, '0')
+					const id = slugifyHeading(getNodeText(children))
+					return <h2 id={id}><span className="hh">{num}</span>{children}</h2>
+				},
+				h3: ({children}) => {
+					const id = slugifyHeading(getNodeText(children))
+					return <h3 id={id}>{children}</h3>
+				},
+				p: ({children}) => <p>{children}</p>,
+				ul: ({children}) => <ul>{children}</ul>,
+				ol: ({children}) => <ol>{children}</ol>,
+				li: ({children}) => <li>{children}</li>,
+				blockquote: ({children}) => <blockquote>{children}</blockquote>,
 				a: ({href, children}) => {
 					if (isVideoLink(href)) {
-						return href ? <VideoComponent src={href} /> : null;
+						return href ? <VideoComponent src={href} /> : null
 					}
 					if (isTweetLink(href)) {
-						const tweetId = href ? getTweetId(href) : null;
+						const tweetId = href ? getTweetId(href) : null
 						return tweetId ? (
-							<div className="w-full mx-auto my-6">
+							<div style={{width: '100%', margin: '24px auto'}}>
 								<Tweet tweetId={tweetId} />
 							</div>
-						) : null;
+						) : null
 					}
 					return (
-						<a
-							href={href}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-						>
+						<a href={href} target="_blank" rel="noopener noreferrer">
 							{children}
 						</a>
-					);
+					)
 				},
-				img: ({src, alt}) => {
-					return (
-						<div className="w-full my-8 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg">
-							<img
-								src={src}
-								alt={alt}
-								className="w-full h-auto object-contain"
-							/>
-						</div>
-					);
-				},
+				img: ({src, alt}) => <img src={src} alt={alt} />,
 				code({
 					node,
 					inline,
@@ -369,28 +362,39 @@ export function MarkDownComponent({markdown}: {markdown: string}) {
 					children,
 					...props
 				}: {
-					node?: any;
-					inline?: boolean;
-					className?: string;
-					children?: React.ReactNode;
-					[key: string]: any;
+					node?: any
+					inline?: boolean
+					className?: string
+					children?: React.ReactNode
+					[key: string]: any
 				}) {
-					const match = /language-(\w+)/.exec(className || '');
+					const match = /language-(\w+)/.exec(className || '')
+					const lang = match ? match[1] : ''
 					return !inline && match ? (
-						<div className="my-6 rounded-xl overflow-hidden shadow-lg">
-							<SyntaxHighlighter style={Xonokai} language={match[1]} {...props}>
+						<div className="codeblock">
+							<div className="cb-bar">
+								<i style={{background: '#ff5f57'}} />
+								<i style={{background: '#febc2e'}} />
+								<i style={{background: '#28c840'}} />
+								<span className="cb-lang">{lang}</span>
+							</div>
+							<SyntaxHighlighter
+								style={oneDark}
+								language={lang}
+								PreTag="div"
+								customStyle={{margin: 0, padding: '16px 18px', background: 'transparent', fontSize: '12.5px'}}
+								{...props}
+							>
 								{String(children).replace(/\n$/, '')}
 							</SyntaxHighlighter>
 						</div>
 					) : (
-						<code className="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded text-sm font-mono" {...props}>
-							{children}
-						</code>
-					);
+						<code {...props}>{children}</code>
+					)
 				},
 			}}
 		>
 			{markdown}
 		</ReactMarkdown>
-	);
+	)
 }

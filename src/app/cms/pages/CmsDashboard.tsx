@@ -4,48 +4,15 @@ import {fetchBlogs} from '@/app/api/blogs';
 import {fetchProjects} from '@/app/api/projects';
 import {fetchExperiences} from '@/app/api/experience';
 import axios from 'axios';
-import {Skeleton} from '@/components/ui/skeleton';
-import {Eye, Heart, TrendingUp, Users, FileText, Briefcase, Code, Layers} from 'lucide-react';
 import {
 	fetchAnalytics,
 	fetchBlogEngagementSummary,
 	AnalyticsData,
 	BlogEngagementSummary,
 } from '@/app/api/cms';
-import {dateParser} from '@/lib/utils';
 
 const API = import.meta.env.VITE_API_URL;
 
-// --- Mini bar chart ---
-function VisitChart({data}: {data: AnalyticsData['chart']}) {
-	if (!data.length) return null;
-	const max = Math.max(...data.map((d) => d.visits), 1);
-
-	return (
-		<div className="flex items-end gap-1 h-16">
-			{data.map((d) => {
-				const pct = Math.max((d.visits / max) * 100, 4);
-				const label = new Date(d.date).toLocaleDateString('en-US', {weekday: 'short'});
-				return (
-					<div key={d.date} className="flex-1 flex flex-col items-center gap-1 group">
-						<div className="relative w-full">
-							<div
-								className="w-full bg-blue-500 dark:bg-blue-400 rounded-t transition-all group-hover:bg-blue-600 dark:group-hover:bg-blue-300"
-								style={{height: `${(pct / 100) * 56}px`}}
-							/>
-							<div className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs px-1.5 py-0.5 rounded whitespace-nowrap pointer-events-none">
-								{d.visits}
-							</div>
-						</div>
-						<span className="text-[9px] text-slate-400">{label}</span>
-					</div>
-				);
-			})}
-		</div>
-	);
-}
-
-// --- Content count cards ---
 interface ContentStat {
 	label: string;
 	count: number | null;
@@ -53,12 +20,73 @@ interface ContentStat {
 	icon: React.ReactNode;
 }
 
+const FileSvg = () => (
+	<svg viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeWidth={1.6}>
+		<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+		<polyline points="14 2 14 8 20 8" />
+	</svg>
+);
+
+const CodeSvg = () => (
+	<svg viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeWidth={1.6}>
+		<polyline points="16 18 22 12 16 6" />
+		<polyline points="8 6 2 12 8 18" />
+	</svg>
+);
+
+const BriefcaseSvg = () => (
+	<svg viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeWidth={1.6}>
+		<rect x="2" y="7" width="20" height="14" rx="2" />
+		<path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+	</svg>
+);
+
+const ListSvg = () => (
+	<svg viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeWidth={1.6}>
+		<line x1="8" y1="6" x2="21" y2="6" />
+		<line x1="8" y1="12" x2="21" y2="12" />
+		<line x1="8" y1="18" x2="21" y2="18" />
+		<line x1="3" y1="6" x2="3.01" y2="6" />
+		<line x1="3" y1="12" x2="3.01" y2="12" />
+		<line x1="3" y1="18" x2="3.01" y2="18" />
+	</svg>
+);
+
+const UsersSvg = () => (
+	<svg viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeWidth={1.6}>
+		<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+		<circle cx="9" cy="7" r="4" />
+		<path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+		<path d="M16 3.13a4 4 0 0 1 0 7.75" />
+	</svg>
+);
+
+const TrendingSvg = () => (
+	<svg viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeWidth={1.6}>
+		<polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+		<polyline points="17 6 23 6 23 12" />
+	</svg>
+);
+
+const EyeSvg = () => (
+	<svg viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeWidth={1.6}>
+		<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" />
+		<circle cx="12" cy="12" r="3" />
+	</svg>
+);
+
+const HeartSvg = () => (
+	<svg viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeWidth={1.6}>
+		<path d="M12 21s-7.5-4.6-10-9.3C.4 8.4 2 5 5.2 5c2 0 3.3 1.1 4.1 2.3l1.4 2 1.4-2C12.9 6.1 14.2 5 16.2 5 19.4 5 21 8.4 19.5 11.7 17 16.4 12 21 12 21Z" />
+	</svg>
+);
+
 export default function CmsDashboard() {
 	const [contentStats, setContentStats] = useState<ContentStat[]>([
-		{label: 'Blogs', count: null, href: '/cms/blogs', icon: <FileText className="w-4 h-4" />},
-		{label: 'Projects', count: null, href: '/cms/projects', icon: <Code className="w-4 h-4" />},
-		{label: 'Experiences', count: null, href: '/cms/experiences', icon: <Briefcase className="w-4 h-4" />},
-		{label: 'Progress', count: null, href: '/cms/progress', icon: <Layers className="w-4 h-4" />},
+		{label: 'Blogs', count: null, href: '/cms/blogs', icon: <FileSvg />},
+		{label: 'Projects', count: null, href: '/cms/projects', icon: <CodeSvg />},
+		{label: 'Experiences', count: null, href: '/cms/experiences', icon: <BriefcaseSvg />},
+		{label: 'Progress', count: null, href: '/cms/progress', icon: <ListSvg />},
 	]);
 	const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
 	const [latestBlogs, setLatestBlogs] = useState<BlogEngagementSummary[]>([]);
@@ -78,19 +106,19 @@ export default function CmsDashboard() {
 					label: 'Blogs',
 					count: blogs.status === 'fulfilled' ? (blogs.value as unknown[]).length : 0,
 					href: '/cms/blogs',
-					icon: <FileText className="w-4 h-4" />,
+					icon: <FileSvg />,
 				},
 				{
 					label: 'Projects',
 					count: projects.status === 'fulfilled' ? (projects.value as unknown[]).length : 0,
 					href: '/cms/projects',
-					icon: <Code className="w-4 h-4" />,
+					icon: <CodeSvg />,
 				},
 				{
 					label: 'Experiences',
 					count: experiences.status === 'fulfilled' ? (experiences.value as unknown[]).length : 0,
 					href: '/cms/experiences',
-					icon: <Briefcase className="w-4 h-4" />,
+					icon: <BriefcaseSvg />,
 				},
 				{
 					label: 'Progress',
@@ -99,7 +127,7 @@ export default function CmsDashboard() {
 							? (progress.value.data?.data?.result?.results ?? []).length
 							: 0,
 					href: '/cms/progress',
-					icon: <Layers className="w-4 h-4" />,
+					icon: <ListSvg />,
 				},
 			]);
 			setContentLoading(false);
@@ -120,143 +148,110 @@ export default function CmsDashboard() {
 			.finally(() => setBlogsLoading(false));
 	}, []);
 
+	const maxVisits = analytics
+		? Math.max(...analytics.chart.map((pt) => pt.visits), 1)
+		: 1;
+
 	return (
-		<div className="space-y-8">
-			<h1 className="text-2xl font-semibold">Dashboard</h1>
+		<>
+			<div className="cms-top">
+				<div>
+					<h1 className="cms-h1">Dashboard</h1>
+					<div className="sub">aj@khesir:~$ ./cms --status · all systems nominal</div>
+				</div>
+				<span className="cms-now">
+					<span className="dot" /> production · synced just now
+				</span>
+			</div>
 
-			{/* Visit Stats */}
-			<section className="space-y-3">
-				<h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-					Site Traffic
-				</h2>
-				<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-					{/* Total Visits */}
-					<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-5 flex items-center gap-4">
-						<div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-							<Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+			<section className="cms-sec">
+				<div className="slabel">Site traffic</div>
+				<div className="cms-stats">
+					<div className="cms-stat">
+						<div className="ic blue">
+							<UsersSvg />
 						</div>
 						<div>
-							<p className="text-xs text-slate-500 dark:text-slate-400">Total Visits</p>
-							{analyticsLoading ? (
-								<Skeleton className="h-7 w-20 mt-1" />
-							) : (
-								<p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums">
-									{analytics?.totalVisits.toLocaleString() ?? '—'}
-								</p>
-							)}
+							<div className="lab">Total visits</div>
+							<div className="val">
+								{analyticsLoading ? '—' : (analytics?.totalVisits.toLocaleString() ?? '—')}
+							</div>
 						</div>
 					</div>
 
-					{/* Today */}
-					<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-5 flex items-center gap-4">
-						<div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
-							<TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
+					<div className="cms-stat">
+						<div className="ic green">
+							<TrendingSvg />
 						</div>
 						<div>
-							<p className="text-xs text-slate-500 dark:text-slate-400">Today</p>
-							{analyticsLoading ? (
-								<Skeleton className="h-7 w-14 mt-1" />
-							) : (
-								<p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums">
-									{analytics?.todayVisits.toLocaleString() ?? '—'}
-								</p>
-							)}
+							<div className="lab">Today</div>
+							<div className="val">
+								{analyticsLoading ? '—' : (analytics?.todayVisits ?? '—')}
+							</div>
 						</div>
 					</div>
 
-					{/* 7-day chart */}
-					<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-5">
-						<p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Last 7 days</p>
-						{analyticsLoading ? (
-							<div className="flex items-end gap-1 h-16">
-								{Array.from({length: 7}).map((_, i) => (
-									<Skeleton key={i} className="flex-1 rounded-t" style={{height: `${Math.random() * 48 + 8}px`}} />
+					<div className="cms-stat chart">
+						<div className="lab">Last 7 days</div>
+						{!analyticsLoading && analytics?.chart && (
+							<div className="cms-chart">
+								{analytics.chart.map((pt, i) => (
+									<div className="col" key={i}>
+										<b style={{height: `${Math.round((pt.visits / maxVisits) * 100)}%`}} />
+										<span>
+											{new Date(pt.date)
+												.toLocaleDateString('en', {weekday: 'short'})
+												.slice(0, 3)}
+										</span>
+									</div>
 								))}
 							</div>
-						) : analytics?.chart ? (
-							<VisitChart data={analytics.chart} />
-						) : (
-							<p className="text-xs text-slate-400">No data</p>
 						)}
 					</div>
 				</div>
 			</section>
 
-			{/* Content Counts */}
-			<section className="space-y-3">
-				<h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-					Content
-				</h2>
-				<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+			<section className="cms-sec">
+				<div className="slabel">Content</div>
+				<div className="cms-counts">
 					{contentStats.map(({label, count, href, icon}) => (
-						<Link key={label} to={href}>
-							<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer">
-								<div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-2">
-									{icon}
-									<span className="text-xs font-medium">{label}</span>
-								</div>
-								{contentLoading ? (
-									<Skeleton className="h-8 w-10" />
-								) : (
-									<p className="text-3xl font-bold text-slate-900 dark:text-white">{count}</p>
-								)}
-								<p className="text-xs text-slate-400 mt-1">Manage →</p>
+						<Link className="cms-count" to={href} key={label}>
+							<div className="ch">
+								{icon} {label}
 							</div>
+							<div className="cn">{contentLoading ? '—' : count}</div>
+							<div className="cm">Manage →</div>
 						</Link>
 					))}
 				</div>
 			</section>
 
-			{/* Latest Blogs with Engagement */}
-			<section className="space-y-3">
-				<div className="flex items-center justify-between">
-					<h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-						Latest Blogs
-					</h2>
-					<Link to="/cms/blogs" className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
-						View all →
-					</Link>
+			<section className="cms-sec">
+				<div className="slabel-row">
+					<div className="slabel" style={{margin: 0}}>Latest blogs</div>
+					<Link to="/cms/blogs">View all →</Link>
 				</div>
-				<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
-					{blogsLoading ? (
-						<div className="divide-y divide-slate-100 dark:divide-slate-800">
-							{Array.from({length: 5}).map((_, i) => (
-								<div key={i} className="flex items-center justify-between px-5 py-3.5 gap-4">
-									<Skeleton className="h-4 flex-1 max-w-xs" />
-									<Skeleton className="h-4 w-24 shrink-0" />
+				<div className="cms-table">
+					{!blogsLoading &&
+						latestBlogs.map((b) => (
+							<div className="cms-row" key={b.id}>
+								<div>
+									<div className="rt">{b.title}</div>
+									<div className="rd">{b.publishedAt}</div>
 								</div>
-							))}
-						</div>
-					) : latestBlogs.length === 0 ? (
-						<p className="text-sm text-slate-400 px-5 py-4">No blogs yet.</p>
-					) : (
-						<div className="divide-y divide-slate-100 dark:divide-slate-800">
-							{latestBlogs.map((blog) => (
-								<div key={blog.id} className="flex items-center justify-between px-5 py-3.5 gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-									<div className="min-w-0">
-										<p className="text-sm font-medium text-slate-900 dark:text-white truncate">
-											{blog.title}
-										</p>
-										<p className="text-xs text-slate-400 mt-0.5">
-											{dateParser(blog.publishedAt)}
-										</p>
-									</div>
-									<div className="flex items-center gap-4 shrink-0">
-										<div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
-											<Eye className="w-3.5 h-3.5" />
-											<span className="text-xs tabular-nums">{blog.views.toLocaleString()}</span>
-										</div>
-										<div className="flex items-center gap-1.5 text-red-400">
-											<Heart className="w-3.5 h-3.5 fill-current" />
-											<span className="text-xs tabular-nums">{blog.hearts.toLocaleString()}</span>
-										</div>
-									</div>
+								<div className="rmeta">
+									<span className="st live">live</span>
+									<span className="e">
+										<EyeSvg /> {b.views}
+									</span>
+									<span className="e heart">
+										<HeartSvg /> {b.hearts}
+									</span>
 								</div>
-							))}
-						</div>
-					)}
+							</div>
+						))}
 				</div>
 			</section>
-		</div>
+		</>
 	);
 }
