@@ -1,0 +1,452 @@
+/* ============================================================
+   KHESIR — shared LoadingScreen + CmsLoginGate styles
+   ============================================================ */
+
+/* ---- shared card shell ---- */
+.boot-stage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  z-index: 1;
+}
+.tcard {
+  width: min(540px, 94vw);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  background: #0e0d13;
+  box-shadow: var(--shadow-lg);
+}
+.tcard .tc-bar {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  background: #16151d;
+  border-bottom: 1px solid var(--line);
+}
+.tcard .tc-bar .dots {
+  display: flex;
+  gap: 6px;
+}
+.tcard .tc-bar .dots i {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: block;
+}
+.tcard .tc-bar .ttl {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin-left: 6px;
+}
+.tcard .tc-bar .ttl b {
+  color: var(--accent);
+}
+.tcard .tc-body {
+  padding: 26px 26px 28px;
+  font-family: var(--mono);
+}
+
+/* ---- boot header ---- */
+.boot-head {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 22px;
+}
+.boot-head .mk {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
+  flex-shrink: 0;
+}
+.boot-head .mk img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.boot-head .bh-t {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--ink);
+}
+.boot-head .bh-t b {
+  color: var(--accent);
+}
+.boot-head .bh-s {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-4);
+  margin-top: 3px;
+}
+.boot-cmd {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-3);
+  margin-bottom: 18px;
+}
+.boot-cmd b {
+  color: var(--accent);
+}
+
+/* ---- boot steps ---- */
+.boot-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.bstep {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 13px;
+  border-radius: 8px;
+  padding: 3px 6px;
+  margin: 0 -6px;
+  transition: background 0.15s;
+}
+.bstep .ic {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.bstep .ic svg {
+  width: 11px;
+  height: 11px;
+}
+.bstep.done .ic {
+  background: var(--accent);
+  color: #06121f;
+}
+.bstep.done .ic svg {
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 3;
+}
+.bstep.done .label {
+  color: var(--ink);
+}
+.bstep.done .stat {
+  color: oklch(0.78 0.13 150);
+}
+.bstep.done:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+.bstep.done:hover .label {
+  color: var(--ink);
+}
+.bstep.active .ic {
+  border: 2px solid var(--accent);
+}
+.bstep.active .ic::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  border-top-color: var(--accent);
+  animation: bspin 0.7s linear infinite;
+}
+.bstep.active .label {
+  color: var(--ink);
+}
+.bstep.active .stat {
+  color: var(--accent);
+}
+.bstep.pending .ic {
+  border: 2px solid var(--line-2);
+}
+.bstep.pending .label {
+  color: var(--ink-4);
+}
+.bstep.pending .stat {
+  color: var(--ink-4);
+}
+.bstep .label {
+  flex: 1;
+}
+.bstep .stat {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+@keyframes bspin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---- progress bar ---- */
+.boot-prog {
+  margin-top: 24px;
+}
+.boot-track {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.boot-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), oklch(0.8 0.13 245));
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.5);
+  transition: width 0.45s ease;
+}
+.boot-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-4);
+}
+.boot-foot .pct {
+  color: var(--ink-2);
+}
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 15px;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: -2px;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---- exit animation ---- */
+.boot-exit {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg);
+  animation: bootFadeOut 0.3s ease forwards;
+}
+@keyframes bootFadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+/* ---- login gate styles (issue 002) ---- */
+.login-body {
+  padding: 30px 30px 32px;
+}
+.login-head {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 6px;
+}
+.login-head .mk {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
+  flex-shrink: 0;
+}
+.login-head .mk img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.login-head .lh-t {
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--ink);
+}
+.login-head .lh-t b {
+  color: var(--accent);
+}
+.login-head .badge {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+.login-prompt {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-3);
+  margin: 16px 0 22px;
+}
+.login-prompt b {
+  color: var(--accent);
+}
+.login-prompt .cur {
+  color: var(--ink);
+}
+.lfield {
+  margin-bottom: 16px;
+}
+.lfield label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-2);
+  margin-bottom: 8px;
+}
+.lfield label .req {
+  color: var(--accent);
+}
+.lwrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line-2);
+  border-radius: 11px;
+  padding: 0 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.lwrap:hover {
+  border-color: var(--line);
+}
+.lwrap:focus-within {
+  border-color: rgba(var(--accent-rgb), 0.6);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
+}
+.lwrap .pchar {
+  font-family: var(--mono);
+  color: var(--accent);
+  font-size: 14px;
+}
+.lwrap input {
+  flex: 1;
+  background: none;
+  border: 0;
+  outline: none;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 14px;
+  padding: 13px 0;
+  letter-spacing: 0.12em;
+}
+.lwrap input::placeholder {
+  color: var(--ink-4);
+  letter-spacing: 0;
+}
+.lwrap .eye {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--ink-3);
+  display: flex;
+  padding: 4px;
+  transition: color 0.15s;
+}
+.lwrap .eye:hover {
+  color: var(--ink);
+}
+.lwrap .eye svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
+}
+.lbtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  background: var(--accent);
+  color: #06121f;
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 14px;
+  border: 0;
+  border-radius: 11px;
+  padding: 13px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.05s, box-shadow 0.15s;
+}
+.lbtn:hover {
+  filter: brightness(1.07);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.35);
+}
+.lbtn:active {
+  transform: translateY(1px);
+}
+.lbtn svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+.lhint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-4);
+  margin-top: 18px;
+}
+.lhint svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
+  flex-shrink: 0;
+}
+.lhint a {
+  color: var(--ink-3);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.lhint a:hover {
+  color: var(--accent);
+}
+.lerror {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--plum);
+  margin-top: 12px;
+}
+.lerror.show {
+  display: flex;
+}
+.lerror svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+}
+.lwrap.invalid {
+  border-color: rgba(var(--plum-rgb), 0.6);
+}

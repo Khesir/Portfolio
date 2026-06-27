@@ -2,7 +2,7 @@
 id: issue-006
 title: "CMS config pages"
 feature: terminal-cms
-status: qa
+status: done
 created_at: 2026-06-27
 tags: [afk, p2]
 ---
@@ -88,3 +88,5 @@ _Updated as work progresses._
 - Rewrote `CmsHomeConfig.tsx`: removed all Tailwind/shadcn, added `cms-top` header with Preview link, `cms-form` with four `fsection` blocks (Availability Banner, Status, Profile, Languages/Tech Stack), inline `.status-pills`, `.rep`/`.rep-row` for languages and buttons, `savedAt` + `relativeTime` save hint, `.save-bar`.
 - Rewrote `CmsAboutConfig.tsx`: removed all Tailwind/shadcn/MarkdownEditor/preview dialog, added three `fsection` blocks (Professional Summary with `.field.mono` textarea, Technical Skills with `.rep` repeater, Core Competencies with `TagInput`), `savedAt` save hint. State for `location`, `lastUpdatedAt`, `profileImageUrl`, `aboutButtons` preserved in memory and sent on save.
 - Rewrote `CmsServiceConfig.tsx`: removed all Tailwind/shadcn/preview dialog, `ServiceCard` now renders as `.rep-row` with `.grip`, `.ico` preview, `.rmain` (display summary + editing fields), `.rm` Remove. `savedAt` save hint. All save handlers and API calls unchanged.
+
+QA approved by user on 2026-06-27.

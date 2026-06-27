@@ -2,7 +2,7 @@
 import {useState, useEffect} from 'react'
 import {Link, useSearchParams} from 'react-router-dom'
 import {TerminalLayout} from './TerminalLayout'
-import {MarkDownComponent} from '@/app/_components/readPage/readingPage'
+import {MarkDownComponent, ImageLightbox} from '@/app/_components/readPage/readingPage'
 import {TerminalContactSection} from '../home/terminalContactSection'
 import {fetchBlogsByID, fetchBlogs} from '@/app/api/blogs'
 import {fetchEngagement, trackView, toggleHeart} from '@/app/api/cms'
@@ -43,6 +43,7 @@ export default function BlogReadPage() {
 	const [error, setError] = useState<string | null>(null)
 	const [blogs, setBlogs] = useState<any[]>([])
 	const [engagement, setEngagement] = useState<EngagementState | null>(null)
+	const [lightbox, setLightbox] = useState<string | null>(null)
 
 	useEffect(() => {
 		if (!id) {
@@ -162,7 +163,7 @@ export default function BlogReadPage() {
 			</div>
 
 			{data.imageUrl && (
-				<div className="ahero">
+				<div className="ahero" onClick={() => setLightbox(data.imageUrl)}>
 					<img src={data.imageUrl} alt={data.name} />
 				</div>
 			)}
@@ -232,6 +233,7 @@ export default function BlogReadPage() {
 			</div>
 
 			<TerminalContactSection />
+			{lightbox && <ImageLightbox src={lightbox} onClose={() => setLightbox(null)} />}
 		</TerminalLayout>
 	)
 }

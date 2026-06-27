@@ -2,7 +2,7 @@
 id: issue-001
 title: "Blog reading view"
 feature: terminal-reading-views
-status: qa
+status: done
 created_at: 2026-06-27
 tags: [afk, p1]
 ---
@@ -101,3 +101,5 @@ Yes.
 - Created `src/app/module/terminal/BlogReadPage.tsx` — terminal-styled reading view inside `TerminalLayout`. Fetches blog by ID, tracks view on mount, fetches engagement (views/hearts), fetches full blog list for prev/next navigation. Parses `##`/`###` headings from raw markdown for sidebar ToC. Heart button wired to `toggleHeart`.
 - Updated `MarkDownComponent` in `src/app/_components/readPage/readingPage.tsx` with terminal prose renderers: numbered `h2` with `.hh` prefix and scroll-target `id`, `h3` with `id`, bare `p`/`ul`/`ol`/`li`/`blockquote` (CSS handles all styling), `.codeblock` terminal window wrapping `SyntaxHighlighter` with `oneDark`, inline `code` with no className (`.article code` CSS handles amber tint). Switched syntax highlighter theme from `xonokai` to `oneDark`.
 - Updated `src/app/app.tsx`: removed `blogs/view/:title` from `BaseLayout` group; added as top-level route rendering `BlogReadPage` (same pattern as `TerminalBlogPage`).
+
+QA approved by user on 2026-06-27.

@@ -136,6 +136,20 @@ body {
 .proj .ptags { display: flex; gap: 7px; flex-wrap: wrap; }
 .proj .yr { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
 
+/* ---- work / blog: featured card ---- */
+.feature { display: grid; grid-template-columns: 1.2fr 1fr; gap: 0; border: 1px solid var(--line-2); border-radius: var(--radius); overflow: hidden; background: linear-gradient(180deg, var(--panel), var(--panel-2)); margin-top: 24px; transition: border-color .2s, transform .2s, box-shadow .2s; }
+.feature:hover { border-color: rgba(var(--accent-rgb),.4); transform: translateY(-3px); box-shadow: var(--shadow-lg), 0 0 40px rgba(var(--accent-rgb),.12); }
+.fimg { position: relative; min-height: 300px; overflow: hidden; background: repeating-linear-gradient(135deg, rgba(255,255,255,.018) 0 12px, transparent 12px 24px), linear-gradient(145deg, rgba(var(--blue-rgb),.12), rgba(var(--plum-rgb),.07)); }
+.fimg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+.feature:hover .fimg img { transform: scale(1.04); }
+.fimg.ph { display: flex; align-items: center; justify-content: center; }
+.ph-label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-4); }
+.fbody { padding: 36px 32px 32px; display: flex; flex-direction: column; justify-content: flex-end; border-left: 1px solid var(--line); position: relative; gap: 0; }
+.fbody .pt { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.fbody h3 { font-family: var(--serif); font-size: clamp(24px, 3vw, 36px); line-height: 1.05; margin: 0 0 18px; letter-spacing: -0.01em; transition: color .18s; }
+.feature:hover .fbody h3 { color: var(--accent); }
+.fbody .ptags { display: flex; gap: 7px; flex-wrap: wrap; }
+
 /* ---- blog / writing list ---- */
 .posts { display: flex; flex-direction: column; }
 .post { display: grid; grid-template-columns: 116px 1fr auto; gap: 22px; align-items: baseline; padding: 20px 4px; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); transition: padding .18s, background .18s; cursor: pointer; }
@@ -223,6 +237,8 @@ body {
   .hobbies { grid-template-columns: 1fr; }
   .gallery { columns: 2; }
   .feature { grid-template-columns: 1fr; }
+  .fimg { min-height: 220px; }
+  .fbody { border-left: 0; border-top: 1px solid var(--line); padding: 24px; }
   .nav { display: none; }
   .focus { grid-template-columns: 1fr; gap: 18px; }
   .post { grid-template-columns: 1fr; gap: 8px; }

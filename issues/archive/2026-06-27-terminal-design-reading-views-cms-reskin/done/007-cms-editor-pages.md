@@ -2,7 +2,7 @@
 id: issue-007
 title: "CMS editor pages"
 feature: terminal-cms
-status: qa
+status: done
 created_at: 2026-06-27
 tags: [afk, p2]
 ---
@@ -89,3 +89,5 @@ Reskinned all four editor pages (`CmsBlogEditor`, `CmsProjectEditor`, `CmsExperi
 - `CmsProjectEditor` and `CmsPostEditor` pinned toggle replaced with `.feat` button using pin SVG.
 - `CmsExperienceEditor` selects use native `<select>` inside `.field` (styled by terminal-cms.css).
 - All existing state, API calls, navigation, and `useEffect` pre-population logic preserved unchanged.
+
+QA approved by user on 2026-06-27.

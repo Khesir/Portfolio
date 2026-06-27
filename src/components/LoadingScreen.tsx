@@ -1,25 +1,48 @@
 import {useEffect, useRef, useState, type ReactNode} from 'react';
-import {motion, AnimatePresence} from 'framer-motion';
 import {prefetchAll} from '@/hooks/use-home-config';
 import {fetchProjects} from '@/app/api/projects';
+import {fetchBlogs} from '@/app/api/blogs';
+import '../css/terminal-mock.css';
+import '../css/terminal-cms-gate.css';
 
-const STEPS = [
-	{key: 'config',   label: 'Profile & config'},
-	{key: 'projects', label: 'Featured projects'},
-	{key: 'wire',     label: 'Connections'},
-	{key: 'ready',    label: 'Ready'},
-] as const;
-
-type StepKey = (typeof STEPS)[number]['key'];
 type Phase = 'booting' | 'exiting' | 'done';
 
-const ease = [0.76, 0, 0.24, 1] as const;
+const STEPS = [
+	{label: 'Profile & config',   stat: 'config'},
+	{label: 'Featured projects',  stat: 'projects'},
+	{label: 'Content & writing',  stat: 'blogs'},
+	{label: 'Mounting routes',    stat: 'routes'},
+] as const;
+
+const LOG_LINES = [
+	'loading profile config…',
+	'fetching featured projects…',
+	'loading content & writing…',
+	'mounting routes…',
+];
+
+const PROGRESS = [30, 55, 80, 100];
+
+function CheckIcon() {
+	return (
+		<svg viewBox="0 0 24 24">
+			<polyline points="20 6 9 17 4 12" />
+		</svg>
+	);
+}
+
+function stepClass(index: number, active: number, done: number): string {
+	if (index < active) return 'bstep done';
+	if (index === active) return 'bstep active';
+	return 'bstep pending';
+}
 
 export function LoadingScreen({children}: {children: ReactNode}) {
 	const [phase, setPhase] = useState<Phase>('booting');
-	const [done, setDone] = useState<Set<StepKey>>(new Set());
+	const [active, setActive] = useState(0);
+	const [doneTo, setDoneTo] = useState(-1);
 	const [progress, setProgress] = useState(0);
-	const [visibleSteps, setVisibleSteps] = useState<StepKey[]>(['config']);
+	const [log, setLog] = useState(LOG_LINES[0]);
 	const ranRef = useRef(false);
 
 	useEffect(() => {
@@ -27,24 +50,30 @@ export function LoadingScreen({children}: {children: ReactNode}) {
 		ranRef.current = true;
 
 		const run = async () => {
+			setActive(0);
+			setLog(LOG_LINES[0]);
 			await prefetchAll();
-			setDone(p => new Set([...p, 'config']));
-			setProgress(30);
-			setVisibleSteps(p => [...p, 'projects']);
+			setDoneTo(0);
+			setProgress(PROGRESS[0]);
 
+			setActive(1);
+			setLog(LOG_LINES[1]);
 			await fetchProjects();
-			setDone(p => new Set([...p, 'projects']));
-			setProgress(65);
-			setVisibleSteps(p => [...p, 'wire']);
+			setDoneTo(1);
+			setProgress(PROGRESS[1]);
 
-			await new Promise(r => setTimeout(r, 220));
-			setDone(p => new Set([...p, 'wire']));
-			setProgress(85);
-			setVisibleSteps(p => [...p, 'ready']);
+			setActive(2);
+			setLog(LOG_LINES[2]);
+			await fetchBlogs();
+			setDoneTo(2);
+			setProgress(PROGRESS[2]);
 
+			setActive(3);
+			setLog(LOG_LINES[3]);
 			await new Promise(r => setTimeout(r, 300));
-			setDone(p => new Set([...p, 'ready']));
-			setProgress(100);
+			setDoneTo(3);
+			setProgress(PROGRESS[3]);
+			setLog('ready.');
 
 			await new Promise(r => setTimeout(r, 500));
 			setPhase('exiting');
@@ -53,119 +82,73 @@ export function LoadingScreen({children}: {children: ReactNode}) {
 		run();
 	}, []);
 
+	if (phase === 'done') return <>{children}</>;
+
 	return (
 		<>
 			{children}
 
-			<AnimatePresence>
-				{phase === 'booting' && (
-					<motion.div
-						key="loader"
-						className="fixed inset-0 z-[100] bg-slate-50 dark:bg-slate-950 flex items-center justify-center"
-						exit={{opacity: 0, transition: {duration: 0.15}}}
-					>
-						<div className="flex flex-col items-center gap-8 w-full max-w-xs px-6">
-							<motion.h1
-								className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight"
-								initial={{opacity: 0, y: 12}}
-								animate={{opacity: 1, y: 0}}
-								transition={{duration: 0.5, ease: 'easeOut'}}
-							>
-								Khesir
-							</motion.h1>
-
-	
-							{/* Card */}
-							<motion.div
-								className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-5 space-y-4"
-								initial={{opacity: 0, y: 12}}
-								animate={{opacity: 1, y: 0}}
-								transition={{duration: 0.5, delay: 0.15, ease: 'easeOut'}}
-							>
-								{/* Steps */}
-								<div className="space-y-2.5">
-									{STEPS.map(({key, label}) =>
-										visibleSteps.includes(key) ? (
-											<motion.div
-												key={key}
-												initial={{opacity: 0, x: -8}}
-												animate={{opacity: 1, x: 0}}
-												transition={{duration: 0.3, ease: 'easeOut'}}
-												className="flex items-center gap-3"
-											>
-												<div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors duration-300 ${
-													done.has(key)
-														? 'border-blue-600 bg-blue-600 dark:border-blue-500 dark:bg-blue-500'
-														: 'border-slate-300 dark:border-slate-600'
-												}`}>
-													{done.has(key) && (
-														<motion.svg
-															initial={{opacity: 0, scale: 0.5}}
-															animate={{opacity: 1, scale: 1}}
-															transition={{duration: 0.2}}
-															className="w-2.5 h-2.5 text-white"
-															viewBox="0 0 10 10"
-															fill="none"
-														>
-															<path d="M2 5l2.5 2.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-														</motion.svg>
-													)}
-													{!done.has(key) && (
-														<motion.div
-															className="w-1.5 h-1.5 rounded-full bg-blue-500"
-															animate={{opacity: [1, 0.3, 1]}}
-															transition={{duration: 0.9, repeat: Infinity}}
-														/>
-													)}
-												</div>
-												<span className={`text-sm transition-colors duration-300 ${
-													done.has(key)
-														? 'text-slate-900 dark:text-slate-100'
-														: 'text-slate-400 dark:text-slate-500'
-												}`}>
-													{label}
-												</span>
-											</motion.div>
-										) : null
-									)}
-								</div>
-
-								{/* Progress bar */}
-								<div className="h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-									<motion.div
-										className="h-full bg-blue-600 dark:bg-blue-500 rounded-full"
-										initial={{width: '0%'}}
-										animate={{width: `${progress}%`}}
-										transition={{duration: 0.45, ease: 'easeOut'}}
-									/>
-								</div>
-							</motion.div>
-					</div>
-					</motion.div>
-				)}
-
+			<div style={{position: 'fixed', inset: 0, zIndex: 100, background: 'var(--bg)'}}>
 				{phase === 'exiting' && (
-					<>
-						<motion.div
-							key="top-panel"
-							className="fixed top-0 left-0 right-0 z-[100] bg-slate-50 dark:bg-slate-950"
-							style={{height: '50vh'}}
-							initial={{y: 0}}
-							animate={{y: '-100%'}}
-							transition={{duration: 0.6, ease}}
-							onAnimationComplete={() => setPhase('done')}
-						/>
-						<motion.div
-							key="bot-panel"
-							className="fixed bottom-0 left-0 right-0 z-[100] bg-slate-50 dark:bg-slate-950"
-							style={{height: '50vh'}}
-							initial={{y: 0}}
-							animate={{y: '100%'}}
-							transition={{duration: 0.6, ease}}
-						/>
-					</>
+					<div
+						className="boot-exit"
+						onAnimationEnd={() => setPhase('done')}
+					/>
 				)}
-			</AnimatePresence>
+
+				<div className="boot-stage">
+					<div className="tcard">
+						<div className="tc-bar">
+							<div className="dots">
+								<i style={{background: '#ff5f57'}} />
+								<i style={{background: '#febc2e'}} />
+								<i style={{background: '#28c840'}} />
+							</div>
+							<span className="ttl">khesir<b>.dev</b> — boot</span>
+						</div>
+
+						<div className="tc-body">
+							<div className="boot-head">
+								<div className="mk">
+									<img src="/img/Mee.png" alt="avatar" />
+								</div>
+								<div>
+									<div className="bh-t">khesir<b>.dev</b></div>
+									<div className="bh-s">initializing content layer</div>
+								</div>
+							</div>
+
+							<div className="boot-cmd">
+								<b>$</b> ./boot --env=production --preload=all
+							</div>
+
+							<div className="boot-steps">
+								{STEPS.map((s, i) => (
+									<div key={s.stat} className={stepClass(i, active, doneTo)}>
+										<div className="ic">
+											{doneTo >= i && <CheckIcon />}
+										</div>
+										<span className="label">{s.label}</span>
+										<span className="stat">
+											{doneTo >= i ? 'done' : i === active ? 'running' : 'pending'}
+										</span>
+									</div>
+								))}
+							</div>
+
+							<div className="boot-prog">
+								<div className="boot-track">
+									<div className="boot-fill" style={{width: progress + '%'}} />
+								</div>
+								<div className="boot-foot">
+									<span>{log}<span className="cursor" /></span>
+									<span className="pct">{progress}%</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</>
 	);
 }

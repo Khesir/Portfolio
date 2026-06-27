@@ -2,7 +2,7 @@
 id: issue-005
 title: "CMS list pages"
 feature: terminal-cms
-status: qa
+status: done
 created_at: 2026-06-27
 tags: [afk, p2]
 ---
@@ -84,3 +84,5 @@ Yes.
 ## Log
 
 - 2026-06-27: Implemented. Removed CmsTable, Button, lucide-react, and shadcn imports from all four pages. Added search + filter state to CmsBlogs, CmsProjects, CmsExperiences (none existed previously). CmsPosts reskinned to card feed (.cms-posts / .cpost). All Tailwind classes replaced with terminal-cms.css classes. Handlers preserved exactly.
+
+QA approved by user on 2026-06-27.

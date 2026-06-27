@@ -2,7 +2,7 @@
 id: issue-004
 title: "CMS dashboard"
 feature: terminal-cms
-status: qa
+status: done
 created_at: 2026-06-27
 tags: [afk, p2]
 ---
@@ -63,3 +63,5 @@ No — the dashboard is a pure data-display page with no user interactions beyon
 ## Log
 
 - 2026-06-27: Implemented. Rewrote CmsDashboard markup to use terminal-cms CSS classes. Removed all Tailwind and shadcn/lucide imports. Replaced lucide icons with inline SVGs. Preserved all data fetching and state exactly. Chart bar heights calculated as `(visits / maxVisits) * 100`%. All blog rows default to `.st.live` badge since BlogEngagementSummary has no draft field. Moved to qa.
+
+QA approved by user on 2026-06-27.

@@ -1,6 +1,6 @@
 # Kanban Board
 
-_Last updated: 2026-06-27_
+_Last updated: 2026-06-27 (batch QA approval)_
 
 ---
 
@@ -29,17 +29,10 @@ Currently being implemented.
 ---
 
 ## QA
-Implementation done. Tests pass. Waiting for review.
+Implementation done. Waiting for review.
 
 | Issue | Title | Type | Priority |
 |-------|-------|------|----------|
-| [001](qa/001-blog-reading-view.md) | Blog reading view | AFK | P1 |
-| [002](qa/002-project-reading-view.md) | Project reading view | AFK | P1 |
-| [003](qa/003-cms-layout-shell.md) | CMS layout shell | AFK | P1 |
-| [004](qa/004-cms-dashboard.md) | CMS dashboard | AFK | P2 |
-| [005](qa/005-cms-list-pages.md) | CMS list pages | AFK | P2 |
-| [006](qa/006-cms-config-pages.md) | CMS config pages | AFK | P2 |
-| [007](qa/007-cms-editor-pages.md) | CMS editor pages | AFK | P2 |
 
 ---
 
@@ -48,3 +41,7 @@ Approved and complete.
 
 | Issue | Title | Type | Priority |
 |-------|-------|------|----------|
+| [001](done/001-loading-screen-terminal-reskin.md) | LoadingScreen — terminal reskin + blogs prefetch | AFK | P1 |
+| [002](done/002-cms-login-gate-terminal-rebuild.md) | CmsLoginGate — terminal rebuild with hover states | AFK | P1 |
+| [003](done/003-feature-card-hover.md) | Work page — featured card hover | AFK | P1 |
+| [004](done/004-work-page-popover.md) | Work page — project row popover | AFK | P2 |

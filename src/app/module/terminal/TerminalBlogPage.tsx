@@ -40,13 +40,11 @@ export default function TerminalBlogPage() {
 						: <div className="fimg ph"><span className="ph-label">cover · 16:9</span></div>
 					}
 					<div className="fbody">
-						<div className="pt" style={{ display: 'flex', gap: '12px', alignItems: 'baseline', flexWrap: 'wrap' }}>
+						<div className="pt">
 							{(latest.tags ?? [])[0] && (
-								<span className="pr" style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--blue)', border: '1px solid rgba(96,150,255,.3)', background: 'rgba(96,150,255,.08)', padding: '3px 9px', borderRadius: '999px' }}>
-									{latest.tags[0]}
-								</span>
+								<span className="pr">{latest.tags[0]}</span>
 							)}
-							<span className="yr" style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--ink-3)' }}>
+							<span className="yr">
 								{latest.releasedDate ? fmtDate(latest.releasedDate) : ''}
 								{latest.minRead ? ` · ${latest.minRead} min` : ''}
 							</span>
@@ -58,8 +56,8 @@ export default function TerminalBlogPage() {
 					</div>
 				</div>
 			) : (
-				<div className="feature" style={{ minHeight: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-					<p style={{ fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--ink-3)' }}>No posts yet.</p>
+				<div className="feature fimg ph">
+					<p className="ph-label">No posts yet.</p>
 				</div>
 			)}
 

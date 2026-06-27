@@ -17,7 +17,7 @@ export const PUBLIC_ROUTES = [
 	{path: '/about', label: 'About'},
 	{path: '/services', label: 'Services'},
 	{path: '/blogs', label: 'Blogs'},
-	{path: '/projects', label: 'Projects'},
+	{path: '/work', label: 'Work'},
 	{path: '/experiences', label: 'Experiences'},
 	{path: '/progress-report', label: 'Progress Report'},
 	{path: '/guest-book', label: 'Guest Book'},

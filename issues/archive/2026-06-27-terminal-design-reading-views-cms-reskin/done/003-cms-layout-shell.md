@@ -2,7 +2,7 @@
 id: issue-003
 title: "CMS layout shell"
 feature: terminal-cms
-status: qa
+status: done
 created_at: 2026-06-27
 tags: [afk, p1]
 ---
@@ -75,3 +75,5 @@ Yes.
 ## Log
 
 - **2026-06-27** — Implemented. Created `src/css/terminal-cms.css` with the full terminal CMS design system. Rewrote `CmsLayout.tsx` to use `.cms-shell` grid, `.cms-aside` sidebar with brand block + grouped nav + footer, and `.cms-main` outlet. All Tailwind and shadcn imports removed. `NavLink` active class uses `'on'`. Hooks `useCmsAuth` and `useEnvironment` preserved unchanged.
+
+QA approved by user on 2026-06-27.

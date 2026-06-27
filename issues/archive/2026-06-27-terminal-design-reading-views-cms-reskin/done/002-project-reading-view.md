@@ -2,7 +2,7 @@
 id: issue-002
 title: "Project reading view"
 feature: terminal-reading-views
-status: qa
+status: done
 created_at: 2026-06-27
 tags: [afk, p1]
 ---
@@ -84,3 +84,5 @@ Yes.
 ## Log
 
 2026-06-27 — Implemented `ProjectReadPage.tsx`. Mirrors `BlogReadPage` shell with project-specific aside (`.pmeta-card` with conditional source/live-demo links, heart button below). Uses `data.languages` for tags, `fetchProjects()` with pinned-first sort for prev/next. Route moved from inside `BaseLayout` to top-level in `app.tsx`, replacing the old `ReadPage` entry.
+
+QA approved by user on 2026-06-27.

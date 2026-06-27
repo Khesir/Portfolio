@@ -157,7 +157,7 @@ export default function CmsServiceConfig() {
 				</div>
 				<a
 					className="btn-ol"
-					href="/projects"
+					href="/work"
 					target="_blank"
 					rel="noreferrer"
 				>

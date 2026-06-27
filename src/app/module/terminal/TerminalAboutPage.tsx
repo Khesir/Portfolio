@@ -74,7 +74,7 @@ export default function TerminalAboutPage() {
 				</div>
 			</section>
 
-			<div className="sl"><span className="n">02</span><h2>skills</h2><span className="rule" /><a className="more" href="/projects">see it applied →</a></div>
+			<div className="sl"><span className="n">02</span><h2>skills</h2><span className="rule" /><a className="more" href="/work">see it applied →</a></div>
 			<section className="stack">
 				{(about.technicalSkills ?? []).map((cat: any, i: number) => (
 					<div className="stack-row" key={i}>

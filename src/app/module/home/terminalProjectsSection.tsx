@@ -18,7 +18,7 @@ export function TerminalProjectsSection() {
 				<span className="n">02</span>
 				<h2>selected_work</h2>
 				<span className="rule" />
-				<Link to="/projects" className="more">all projects →</Link>
+				<Link to="/work" className="more">all projects →</Link>
 			</div>
 			<section className="projs">
 				{projects.length === 0 ? (
@@ -35,7 +35,7 @@ export function TerminalProjectsSection() {
 							<div
 								className="proj"
 								key={id}
-								onClick={() => navigate(`/projects/view/${name.replace(/\s+/g, '-')}?id=${id}`)}
+								onClick={() => navigate(`/work/view/${name.replace(/\s+/g, '-')}?id=${id}`)}
 							>
 								<span className="idx">{String(i + 1).padStart(2, '0')}</span>
 								<div>

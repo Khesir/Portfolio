@@ -142,7 +142,7 @@ export function ProjectList() {
 						key={i}
 						variants={cardVariants}
 						className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer hover:scale-[1.02]"
-						onClick={() => navigate(`/projects/view/${name.replace(/\s+/g, '-')}?id=${id}`)}
+						onClick={() => navigate(`/work/view/${name.replace(/\s+/g, '-')}?id=${id}`)}
 					>
 						<div className="relative h-[200px] overflow-hidden bg-slate-100 dark:bg-slate-800">
 							<img

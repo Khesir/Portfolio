@@ -36,11 +36,11 @@ export default function App() {
 					/> */}
 					</Route>
 					<Route path="sandbox" element={<SandBoxPage />} />
-					<Route path="projects" element={<TerminalWorkPage />} />
+					<Route path="work" element={<TerminalWorkPage />} />
 					<Route path="about" element={<TerminalAboutPage />} />
 					<Route path="blogs" element={<TerminalBlogPage />} />
 					<Route path="blogs/view/:title" element={<BlogReadPage />} />
-					<Route path="projects/view/:title" element={<ProjectReadPage />} />
+					<Route path="work/view/:title" element={<ProjectReadPage />} />
 					<Route index element={<TerminalHomePage />} />
 					<Route path="cms/*" element={<CmsApp />} />
 					<Route path="*" element={<NotFoundPage />} />

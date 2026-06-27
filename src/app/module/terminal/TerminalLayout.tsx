@@ -7,7 +7,7 @@ import {type ReactNode} from 'react';
 const NAV_LINKS = [
 	{label: '~/home', to: '/'},
 	{label: '/about', to: '/about'},
-	{label: '/work', to: '/projects'},
+	{label: '/work', to: '/work'},
 	{label: '/blog', to: '/blogs'},
 ] as const;
 

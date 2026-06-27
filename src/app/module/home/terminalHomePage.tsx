@@ -20,7 +20,7 @@ export default function TerminalHomePage() {
 					<div className="hrole">{config.role}</div>
 					<p className="hblurb">{config.description}</p>
 					<div className="hacts">
-						<Link to="/projects" className="btn btn-blue">View work →</Link>
+						<Link to="/work" className="btn btn-blue">View work →</Link>
 						<Link to="/about" className="btn btn-ghost">$ cat about.me</Link>
 					</div>
 					<div className="hmeta">
