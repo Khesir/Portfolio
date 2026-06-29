@@ -1,8 +1,8 @@
----
+﻿---
 id: issue-008
 title: "Work page tiered display + server pagination"
 feature: work
-status: qa
+status: done
 created_at: 2026-06-28
 tags: [afk, p1]
 ---
@@ -75,3 +75,5 @@ The previous "featured hero" (single large card for the first pinned project) is
 ## Log
 
 Implemented 2026-06-29. Updated fetchProjects to accept page/pageSize params with dev-mode slicing. Replaced TerminalWorkPage with tiered display: pinned first, non-pinned paginated, 5-item initial cap, show-more fetches next page. Added terminalWorkPage.test.tsx with 5 tests. Updated cms.ts backend guide comment.
+
+QA approved by user on 2026-06-29.

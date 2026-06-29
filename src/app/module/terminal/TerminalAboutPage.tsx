@@ -4,6 +4,44 @@ import {useAboutConfig} from '@/hooks/use-home-config';
 import {TerminalContactSection} from '../home/terminalContactSection';
 import {fetchExperiences} from '@/app/api/experience';
 import {MarkDownComponent} from '@/app/_components/readPage/readingPage';
+import {Icon} from '@iconify/react';
+import {motion, AnimatePresence} from 'framer-motion';
+
+const headContainer = {
+	hidden: {},
+	show: {transition: {staggerChildren: 0.1, delayChildren: 0.05}},
+};
+const headItem = {
+	hidden: {opacity: 0, y: 18},
+	show: {opacity: 1, y: 0, transition: {type: 'spring' as const, stiffness: 80, damping: 18}},
+};
+
+const rowContainer = {
+	hidden: {},
+	show: {transition: {staggerChildren: 0.09}},
+};
+const rowItem = {
+	hidden: {opacity: 0, y: 20},
+	show: {opacity: 1, y: 0, transition: {type: 'spring' as const, stiffness: 80, damping: 18}},
+};
+
+const chipContainer = {
+	hidden: {},
+	show: {transition: {staggerChildren: 0.05}},
+};
+const chipItem = {
+	hidden: {opacity: 0, scale: 0.82, y: 8},
+	show: {opacity: 1, scale: 1, y: 0, transition: {type: 'spring' as const, stiffness: 130, damping: 16}},
+};
+
+const stackRowContainer = {
+	hidden: {},
+	show: {transition: {staggerChildren: 0.1}},
+};
+const stackRowItem = {
+	hidden: {opacity: 0, x: -14},
+	show: {opacity: 1, x: 0, transition: {type: 'spring' as const, stiffness: 80, damping: 18}},
+};
 
 export default function TerminalAboutPage() {
 	const {config: about} = useAboutConfig();
@@ -17,88 +55,99 @@ export default function TerminalAboutPage() {
 
 	return (
 		<TerminalLayout>
-			<section className="phead">
-				<div className="crumb"><b>aj@khesir</b>:~$ cat about.me</div>
-				<h1 className="ptitle">Hey, I'm <em>AJ</em>.</h1>
-				<p className="plede">{about.professionalSummary || 'Full-stack engineer and toolmaker.'}</p>
-			</section>
+			<motion.section
+				className="phead"
+				variants={headContainer}
+				initial="hidden"
+				animate="show"
+			>
+				<motion.div variants={headItem} className="crumb"><b>aj@khesir</b>:~$ cat about.me</motion.div>
+				<motion.h1 variants={headItem} className="ptitle">Hey, I'm <em>AJ</em>.</motion.h1>
+				<motion.p variants={headItem} className="plede">{about.professionalSummary || 'Full-stack engineer and toolmaker.'}</motion.p>
+			</motion.section>
 
 			<section className="about-grid">
-				<div className="portrait">
+				<motion.div
+					className="portrait"
+					initial={{opacity: 0, x: -32}}
+					whileInView={{opacity: 1, x: 0}}
+					viewport={{once: true, amount: 0.3}}
+					transition={{type: 'spring', stiffness: 70, damping: 18}}
+				>
 					<img src={about.profileImageUrl || '/img/profile2.jpg'} alt="AJ" />
-				</div>
-				<div className="prose">
+				</motion.div>
+				<motion.div
+					className="prose"
+					initial={{opacity: 0, x: 24}}
+					whileInView={{opacity: 1, x: 0}}
+					viewport={{once: true, amount: 0.2}}
+					transition={{type: 'spring', stiffness: 70, damping: 18, delay: 0.1}}
+				>
 					{about.bioTagline && <p className="lead">{about.bioTagline}</p>}
 					{about.bioBody && <MarkDownComponent markdown={about.bioBody} />}
-				</div>
+				</motion.div>
 			</section>
 
-			<div className="sl"><span className="n">01</span><h2>off_the_clock</h2><span className="rule" /></div>
-			<section className="hobbies">
-				<div className="hobby">
-					<div className="hi">
-						<svg className="ic" style={{fontSize: '20px'}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-							<path d="M7 12h4M9 10v4M15.5 11.5h.01M18 13.5h.01M7 7h10a4 4 0 014 4l-1 6a3 3 0 01-5 1l-1-1H9l-1 1a3 3 0 01-5-1l-1-6a4 4 0 014-4z" />
-						</svg>
-					</div>
-					<h4>Games</h4>
-					<p>RPGs for the worlds, osu! for the rhythm and that obsessive drive to keep improving.</p>
-				</div>
-
-				<div className="hobby">
-					<div className="hi">
-						<svg className="ic" style={{fontSize: '20px'}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-							<path d="M6.5 6.5l11 11M4 9l2-2M9 4l-2 2M20 15l-2 2M15 20l2-2M3 12l1.5 1.5M21 12l-1.5-1.5" />
-						</svg>
-					</div>
-					<h4>The gym</h4>
-					<p>Lifting keeps me disciplined — same loop as shipping: show up, add a little, repeat.</p>
-				</div>
-
-				<div className="hobby">
-					<div className="hi">
-						<svg className="ic" style={{fontSize: '20px'}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-							<path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 5v14M19 19v2" />
-						</svg>
-					</div>
-					<h4>Reading &amp; collecting</h4>
-					<p>Always mid-book. I collect physical copies — fantasy, craft and tech books.</p>
-				</div>
-
-				<div className="hobby">
-					<div className="hi">
-						<svg className="ic" style={{fontSize: '20px'}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-							<path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13 6l-2 12" />
-						</svg>
-					</div>
-					<h4>Tinkering</h4>
-					<p>Small side projects and tools — building something just to see how it works is half the fun.</p>
-				</div>
-			</section>
+			{(about.offTheClock ?? []).length > 0 && (
+				<>
+					<div className="sl"><span className="n">01</span><h2>off_the_clock</h2><span className="rule" /></div>
+					<motion.section
+						className="hobbies"
+						variants={rowContainer}
+						initial="hidden"
+						whileInView="show"
+						viewport={{once: true, amount: 0.15}}
+					>
+						{(about.offTheClock ?? []).map((item, i) => (
+							<motion.div className="hobby" key={i} variants={rowItem}>
+								<div className="hi">
+									{item.icon && <Icon icon={item.icon} className="ic" style={{fontSize: '20px'}} />}
+								</div>
+								<h4>{item.label}</h4>
+								{item.description && <p>{item.description}</p>}
+							</motion.div>
+						))}
+					</motion.section>
+				</>
+			)}
 
 			<div className="sl"><span className="n">02</span><h2>skills</h2><span className="rule" /><a className="more" href="/work">see it applied →</a></div>
-			<section className="stack">
+			<motion.section
+				className="stack"
+				key={about.technicalSkills.length}
+				variants={stackRowContainer}
+				initial="hidden"
+				whileInView="show"
+				viewport={{once: true, amount: 0.15}}
+			>
 				{(about.technicalSkills ?? []).map((cat: any, i: number) => (
-					<div className="stack-row" key={i}>
+					<motion.div className="stack-row" key={i} variants={stackRowItem}>
 						<div className="stack-cat">{cat.category}</div>
-						<div className="chips">
+						<motion.div className="chips" variants={chipContainer}>
 							{cat.items.map((item: string, j: number) => (
-								<span className="chip2" key={j}>{item}</span>
+								<motion.span className="chip2" key={j} variants={chipItem}>{item}</motion.span>
 							))}
-						</div>
-					</div>
+						</motion.div>
+					</motion.div>
 				))}
-			</section>
+			</motion.section>
 
 			<div className="sl"><span className="n">03</span><h2>journey</h2><span className="rule" /></div>
-			<section className="exp">
+			<motion.section
+				className="exp"
+				key={experiences.length}
+				variants={rowContainer}
+				initial="hidden"
+				whileInView="show"
+				viewport={{once: true, amount: 0.1}}
+			>
 				{experiences.map((e: any, i: number) => {
 					const startYr = e.durationStart ? new Date(e.durationStart).getFullYear() : '';
 					const endYr = e.durationEnd ? String(new Date(e.durationEnd).getFullYear()).slice(-2) : null;
 					const yr = endYr ? `${startYr} — ${endYr}` : `${startYr} —`;
 					const isExpanded = expandedIdx === i;
 					return (
-						<div key={i}>
+						<motion.div key={i} variants={rowItem}>
 							<div
 								className="exp-row"
 								style={{cursor: 'pointer'}}
@@ -111,15 +160,24 @@ export default function TerminalAboutPage() {
 								</div>
 								<span className="eyr">{yr}</span>
 							</div>
-							{isExpanded && (
-								<div className="exp-detail">
-									{e.pageMd
-										? <MarkDownComponent markdown={e.pageMd} />
-										: <p style={{fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--ink-3)'}}>No details available.</p>
-									}
-								</div>
-							)}
-						</div>
+							<AnimatePresence initial={false}>
+								{isExpanded && (
+									<motion.div
+										className="exp-detail"
+										initial={{height: 0, opacity: 0}}
+										animate={{height: 'auto', opacity: 1}}
+										exit={{height: 0, opacity: 0}}
+										transition={{duration: 0.28, ease: 'easeInOut'}}
+										style={{overflow: 'hidden'}}
+									>
+										{e.pageMd
+											? <MarkDownComponent markdown={e.pageMd} />
+											: <p style={{fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--ink-3)'}}>No details available.</p>
+										}
+									</motion.div>
+								)}
+							</AnimatePresence>
+						</motion.div>
 					);
 				})}
 				{experiences.length === 0 && (
@@ -146,7 +204,7 @@ export default function TerminalAboutPage() {
 						show more
 					</button>
 				)}
-			</section>
+			</motion.section>
 
 			<TerminalContactSection />
 		</TerminalLayout>

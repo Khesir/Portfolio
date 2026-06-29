@@ -1,8 +1,8 @@
----
+﻿---
 id: issue-003
 title: "Home preview counts configurable"
 feature: home-config
-status: qa
+status: done
 created_at: 2026-06-28
 tags: [afk, p2]
 ---
@@ -60,3 +60,5 @@ The existing `terminalProjectsSection.test.tsx` has a test "shows at most 3 proj
 ## Log
 
 Implemented 2026-06-29. Added selectedWorkCount and writingCount to DTO, mock (defaults 3), HomeConfig interface, and DEFAULT_HOME. TerminalProjectsSection and TerminalWritingSection accept a count prop (default 3). TerminalHomePage passes config values as props. CmsHomeConfig Hero section has two number inputs for the counts. Updated and extended tests in both section test files.
+
+QA approved by user on 2026-06-29.

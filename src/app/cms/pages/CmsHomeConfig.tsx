@@ -10,6 +10,7 @@ import {
 } from '@/app/api/cms';
 import {toast} from 'sonner';
 import ImageUpload from '../components/ImageUpload';
+import {invalidateHomeCache} from '@/hooks/use-home-config';
 import BannerButtonEditor from '../components/BannerButtonEditor';
 import TagInput from '../components/TagInput';
 import IconSelector from '../components/IconSelector';
@@ -102,6 +103,7 @@ export default function CmsHomeConfig() {
 				footerCopyright,
 				footerTagline,
 			});
+			invalidateHomeCache();
 			setSavedAt(new Date());
 			toast.success('Home config saved');
 		} catch {

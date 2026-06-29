@@ -10,9 +10,10 @@ import {
 	LanguageEntry,
 	NeofetchRow,
 	SocialLink,
+	OffTheClockItem,
 } from '@/app/api/cms';
 
-export type {StatusConfig, BannerButton, LanguageEntry, NeofetchRow, SocialLink};
+export type {StatusConfig, BannerButton, LanguageEntry, NeofetchRow, SocialLink, OffTheClockItem};
 export type {StatusType} from '@/app/api/cms';
 
 export interface HomeConfig {
@@ -27,6 +28,7 @@ export interface HomeConfig {
 	neofetchRows: NeofetchRow[];
 	location: string;
 	tags: string[];
+	languages: LanguageEntry[];
 	selectedWorkCount: number;
 	writingCount: number;
 	contactHeading: string;
@@ -44,13 +46,20 @@ export interface AboutConfig {
 	aboutButtons: BannerButton[];
 	professionalSummary: string;
 	technicalSkills: SkillCategoryDto[];
-	coreCompetencies: string[];
 	bioTagline: string;
 	bioBody: string;
+	offTheClock: OffTheClockItem[];
 }
 
 export interface ServiceConfig {
 	services: ServiceDto[];
+	greeting: string;
+	headline: string;
+	roleLabel: string;
+	siteUrl: string;
+	profileImageUrl: string;
+	contactEmail: string;
+	socialLinks: SocialLink[];
 }
 
 const DEFAULT_HOME: HomeConfig = {
@@ -65,6 +74,7 @@ const DEFAULT_HOME: HomeConfig = {
 	neofetchRows: [],
 	location: '',
 	tags: [],
+	languages: [],
 	selectedWorkCount: 3,
 	writingCount: 3,
 	contactHeading: "Let's build something & make it faster.",
@@ -82,12 +92,21 @@ const DEFAULT_ABOUT: AboutConfig = {
 	aboutButtons: [],
 	professionalSummary: '',
 	technicalSkills: [],
-	coreCompetencies: [],
 	bioTagline: '',
 	bioBody: '',
+	offTheClock: [] as OffTheClockItem[],
 };
 
-const DEFAULT_SERVICE: ServiceConfig = {services: []};
+const DEFAULT_SERVICE: ServiceConfig = {
+	services: [],
+	greeting: 'Hey —',
+	headline: "here's what I can help with.",
+	roleLabel: 'AJ · Khesir // Full-Stack & Toolmaker',
+	siteUrl: 'khesir',
+	profileImageUrl: '',
+	contactEmail: '',
+	socialLinks: [],
+};
 
 // Module-level cache
 let _homeCache: HomeConfig | null = null;
@@ -96,6 +115,21 @@ let _aboutCache: AboutConfig | null = null;
 let _aboutPromise: Promise<AboutConfig> | null = null;
 let _serviceCache: ServiceConfig | null = null;
 let _servicePromise: Promise<ServiceConfig> | null = null;
+
+export function invalidateAboutCache() {
+	_aboutCache = null;
+	_aboutPromise = null;
+}
+
+export function invalidateHomeCache() {
+	_homeCache = null;
+	_homePromise = null;
+}
+
+export function invalidateServiceCache() {
+	_serviceCache = null;
+	_servicePromise = null;
+}
 
 function makeLoader<T>(
 	getCache: () => T | null,
@@ -158,7 +192,6 @@ export function useHomeConfig() {
 	const [config, setConfig] = useState<HomeConfig>(_homeCache ?? DEFAULT_HOME);
 	const [loading, setLoading] = useState(!_homeCache);
 	useEffect(() => {
-		if (_homeCache) return;
 		loadHome().then((cfg) => { setConfig(cfg); setLoading(false); });
 	}, []);
 	return {config, loading};
@@ -168,7 +201,6 @@ export function useAboutConfig() {
 	const [config, setConfig] = useState<AboutConfig>(_aboutCache ?? DEFAULT_ABOUT);
 	const [loading, setLoading] = useState(!_aboutCache);
 	useEffect(() => {
-		if (_aboutCache) return;
 		loadAbout().then((cfg) => { setConfig(cfg); setLoading(false); });
 	}, []);
 	return {config, loading};

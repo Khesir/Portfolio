@@ -31,7 +31,7 @@ export function TerminalLayout({children}: {children: ReactNode}) {
 					<div className="mk">
 						<img src="/img/Mee.png" alt="AJ" />
 					</div>
-					<span className="nm">khesir<b>.dev</b></span>
+					<span className="nm">khesir</span>
 				</Link>
 
 				<nav className="nav">

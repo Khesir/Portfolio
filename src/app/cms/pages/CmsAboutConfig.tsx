@@ -4,10 +4,13 @@ import {
 	cmsUpdateAboutConfig,
 	SkillCategoryDto,
 	BannerButton,
+	OffTheClockItem,
 } from '@/app/api/cms';
 import {toast} from 'sonner';
 import TagInput from '../components/TagInput';
 import ImageUpload from '../components/ImageUpload';
+import IconSelector from '../components/IconSelector';
+import {invalidateAboutCache} from '@/hooks/use-home-config';
 
 function relativeTime(date: Date): string {
 	const secs = Math.floor((Date.now() - date.getTime()) / 1000);
@@ -64,9 +67,9 @@ export default function CmsAboutConfig() {
 	const [aboutButtons, setAboutButtons] = useState<BannerButton[]>([]);
 	const [professionalSummary, setProfessionalSummary] = useState('');
 	const [technicalSkills, setTechnicalSkills] = useState<SkillCategoryDto[]>([]);
-	const [coreCompetencies, setCoreCompetencies] = useState<string[]>([]);
 	const [bioTagline, setBioTagline] = useState('');
 	const [bioBody, setBioBody] = useState('');
+	const [offTheClock, setOffTheClock] = useState<OffTheClockItem[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [savedAt, setSavedAt] = useState<Date | null>(null);
@@ -81,9 +84,9 @@ export default function CmsAboutConfig() {
 				setAboutButtons(data?.aboutButtons ?? []);
 				setProfessionalSummary(data?.professionalSummary ?? '');
 				setTechnicalSkills(data?.technicalSkills ?? []);
-				setCoreCompetencies(data?.coreCompetencies ?? []);
 				setBioTagline(data?.bioTagline ?? '');
 				setBioBody(data?.bioBody ?? '');
+				setOffTheClock(data?.offTheClock ?? []);
 			})
 			.catch(() => toast.error('Failed to load about config'))
 			.finally(() => setLoading(false));
@@ -101,10 +104,11 @@ export default function CmsAboutConfig() {
 				aboutButtons,
 				professionalSummary,
 				technicalSkills,
-				coreCompetencies,
 				bioTagline,
 				bioBody,
+				offTheClock,
 			});
+			invalidateAboutCache();
 			setSavedAt(new Date());
 			toast.success('About config saved');
 		} catch {
@@ -204,14 +208,77 @@ export default function CmsAboutConfig() {
 				</div>
 
 				<div className="fsection">
-					<h2>Core competencies</h2>
-					<div className="field">
-						<label>Competencies</label>
-						<TagInput
-							value={coreCompetencies}
-							onChange={setCoreCompetencies}
-							placeholder="System Design, REST APIs — press Enter"
-						/>
+					<div className="fhead">
+						<h2>Off the clock</h2>
+						<button
+							type="button"
+							className="btn-ol"
+							onClick={() =>
+								setOffTheClock((prev) => [
+									...prev,
+									{label: '', description: '', icon: ''},
+								])
+							}
+						>
+							Add item
+						</button>
+					</div>
+					<div className="rep">
+						{offTheClock.map((item, i) => (
+							<div key={i} className="rep-row" style={{alignItems: 'flex-start'}}>
+								<div className="rmain">
+									<div className="frow">
+										<div className="field">
+											<input
+												type="text"
+												value={item.label}
+												onChange={(e) =>
+													setOffTheClock((prev) =>
+														prev.map((x, j) =>
+															j === i ? {...x, label: e.target.value} : x,
+														),
+													)
+												}
+												placeholder="Label (e.g. At the gym)"
+											/>
+										</div>
+										<div className="field">
+											<input
+												type="text"
+												value={item.description}
+												onChange={(e) =>
+													setOffTheClock((prev) =>
+														prev.map((x, j) =>
+															j === i ? {...x, description: e.target.value} : x,
+														),
+													)
+												}
+												placeholder="Short description"
+											/>
+										</div>
+									</div>
+									<div className="field" style={{marginTop: 8}}>
+										<IconSelector
+											value={item.icon}
+											onChange={(icon) =>
+												setOffTheClock((prev) =>
+													prev.map((x, j) => (j === i ? {...x, icon} : x)),
+												)
+											}
+										/>
+									</div>
+								</div>
+								<button
+									type="button"
+									className="rm"
+									onClick={() =>
+										setOffTheClock((prev) => prev.filter((_, j) => j !== i))
+									}
+								>
+									Remove
+								</button>
+							</div>
+						))}
 					</div>
 				</div>
 

@@ -1,8 +1,8 @@
----
+﻿---
 id: issue-006
 title: "About journey show-more + inline expand"
 feature: about-config
-status: qa
+status: done
 created_at: 2026-06-28
 tags: [afk, p2]
 ---
@@ -70,3 +70,5 @@ The `.exp-row` currently has a `.box.now` marker on index 0 — preserve this st
 _Updated as work progresses._
 
 Implemented 2026-06-29. Changed initial fetchExperiences to 5. Added show-more button (appears when 5 rows loaded, calls fetchExperiences(20)). Added inline expand per row showing pageMd via MarkDownComponent; single-row-at-a-time accordion. Added terminalAboutJourney.test.tsx with 6 tests.
+
+QA approved by user on 2026-06-29.

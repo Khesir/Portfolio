@@ -1,174 +1,142 @@
-# PRD: Config-Public Route Sync & Rendering Rules
+# PRD: Service Page Flip Card
 
 **Status:** Draft
-**Date:** 2026-06-28
+**Date:** 2026-06-29
 
 ---
 
 ## Problem Statement
 
-The public-facing pages and the CMS config pages have drifted out of sync. The home CMS config contains fields that no longer exist on the public page (banner title/subtitle, languages/tech stack), while the public page has hardcoded content that should be editable (neofetch rows, hero meta tags, contact section, footer). The about page's bio prose is fully hardcoded. The work and blog pages dump all data at once with no pagination, which will grow into a payload problem as content scales — especially since project records contain full markdown. The "Get In Touch" card and footer have placeholder social links that go nowhere.
+The public `/services` route currently renders a generic card list that does not match the site's terminal aesthetic and lacks personality. Visitors have no memorable way to understand what services are offered, and the layout gives no sense of the craft behind the work. The page also has no contact affordance of its own — visitors who want to reach out after reading the services have no path forward from the page itself.
 
 ---
 
 ## Solution
 
-Restructure the home config to match what the public page actually renders: replace the stale banner fields with a neofetch rows editor, hero meta tags, and configurable hero buttons. Add bio fields to the about config. Add server-side pagination to the work page (tiered by featured → all) and a client-side show-more to the blog page. Wire social links and footer text to a new "Footer & Contact" section in the home config. Add an inline-expand for experience markdown on the about page journey section.
+Replace the existing services page with an interactive flip card — a physical "calling card" metaphor that fits the terminal aesthetic. The front face introduces the author with a greeting, headline, role label, avatar, and site URL. Flipping the card reveals the full list of services with icons, tags, and descriptions, plus a contact footer with social links and a preferred email. All copy and contact details are configurable from the CMS service config editor so nothing requires a code change to update.
 
 ---
 
 ## User Stories
 
-1. As a site owner, I want to edit the neofetch terminal rows (key-value pairs) in the CMS, so that the terminal window on the home page reflects accurate and current info without a code change.
-2. As a site owner, I want a dedicated location field in the home config (displayed with a dot indicator), so that my location tag on the home page stays consistent.
-3. As a site owner, I want to manage a plain tags array in the home config, so that I can update the specialty tags ("agentic AI", "APIs & tooling") shown below the hero buttons.
-4. As a site owner, I want the hero CTA buttons ("View work →", "$ cat about.me") to come from a `heroButtons` config, so that I can change their labels, targets, and variants without touching code.
-5. As a site owner, I want to control how many selected works are shown on the home page via a `selectedWorkCount` field, so that I can tune the preview without a deployment.
-6. As a site owner, I want to control how many writing posts are shown on the home page via a `writingCount` field, so that I can tune the preview without a deployment.
-7. As a site owner, I want the Languages / Tech Stack section removed from the home CMS config, so that I only manage tech stack in one place (the about config).
-8. As a site owner, I want `bannerTitle` and `bannerSubtitle` removed from the home CMS config, since those fields no longer appear on the public page.
-9. As a site owner, I want the banner image upload folded into the Profile section in the CMS, so that the "Availability Banner" heading no longer implies fields that don't exist.
-10. As a site owner, I want to edit the bio tagline ("I build software — and I build the tools that build software.") in the about CMS config, so that the lead sentence on the about page is not hardcoded.
-11. As a site owner, I want to edit the bio body paragraphs in the about CMS config, so that the prose below the tagline can be updated without a code change.
-12. As a site owner, I want the about config's `bioTagline` and `bioBody` to be independent from `professionalSummary`, so that I have separate control over the hero subtitle and the portrait prose block.
-13. As a site owner, I want the about page and home page to each carry their own `profileImageUrl`, so that I can show a different photo on each page without coupling the configs.
-14. As a visitor, I want the about page journey section to initially show 5 experiences, so that the page loads quickly without a long list.
-15. As a visitor, I want a "show more" button on the about journey section, so that I can load additional experiences on demand.
-16. As a visitor, I want to click an experience row on the about page and see its full markdown description expand inline below the row, so that I can read the detail without leaving the page.
-17. As a visitor, I want to collapse an expanded experience row by clicking it again, so that I can browse other entries cleanly.
-18. As a visitor, I want the work page to show pinned/featured projects first, followed by non-pinned projects, so that the most important work is always at the top.
-19. As a visitor, I want the work page to initially show 5 projects, so that the page loads fast.
-20. As a visitor, I want a "show more" button on the work page that fetches the next batch from the server, so that I only download data I actually view.
-21. As a site owner, I want the work page list endpoint to return lightweight project cards (no markdown field), so that list payloads stay small as the project count grows.
-22. As a visitor, I want to open a project detail page to read its full markdown, so that the full content is only fetched when I choose to view it.
-23. As a visitor, I want the blog page to initially show 5 posts, so that the page loads fast.
-24. As a visitor, I want a "show more" button on the blog page that reveals more posts sorted by latest, so that I can browse without a full page reload.
-25. As a site owner, I want to edit the "Get In Touch" heading and subtext in the home CMS config, so that the contact card copy can change without a code deploy.
-26. As a site owner, I want to manage a `socialLinks` array (label, href, icon) in the home CMS config, so that the social icons in the contact section point to real URLs.
-27. As a site owner, I want to edit the footer copyright text in the home CMS config, so that I can update the year or name without touching code.
-28. As a site owner, I want to edit the footer tagline in the home CMS config, so that the theme descriptor can be changed from the CMS.
-29. As a visitor, I want the social links in the footer and contact section to use the same configured URLs, so that links are consistent across the page.
+1. As a visitor, I want to see a visually distinct services page so that the experience feels intentional rather than templated.
+2. As a visitor, I want to see a greeting and headline on the front of the card so that I understand the tone before reading the details.
+3. As a visitor, I want to see a profile avatar on the front of the card so that I can associate the services with a person.
+4. As a visitor, I want to see a site URL on the front of the card so that I know where I am and can share the link.
+5. As a visitor, I want to tap or click the card to flip it so that I can reveal the services in a satisfying interaction.
+6. As a visitor, I want the flip animation to feel physical and smooth so that the interaction feels premium rather than abrupt.
+7. As a visitor, I want to see a list of services on the back of the card so that I understand what is available.
+8. As a visitor, I want each service to show an icon, title, tag badge, and description so that I can scan and understand each offering quickly.
+9. As a visitor, I want to flip back to the front by tapping the card again so that I can re-read the intro without refreshing.
+10. As a visitor, I want to see a "tap to flip" hint on the front so that the interaction is discoverable without instructions.
+11. As a visitor, I want to see a "↩ tap to flip" label on the back so that I know how to get back to the front.
+12. As a visitor, I want to see social links in the back footer so that I can reach out through my preferred platform.
+13. As a visitor, I want to see a preferred contact email in the back footer so that I have a direct way to start a conversation.
+14. As a visitor on mobile, I want the card to be appropriately sized so that it fits the screen without horizontal scrolling.
+15. As a site owner, I want to edit the greeting text from the CMS so that I can update my intro copy without touching code.
+16. As a site owner, I want to edit the headline text from the CMS so that I can change my value proposition at any time.
+17. As a site owner, I want to edit the role label from the CMS so that it reflects my current focus.
+18. As a site owner, I want to edit the site URL label from the CMS so that it shows the right URL.
+19. As a site owner, I want to upload a profile image specifically for the service card from the CMS so that it is independent from other pages.
+20. As a site owner, I want to add, edit, and remove services from the CMS so that the back face stays current.
+21. As a site owner, I want each service to have an icon (Iconify ID), title, main tag, description, and stack tags so that the card is information-rich.
+22. As a site owner, I want to add, edit, and remove social links from the CMS service config so that my contact options are always up to date.
+23. As a site owner, I want to set a preferred contact email from the CMS service config so that visitors know the best way to reach me.
+24. As a site owner, I want an empty services list to render gracefully so that the page does not break while I am editing.
+25. As a site owner, I want an empty social links list to render gracefully so that the footer does not crash.
 
 ---
 
 ## Implementation Decisions
 
-### Home Config Schema Changes
+### Schema changes — `UpdateServiceConfigDto` and `ServiceConfig`
 
-Remove from `UpdateHomeConfigDto`:
-- `bannerTitle`
-- `bannerSubtitle`
-- `languages` (tech stack; owned by about config)
+Extend both the DTO and the `ServiceConfig` interface with the following new fields:
 
-Rename:
-- `bannerButtons` → `heroButtons` (same `BannerButton[]` shape, wired to the hero CTA row)
+- `greeting: string` — front face greeting line (e.g. "Hey —")
+- `headline: string` — front face headline (e.g. "here's what I can help with.")
+- `roleLabel: string` — front face role line (e.g. "AJ · Khesir // Full-Stack & Toolmaker")
+- `siteUrl: string` — front face URL label (e.g. "khesir.dev")
+- `profileImageUrl: string` — front face avatar image URL
+- `contactEmail: string` — back footer preferred email
+- `socialLinks: SocialLink[]` — back footer icon links; reuse the existing `SocialLink` type (`{ label, href, icon }`) already used in `HomeConfig`
 
-Add to `UpdateHomeConfigDto`:
-- `neofetchRows: { key: string; value: string }[]` — free-form key-value list; defaults match current hardcoded values (Role, Uptime, Editor, Lang, Stack, Locale)
-- `location: string` — rendered with a dot indicator in `.hmeta`
-- `tags: string[]` — plain tag array rendered in `.hmeta` after the location tag
-- `selectedWorkCount: number` — default 3; controls how many pinned projects the home page previews
-- `writingCount: number` — default 3; controls how many blogs the home page previews
-- `contactHeading: string` — heading in the "Get In Touch" card
-- `contactSubtext: string` — subtext in the "Get In Touch" card
-- `socialLinks: { label: string; href: string; icon: string }[]` — social link entries shared by contact section and footer
-- `footerCopyright: string` — e.g. "© 2026 AJ — Khesir"
-- `footerTagline: string` — e.g. `direction B — "Terminal" · tech-first`
+The existing `services: ServiceDto[]` array is unchanged. `ServiceDto` already has `icon` (Iconify ID), `title`, `mainTag`, `description`, and `tags`.
 
-The `bannerImageUrl` field is retained; its CMS editor field moves from the "Availability Banner" section into the "Profile" section.
+Mock dev data in `fetchServiceConfig` must be updated with sensible defaults for all new fields so the page renders fully without a backend.
 
-The CMS "Availability Banner" section is replaced by a "Hero" section (heroButtons) and a "Footer & Contact" section (contactHeading, contactSubtext, socialLinks, footerCopyright, footerTagline).
+`DEFAULT_SERVICE` in `use-home-config.ts` must be updated with the same defaults.
 
-### About Config Schema Changes
+### Public page — `ServicePage`
 
-Add to `UpdateAboutConfigDto`:
-- `bioTagline: string` — single-line lead sentence displayed as the bold `.lead` paragraph
-- `bioBody: string` — textarea/markdown block for the body paragraphs below the tagline
+Full rewrite of `servicePage.tsx`. The component:
 
-`professionalSummary` is retained and continues to power the `.plede` subtitle in the page header.
+- Stays inside `BaseLayout` (no route change needed in `app.tsx`)
+- Renders a single centered flip card — `440px × 600px` on desktop, `360px` wide on screens narrower than `520px`
+- Uses Framer Motion for the flip: `rotateY` from `0deg` to `180deg`, duration `0.85s`, easing `cubicBezier(0.22, 0.78, 0.24, 1)`, `perspective: 2000px` on the wrapper
+- `backfaceVisibility: hidden` applied to both faces via Framer Motion's `style` prop
+- Flip state is a single `useState<boolean>` toggled on card click; clicks on `<a>` tags inside the card do not propagate to the flip handler
+- **Front face** renders: avatar (`profileImageUrl`), kind label (hardcoded "card · services"), greeting, headline with accent span, role label, URL label (`siteUrl`), and the "tap card to flip →" hint with a pulsing dot
+- **Back face** renders: "// services" section header, "↩ tap to flip" label, service rows (icon via `<Icon />` from `@iconify/react`, title, `mainTag` badge, description), and a footer row with `socialLinks` icon anchors and `contactEmail`
+- `useServiceConfig()` is the sole data source — no props needed
+- Loading state: render three skeleton placeholder rows at `440px × 600px` height using `animate-pulse`
 
-### CMS Home Config Page Layout (new sections)
+### CMS editor — `CmsServiceConfig`
 
-1. **Profile** — profileImageUrl, bannerImageUrl, name, role, contactEmail, description
-2. **Status** — unchanged
-3. **Hero** — heroButtons editor, location, tags, selectedWorkCount, writingCount
-4. **Neofetch** — free-form key-value list editor (same rep-row pattern as existing languages editor)
-5. **Footer & Contact** — contactHeading, contactSubtext, socialLinks editor, footerCopyright, footerTagline
+Extend the existing CMS service config page with two new sections above the existing Services list:
 
-### About Page Journey Section
+**Card Copy section** — text inputs for `greeting`, `headline`, `roleLabel`, `siteUrl`, and an image upload field for `profileImageUrl` (reuse the same upload pattern as `CmsAboutConfig` profile image).
 
-- Initial load: `fetchExperiences(5)`
-- "Show more" button triggers `fetchExperiences(20)` (or a higher pageSize)
-- Each experience row is a clickable element; clicking toggles an inline-expand below the row that renders the `pageMd` field via `MarkDownComponent`
-- Only one row expanded at a time (clicking a second row collapses the first)
+**Contact section** — a `contactEmail` text input and a repeatable `socialLinks` list editor (label, href, icon per entry — use `IconSelector` for the icon field, consistent with the rest of the CMS). Same `rep-row` pattern as the existing services list.
 
-### Work Page Tiered Display & Pagination
+`cmsUpdateServiceConfig` and `UpdateServiceConfigDto` must be extended to include all new fields. The save handler sends the full config object including both existing services and new fields.
 
-Display order:
-1. Pinned projects (from `fetchFeaturedProjects`, ordered by API response)
-2. Non-pinned projects (from paginated `fetchProjects`, excluding IDs already shown as pinned)
+### Routing
 
-Pagination:
-- `fetchProjects` gains `page` and `pageSize` query params (e.g. `?page=1&pageSize=5`)
-- Initial render: first 5 items across the combined tiered list
-- "Show more" increments the page and appends results
-- Backend contract: the `/projects` list endpoint must exclude the `markdown` field; markdown is only returned by `/projects/:id`
+No changes to `app.tsx`. The `/services` route already exists inside `BaseLayout`.
 
-Backend guide comment in `cms.ts` should be updated to document:
-- `GET /projects?page=1&pageSize=5` — paginated lightweight list (no markdown)
-- `GET /projects/:id` — full object including markdown
+### Styling
 
-### Blog Page Show-More
-
-- Initial render: first 5 blogs from `fetchBlogs()` (all fetched client-side, reveal via slice)
-- "Show more" increments the visible count by 5, sorted by latest (`releasedDate` desc)
-- No server pagination needed; blog payload without markdown is small
-
-### Footer & Contact Section
-
-`TerminalContactSection` and `TerminalLayout` footer both read from `useHomeConfig()`:
-- Contact heading, subtext, email button, and social icons rendered from config
-- Footer copyright and tagline rendered from config
-- Social links array is rendered as icon anchor tags in both locations
+The flip card uses inline Framer Motion styles and Tailwind utility classes only — no new CSS files. Accent color, font variables, and shadow tokens follow the existing terminal theme already applied site-wide.
 
 ---
 
 ## Testing Decisions
 
-Good tests assert on rendered output from the user's perspective — what appears in the DOM — not on internal state or implementation details. Mock at the API boundary (same pattern as existing tests: `vi.mock('@/app/api/...')`), never mock child components or internal hooks.
+Good tests assert on rendered output visible to the user — text content, image `src`, link `href`, presence/absence of elements — not on internal state variable names or animation implementation details.
 
-**Modules to test:**
+**Module under test:** `ServicePage` (`servicePage.tsx`)
 
-- `TerminalHomePage` — assert neofetch rows, location tag, plain tags, and hero buttons render from config values; assert `selectedWorkCount` and `writingCount` control the slice limits passed to sub-sections
-- `TerminalProjectsSection` (home) — assert count cap respects `selectedWorkCount` from config
-- `TerminalWritingSection` (home) — assert count cap respects `writingCount` from config
-- `TerminalWorkPage` — assert pinned projects appear before non-pinned; assert "show more" button appears and triggers a second fetch; assert markdown field is not expected in list responses
-- `TerminalBlogPage` — assert first 5 are shown; assert "show more" reveals the next batch
-- `TerminalAboutPage` — assert `bioTagline` and `bioBody` render from about config; assert journey section shows 5 rows initially; assert "show more" appears; assert clicking a row expands inline content; assert clicking again collapses it
-- `TerminalContactSection` — assert heading, subtext, and social links render from home config values (replaces the existing placeholder assertion)
-- `TerminalLayout` footer — assert copyright and tagline render from home config
+**Test file:** `servicePage.test.tsx` — located alongside the module, following the `__tests__/` convention established by `terminalContactSection.test.tsx` and `terminalHomePage.test.tsx`.
 
-**Prior art:** `src/app/module/home/__tests__/terminalProjectsSection.test.tsx` — component rendered inside `MemoryRouter`, API mocked with `vi.mock`, assertions via `screen.findByText` / `screen.getByRole`.
+**Pattern:** Mock `useServiceConfig` with `vi.fn()`, render `<ServicePage />` inside `MemoryRouter`, assert on DOM output.
+
+**Cases to cover:**
+1. Front face renders `greeting`, `headline`, `roleLabel`, and `siteUrl` from config
+2. Profile `<img>` has `src` equal to `profileImageUrl` from config
+3. Clicking the card causes the back face services to become accessible in the DOM (flip toggled)
+4. Back face renders each service's `title`, `mainTag`, and `description`
+5. Back footer renders `contactEmail` and each `socialLink`'s `href`
+6. Empty `services` array renders without error
+7. Empty `socialLinks` array renders without error
 
 ---
 
 ## Out of Scope
 
-- Off-the-clock hobby cards on the about page (remain hardcoded)
-- About page `coreCompetencies` and `aboutButtons` fields (no changes requested)
-- Services page config
-- Posts (social) page
-- Individual blog/project read pages
-- CMS CRUD pages for blogs, projects, experiences, posts
-- Navigation links (remain hardcoded)
-- Any backend implementation details beyond the API contract documented above
+- QR code generation — replaced by a plain URL label
+- Mode toggle (engineering / art) — a single card driven by CMS data covers both use cases
+- Full-bleed standalone page layout — the card stays inside `BaseLayout`
+- Animations on the CMS editor itself
+- Any changes to `HomeConfig`, `AboutConfig`, or other config schemas
+- Unit tests for `CmsServiceConfig`
 
 ---
 
 ## Further Notes
 
-The `bioTagline` / `bioBody` split on the about config means the CMS about editor will need two new fields inserted between the existing profile image and `professionalSummary` fields to maintain a logical reading order in the form.
+The design source is `Service Card - Desktop.html` from the claude.ai design project `0e36bcb5-36bd-4876-b587-39165c964189`. The implemented card is Direction A (flip calling card) from that file, adapted to be data-driven rather than hardcoded. The standalone stage wrapper, segmented mode switch, and QR code from the design file are not carried over.
 
-The `neofetchRows` default values (Role, Uptime, Editor, Lang, Stack, Locale) should be seeded in both the mock data and the backend config document on first deploy to avoid a blank terminal window before the config is saved.
+The `SocialLink` type is shared with `HomeConfig` — do not duplicate the type definition. Import it from wherever it is currently exported.
 
-The work page must de-duplicate: if a pinned project appears in the `?featured=true` list, it must not also appear in the non-pinned section fetched via the paginated list endpoint. The cleanest approach is to filter the paginated list client-side by excluding IDs already rendered as pinned.
+The pulsing dot on the "tap to flip" hint is a pure CSS `@keyframes` animation — implement it with a Tailwind `animate-pulse` or a custom inline keyframe; do not reach for a JS animation for this.

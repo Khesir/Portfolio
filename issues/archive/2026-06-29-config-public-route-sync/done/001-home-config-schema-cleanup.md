@@ -1,8 +1,8 @@
----
+﻿---
 id: issue-001
 title: "Home config schema cleanup + hero buttons wired"
 feature: home-config
-status: qa
+status: done
 created_at: 2026-06-28
 tags: [afk, p1]
 ---
@@ -68,3 +68,5 @@ The `BannerButton` type supports `to` (internal route), `href` (external link), 
 _Updated as work progresses._
 
 Implemented 2026-06-29. Removed bannerTitle, bannerSubtitle, languages from DTO/hook/CMS editor; renamed bannerButtons → heroButtons everywhere. Hero CTA buttons on public page now render dynamically from config.heroButtons. Updated terminalHomePage.test.tsx to drive button assertions from mock config.
+
+QA approved by user on 2026-06-29.

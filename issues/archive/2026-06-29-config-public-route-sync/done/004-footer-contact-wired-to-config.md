@@ -1,8 +1,8 @@
----
+﻿---
 id: issue-004
 title: "Footer & Contact wired to config"
 feature: home-config
-status: qa
+status: done
 created_at: 2026-06-28
 tags: [afk, p2]
 ---
@@ -64,3 +64,5 @@ The `icon` field in `socialLinks` is an Iconify ID string. The contact section c
 ## Log
 
 Implemented 2026-06-29. Added contactHeading, contactSubtext, socialLinks, footerCopyright, footerTagline to DTO, mock, HomeConfig interface, and DEFAULT_HOME. TerminalContactSection renders heading/subtext/socialLinks from config; no more hardcoded strings or href="#". TerminalLayout footer reads footerCopyright/footerTagline from config. CmsHomeConfig has new Footer & Contact section with social link list editor (IconSelector per entry). Social links rendered as anchor tags with label text (visual icon upgrade is post-implementation QA decision). Rewrote terminalContactSection.test.tsx with 7 tests covering config-driven rendering.
+
+QA approved by user on 2026-06-29.

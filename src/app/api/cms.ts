@@ -179,6 +179,12 @@ export interface SkillCategoryDto {
 	items: string[];
 }
 
+export interface OffTheClockItem {
+	label: string;
+	description: string;
+	icon: string;
+}
+
 export type StatusType = 'online' | 'idle' | 'dnd' | 'custom';
 
 export interface StatusConfig {
@@ -241,13 +247,20 @@ export interface UpdateAboutConfigDto {
 	aboutButtons: BannerButton[];
 	professionalSummary: string;
 	technicalSkills: SkillCategoryDto[];
-	coreCompetencies: string[];
 	bioTagline: string;
 	bioBody: string;
+	offTheClock: OffTheClockItem[];
 }
 
 export interface UpdateServiceConfigDto {
 	services: ServiceDto[];
+	greeting: string;
+	headline: string;
+	roleLabel: string;
+	siteUrl: string;
+	profileImageUrl: string;
+	contactEmail: string;
+	socialLinks: SocialLink[];
 }
 
 // =============================================================================
@@ -695,9 +708,9 @@ export const cmsUpdateHomeConfig = async (payload: UpdateHomeConfigDto) => {
 //       aboutButtons:        BannerButton[]
 //       professionalSummary: string   — markdown, shown in page header (.plede)
 //       technicalSkills:     { category: string, items: string[] }[]
-//       coreCompetencies:    string[]
 //       bioTagline:          string   — short lead sentence shown in .prose
 //       bioBody:             string   — markdown, full bio shown in .prose
+//       offTheClock:         { label: string, description: string, icon: string }[]
 //     }
 //
 //   GET /api/config/about          — public, no auth
@@ -740,15 +753,12 @@ export const fetchAboutConfig = async () => {
 				},
 				{category: 'Game Dev', items: ['Unity', 'C#', 'Lua', 'C++']},
 			],
-			coreCompetencies: [
-				'System Design',
-				'REST API Design',
-				'Game Architecture',
-				'CI/CD',
-				'Docker',
-			],
 			bioTagline: 'I build software — and I build the tools that build software.',
-			bioBody: "I'm a full-stack engineer shipping web and mobile apps in **TypeScript, C#, Python and Flutter**. I enjoy spotting the slow, repetitive parts of a workflow and replacing them with a tool, an API or an automation.\n\nLately a lot of that is AI-driven — wiring up **agentic workflows** with n8n and LLMs. Off the screen I'm at the gym or buried in a book. Always building something.",
+			bioBody: "I'm a full-stack engineer shipping web and mobile apps in **TypeScript, C#, Python and Flutter**. I enjoy spotting the slow, repetitive parts of a workflow and replacing them with a tool, an API or an automation.\n\nLately a lot of that is AI-driven — wiring up **agentic workflows** with n8n and LLMs. Always building something.",
+			offTheClock: [
+				{label: 'At the gym', description: 'Lifting and staying consistent.', icon: 'mdi:dumbbell'},
+				{label: 'Reading', description: 'Buried in a book — mostly non-fiction.', icon: 'mdi:book-open-variant'},
+			],
 		};
 	const res = await axios.get(`${API}/config/about`);
 	return res.data;
@@ -773,6 +783,13 @@ export const cmsUpdateAboutConfig = async (payload: UpdateAboutConfigDto) => {
 //
 //   Shape of the stored JSON (matches UpdateServiceConfigDto):
 //     {
+//       greeting:        string   — front face greeting line (e.g. "Hey —")
+//       headline:        string   — front face headline
+//       roleLabel:       string   — front face role/identity line
+//       siteUrl:         string   — front face URL label (e.g. "khesir.dev")
+//       profileImageUrl: string   — front face avatar image URL (empty = no image)
+//       contactEmail:    string   — back footer preferred contact email
+//       socialLinks:     { label: string, href: string, icon: string }[]  — back footer icon links
 //       services: {
 //         icon:        string   — Iconify icon ID (e.g. "mdi:server")
 //         title:       string   — service heading
@@ -793,6 +810,17 @@ export const cmsUpdateAboutConfig = async (payload: UpdateAboutConfigDto) => {
 export const fetchServiceConfig = async () => {
 	if (useEnvironment.getState().isDevelopment())
 		return {
+			greeting: 'Hey —',
+			headline: "here's what I can help with.",
+			roleLabel: 'AJ · Khesir // Full-Stack & Toolmaker',
+			siteUrl: 'khesir',
+			profileImageUrl: '',
+			contactEmail: 'hello@khesir.dev',
+			socialLinks: [
+				{label: 'Twitter / X', href: 'https://x.com/khesir_dev', icon: 'ri:twitter-x-fill'},
+				{label: 'Discord', href: '#', icon: 'ic:baseline-discord'},
+				{label: 'Email', href: 'mailto:hello@khesir.dev', icon: 'mdi:email'},
+			],
 			services: [
 				{
 					icon: 'mdi:server',

@@ -1,8 +1,8 @@
----
+﻿---
 id: issue-007
 title: "Blog page show-more"
 feature: blog
-status: qa
+status: done
 created_at: 2026-06-28
 tags: [afk, p1]
 ---
@@ -63,3 +63,5 @@ Yes — `TerminalBlogPage` test:
 _Updated as work progresses._
 
 Implemented 2026-06-29. Added visibleCount state (starts at 5). Shows latest (blogs[0]) + rest.slice(0, visibleCount-1). Show-more button increments visibleCount by 5, disappears when all posts visible. Added terminalBlogPage.test.tsx with 5 tests.
+
+QA approved by user on 2026-06-29.

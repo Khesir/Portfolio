@@ -1,8 +1,9 @@
 import {useEffect, useState} from 'react';
-import {fetchServiceConfig, cmsUpdateServiceConfig, ServiceDto} from '@/app/api/cms';
+import {fetchServiceConfig, cmsUpdateServiceConfig, ServiceDto, SocialLink} from '@/app/api/cms';
 import {toast} from 'sonner';
 import TagInput from '../components/TagInput';
 import IconSelector from '../components/IconSelector';
+import ImageUpload from '../components/ImageUpload';
 
 function relativeTime(date: Date): string {
 	const secs = Math.floor((Date.now() - date.getTime()) / 1000);
@@ -110,6 +111,13 @@ function ServiceCard({
 
 export default function CmsServiceConfig() {
 	const [services, setServices] = useState<ServiceDto[]>([]);
+	const [greeting, setGreeting] = useState('');
+	const [headline, setHeadline] = useState('');
+	const [roleLabel, setRoleLabel] = useState('');
+	const [siteUrl, setSiteUrl] = useState('');
+	const [profileImageUrl, setProfileImageUrl] = useState('');
+	const [contactEmail, setContactEmail] = useState('');
+	const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [savedAt, setSavedAt] = useState<Date | null>(null);
@@ -117,7 +125,16 @@ export default function CmsServiceConfig() {
 	useEffect(() => {
 		fetchServiceConfig()
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			.then((data: any) => setServices(data?.services ?? []))
+			.then((data: any) => {
+				setServices(data?.services ?? []);
+				setGreeting(data?.greeting ?? '');
+				setHeadline(data?.headline ?? '');
+				setRoleLabel(data?.roleLabel ?? '');
+				setSiteUrl(data?.siteUrl ?? '');
+				setProfileImageUrl(data?.profileImageUrl ?? '');
+				setContactEmail(data?.contactEmail ?? '');
+				setSocialLinks(data?.socialLinks ?? []);
+			})
 			.catch(() => toast.error('Failed to load service config'))
 			.finally(() => setLoading(false));
 	}, []);
@@ -126,7 +143,7 @@ export default function CmsServiceConfig() {
 		e.preventDefault();
 		setSaving(true);
 		try {
-			await cmsUpdateServiceConfig({services});
+			await cmsUpdateServiceConfig({services, greeting, headline, roleLabel, siteUrl, profileImageUrl, contactEmail, socialLinks});
 			setSavedAt(new Date());
 			toast.success('Services saved');
 		} catch {
@@ -166,6 +183,140 @@ export default function CmsServiceConfig() {
 			</div>
 
 			<form className="cms-form" onSubmit={handleSubmit}>
+				<div className="fsection">
+					<h2>Card Copy</h2>
+					<ImageUpload
+						value={profileImageUrl}
+						onChange={setProfileImageUrl}
+					/>
+					<div className="frow">
+						<div className="field">
+							<label>Greeting</label>
+							<input
+								type="text"
+								value={greeting}
+								onChange={(e) => setGreeting(e.target.value)}
+								placeholder="Hey, I'm"
+							/>
+						</div>
+						<div className="field">
+							<label>Role label</label>
+							<input
+								type="text"
+								value={roleLabel}
+								onChange={(e) => setRoleLabel(e.target.value)}
+								placeholder="Full-stack Engineer"
+							/>
+						</div>
+					</div>
+					<div className="field">
+						<label>Headline</label>
+						<input
+							type="text"
+							value={headline}
+							onChange={(e) => setHeadline(e.target.value)}
+							placeholder="I build things for the web."
+						/>
+					</div>
+					<div className="field">
+						<label>Site URL</label>
+						<input
+							type="text"
+							value={siteUrl}
+							onChange={(e) => setSiteUrl(e.target.value)}
+							placeholder="https://yoursite.com"
+						/>
+					</div>
+				</div>
+
+				<div className="fsection">
+					<div className="fhead">
+						<h2>Contact</h2>
+					</div>
+					<div className="field">
+						<label>Contact email</label>
+						<input
+							type="text"
+							value={contactEmail}
+							onChange={(e) => setContactEmail(e.target.value)}
+							placeholder="you@example.com"
+						/>
+					</div>
+					<div className="fhead" style={{marginTop: 16}}>
+						<h3>Social links</h3>
+						<button
+							type="button"
+							className="btn-ol"
+							onClick={() =>
+								setSocialLinks((prev) => [...prev, {label: '', href: '', icon: ''}])
+							}
+						>
+							Add link
+						</button>
+					</div>
+					<div className="rep">
+						{socialLinks.map((link, i) => (
+							<div key={i} className="rep-row" style={{alignItems: 'flex-start'}}>
+								<div className="rmain">
+									<div className="frow">
+										<div className="field">
+											<label>Label</label>
+											<input
+												type="text"
+												value={link.label}
+												onChange={(e) =>
+													setSocialLinks((prev) =>
+														prev.map((x, j) =>
+															j === i ? {...x, label: e.target.value} : x,
+														),
+													)
+												}
+												placeholder="GitHub"
+											/>
+										</div>
+										<div className="field">
+											<label>URL</label>
+											<input
+												type="text"
+												value={link.href}
+												onChange={(e) =>
+													setSocialLinks((prev) =>
+														prev.map((x, j) =>
+															j === i ? {...x, href: e.target.value} : x,
+														),
+													)
+												}
+												placeholder="https://github.com/you"
+											/>
+										</div>
+									</div>
+									<div className="field" style={{marginTop: 8}}>
+										<label>Icon</label>
+										<IconSelector
+											value={link.icon}
+											onChange={(icon) =>
+												setSocialLinks((prev) =>
+													prev.map((x, j) => (j === i ? {...x, icon} : x)),
+												)
+											}
+											placeholder="mdi:github"
+										/>
+									</div>
+								</div>
+								<button
+									type="button"
+									className="rm"
+									onClick={() =>
+										setSocialLinks((prev) => prev.filter((_, j) => j !== i))
+									}
+								>
+									Remove
+								</button>
+							</div>
+						))}
+					</div>
+				</div>
+
 				<div className="fsection">
 					<div className="fhead">
 						<h2>Services</h2>

@@ -241,8 +241,9 @@ export default function AboutMe() {
 				</motion.div>
 			)}
 
-			{/* Core Competencies */}
-			{about.coreCompetencies.length > 0 && (
+
+			{/* Off the Clock */}
+			{about.offTheClock.length > 0 && (
 				<motion.div
 					className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg p-8"
 					initial={{y: 50, opacity: 0}}
@@ -251,16 +252,28 @@ export default function AboutMe() {
 					transition={{type: 'spring', stiffness: 60, damping: 15}}
 				>
 					<h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
-						Core Competencies
+						Off the Clock
 					</h2>
-					<div className="flex flex-wrap gap-2">
-						{about.coreCompetencies.map((c) => (
-							<span
-								key={c}
-								className="px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 rounded-lg text-sm font-medium"
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+						{about.offTheClock.map((item, i) => (
+							<div
+								key={i}
+								className="flex items-start gap-4 p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
 							>
-								{c}
-							</span>
+								{item.icon && (
+									<Icon icon={item.icon} className="w-8 h-8 shrink-0 mt-0.5 text-slate-600 dark:text-slate-400" />
+								)}
+								<div>
+									<p className="font-semibold text-slate-900 dark:text-white text-sm">
+										{item.label}
+									</p>
+									{item.description && (
+										<p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
+											{item.description}
+										</p>
+									)}
+								</div>
+							</div>
 						))}
 					</div>
 				</motion.div>

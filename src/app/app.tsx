@@ -1,5 +1,13 @@
-import {BrowserRouter, Route, Routes as Router} from 'react-router-dom';
+import {BrowserRouter, Route, Routes as Router, useLocation} from 'react-router-dom';
 import {LoadingScreen} from '@/components/LoadingScreen';
+import type {ReactNode} from 'react';
+
+function ConditionalLoadingScreen({children}: {children: ReactNode}) {
+	const {pathname} = useLocation();
+	if (pathname.startsWith('/cms')) return <>{children}</>;
+	if (pathname === '/services') return <>{children}</>;
+	return <LoadingScreen>{children}</LoadingScreen>;
+}
 
 import SandBoxPage from './sandbox/SandBoxPage';
 import CmsApp from './cms/CmsApp';
@@ -22,12 +30,11 @@ import {NotFoundPage} from './module/notFound/notFoundPage';
 export default function App() {
 	return (
 		<BrowserRouter>
-			<LoadingScreen>
+			<ConditionalLoadingScreen>
 				<Router>
 					<Route element={<BaseLayout />}>
 						<Route path="progress-report" element={<ProgressPage />} />
 						<Route path="guest-book" element={<GuestchatPage />} />
-						<Route path="services" element={<ServicePage />} />
 						<Route path="experiences" element={<ExperiencePage />} />
 						<Route path="posts" element={<PostsPage />} />
 							{/* <Route
@@ -36,6 +43,7 @@ export default function App() {
 					/> */}
 					</Route>
 					<Route path="sandbox" element={<SandBoxPage />} />
+					<Route path="services" element={<ServicePage />} />
 					<Route path="work" element={<TerminalWorkPage />} />
 					<Route path="about" element={<TerminalAboutPage />} />
 					<Route path="blogs" element={<TerminalBlogPage />} />
@@ -46,7 +54,7 @@ export default function App() {
 					<Route path="*" element={<NotFoundPage />} />
 					<Route path="skillset" element={<SkillSetPage />} />
 				</Router>
-			</LoadingScreen>
+			</ConditionalLoadingScreen>
 		</BrowserRouter>
 	);
 }

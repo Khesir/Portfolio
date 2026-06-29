@@ -1,3 +1,5 @@
+import '@/css/terminal-mock.css';
+import '@/css/terminal-theme.css';
 import '@/css/terminal-cms.css';
 import {NavLink, Outlet} from 'react-router-dom';
 import {useCmsAuth} from '@/hooks/use-cms-auth-store';

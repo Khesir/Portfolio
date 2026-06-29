@@ -85,70 +85,66 @@ export function LoadingScreen({children}: {children: ReactNode}) {
 	if (phase === 'done') return <>{children}</>;
 
 	return (
-		<>
-			{children}
+		<div style={{position: 'fixed', inset: 0, zIndex: 100, background: 'var(--bg)'}}>
+			{phase === 'exiting' && (
+				<div
+					className="boot-exit"
+					onAnimationEnd={() => setPhase('done')}
+				/>
+			)}
 
-			<div style={{position: 'fixed', inset: 0, zIndex: 100, background: 'var(--bg)'}}>
-				{phase === 'exiting' && (
-					<div
-						className="boot-exit"
-						onAnimationEnd={() => setPhase('done')}
-					/>
-				)}
+			<div className="boot-stage">
+				<div className="tcard">
+					<div className="tc-bar">
+						<div className="dots">
+							<i style={{background: '#ff5f57'}} />
+							<i style={{background: '#febc2e'}} />
+							<i style={{background: '#28c840'}} />
+						</div>
+						<span className="ttl">khesir — boot</span>
+					</div>
 
-				<div className="boot-stage">
-					<div className="tcard">
-						<div className="tc-bar">
-							<div className="dots">
-								<i style={{background: '#ff5f57'}} />
-								<i style={{background: '#febc2e'}} />
-								<i style={{background: '#28c840'}} />
+					<div className="tc-body">
+						<div className="boot-head">
+							<div className="mk">
+								<img src="/img/Mee.png" alt="avatar" />
 							</div>
-							<span className="ttl">khesir<b>.dev</b> — boot</span>
+							<div>
+								<div className="bh-t">khesir</div>
+								<div className="bh-s">initializing content layer</div>
+							</div>
 						</div>
 
-						<div className="tc-body">
-							<div className="boot-head">
-								<div className="mk">
-									<img src="/img/Mee.png" alt="avatar" />
-								</div>
-								<div>
-									<div className="bh-t">khesir<b>.dev</b></div>
-									<div className="bh-s">initializing content layer</div>
-								</div>
-							</div>
+						<div className="boot-cmd">
+							<b>$</b> ./boot --env=production --preload=all
+						</div>
 
-							<div className="boot-cmd">
-								<b>$</b> ./boot --env=production --preload=all
-							</div>
-
-							<div className="boot-steps">
-								{STEPS.map((s, i) => (
-									<div key={s.stat} className={stepClass(i, active, doneTo)}>
-										<div className="ic">
-											{doneTo >= i && <CheckIcon />}
-										</div>
-										<span className="label">{s.label}</span>
-										<span className="stat">
-											{doneTo >= i ? 'done' : i === active ? 'running' : 'pending'}
-										</span>
+						<div className="boot-steps">
+							{STEPS.map((s, i) => (
+								<div key={s.stat} className={stepClass(i, active, doneTo)}>
+									<div className="ic">
+										{doneTo >= i && <CheckIcon />}
 									</div>
-								))}
-							</div>
+									<span className="label">{s.label}</span>
+									<span className="stat">
+										{doneTo >= i ? 'done' : i === active ? 'running' : 'pending'}
+									</span>
+								</div>
+							))}
+						</div>
 
-							<div className="boot-prog">
-								<div className="boot-track">
-									<div className="boot-fill" style={{width: progress + '%'}} />
-								</div>
-								<div className="boot-foot">
-									<span>{log}<span className="cursor" /></span>
-									<span className="pct">{progress}%</span>
-								</div>
+						<div className="boot-prog">
+							<div className="boot-track">
+								<div className="boot-fill" style={{width: progress + '%'}} />
+							</div>
+							<div className="boot-foot">
+								<span>{log}<span className="cursor" /></span>
+								<span className="pct">{progress}%</span>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 }

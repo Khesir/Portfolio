@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {fetchBlogs} from '@/app/api/blogs';
+import {motion} from 'framer-motion';
 
 function fmtDate(iso: string): string {
 	const d = new Date(iso);
@@ -9,6 +10,15 @@ function fmtDate(iso: string): string {
 	const dd = String(d.getDate()).padStart(2, '0');
 	return `${yyyy}.${mm}.${dd}`;
 }
+
+const listContainer = {
+	hidden: {},
+	show: {transition: {staggerChildren: 0.09}},
+};
+const listItem = {
+	hidden: {opacity: 0, x: -18},
+	show: {opacity: 1, x: 0, transition: {type: 'spring' as const, stiffness: 80, damping: 18}},
+};
 
 export function TerminalWritingSection({count = 3}: {count?: number}) {
 	const [blogs, setBlogs] = useState<any[]>([]);
@@ -29,7 +39,14 @@ export function TerminalWritingSection({count = 3}: {count?: number}) {
 				<Link to="/blogs" className="more">all posts →</Link>
 			</div>
 
-			<section className="posts">
+			<motion.section
+				className="posts"
+				key={blogs.length}
+				variants={listContainer}
+				initial="hidden"
+				whileInView="show"
+				viewport={{once: true, amount: 0.1}}
+			>
 				{blogs.length === 0 ? (
 					<p style={{color: 'var(--ink-3)', fontFamily: 'var(--mono)', fontSize: '13px'}}>No posts yet.</p>
 				) : (
@@ -38,9 +55,10 @@ export function TerminalWritingSection({count = 3}: {count?: number}) {
 						const name = b.name ?? 'Untitled';
 						const tags: string[] = b.tags ?? [];
 						return (
-							<div
+							<motion.div
 								className="post"
 								key={id}
+								variants={listItem}
 								onClick={() => navigate(`/blogs/view/${name.replace(/\s+/g, '-')}?id=${id}`)}
 							>
 								<span className="pdate">{b.releasedDate ? fmtDate(b.releasedDate) : '—'}</span>
@@ -51,11 +69,11 @@ export function TerminalWritingSection({count = 3}: {count?: number}) {
 									{tags[0] && <span className="pcat">{tags[0]}</span>}
 									{b.minRead && <span className="pread">{b.minRead} min</span>}
 								</div>
-							</div>
+							</motion.div>
 						);
 					})
 				)}
-			</section>
+			</motion.section>
 		</>
 	);
 }
