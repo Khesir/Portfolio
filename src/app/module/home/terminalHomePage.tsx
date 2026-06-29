@@ -20,15 +20,22 @@ export default function TerminalHomePage() {
 					<div className="hrole">{config.role}</div>
 					<p className="hblurb">{config.description}</p>
 					<div className="hacts">
-						<Link to="/work" className="btn btn-blue">View work →</Link>
-						<Link to="/about" className="btn btn-ghost">$ cat about.me</Link>
+						{(config.heroButtons ?? []).map((btn, i) => {
+							if (btn.to) return <Link key={i} to={btn.to} className={`btn ${i === 0 ? 'btn-blue' : 'btn-ghost'}`}>{btn.label}</Link>
+							if (btn.href) return <a key={i} href={btn.href} className={`btn ${i === 0 ? 'btn-blue' : 'btn-ghost'}`} target="_blank" rel="noreferrer">{btn.label}</a>
+							if (btn.action === 'contact') return <button key={i} className={`btn ${i === 0 ? 'btn-blue' : 'btn-ghost'}`} onClick={() => document.getElementById('contact')?.scrollIntoView()}>{btn.label}</button>
+							return null
+						})}
 					</div>
 					<div className="hmeta">
-						<span className="tag">
-							<span className="dot" style={{background: 'var(--accent)'}} /> Philippines · UTC+8
-						</span>
-						<span className="tag">agentic AI</span>
-						<span className="tag">APIs &amp; tooling</span>
+						{config.location && (
+							<span className="tag">
+								<span className="dot" style={{background: 'var(--accent)'}} /> {config.location}
+							</span>
+						)}
+						{(config.tags ?? []).map((tag, i) => (
+							<span className="tag" key={i}>{tag}</span>
+						))}
 					</div>
 				</div>
 
@@ -56,12 +63,12 @@ export default function TerminalHomePage() {
 									<span className="h">khesir</span>
 								</div>
 								<div className="nf-line">───────────────</div>
-								<div className="r"><span className="k">Role</span><span className="v">{config.role || 'Full-Stack · Toolmaker'}</span></div>
-								<div className="r"><span className="k">Uptime</span><span className="v">building since 2020</span></div>
-								<div className="r"><span className="k">Editor</span><span className="v">VS Code · Cursor</span></div>
-								<div className="r"><span className="k">Lang</span><span className="v">TypeScript · C# · Py</span></div>
-								<div className="r"><span className="k">Stack</span><span className="v">React · Flutter · Node</span></div>
-								<div className="r"><span className="k">Locale</span><span className="v">PH · UTC+8</span></div>
+								{(config.neofetchRows ?? []).map((row, i) => (
+									<div className="r" key={i}>
+										<span className="k">{row.key}</span>
+										<span className="v">{row.value}</span>
+									</div>
+								))}
 								<div className="nf-colors">
 									<i style={{background: 'oklch(0.80 0.145 70)'}} />
 									<i style={{background: 'oklch(0.74 0.13 245)'}} />
@@ -76,8 +83,8 @@ export default function TerminalHomePage() {
 			</section>
 
 			<TerminalStackSection />
-			<TerminalProjectsSection />
-			<TerminalWritingSection />
+			<TerminalProjectsSection count={config.selectedWorkCount} />
+			<TerminalWritingSection count={config.writingCount} />
 			<TerminalContactSection />
 		</TerminalLayout>
 	);

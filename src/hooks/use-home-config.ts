@@ -8,9 +8,11 @@ import {
 	StatusConfig,
 	BannerButton,
 	LanguageEntry,
+	NeofetchRow,
+	SocialLink,
 } from '@/app/api/cms';
 
-export type {StatusConfig, BannerButton, LanguageEntry};
+export type {StatusConfig, BannerButton, LanguageEntry, NeofetchRow, SocialLink};
 export type {StatusType} from '@/app/api/cms';
 
 export interface HomeConfig {
@@ -19,12 +21,19 @@ export interface HomeConfig {
 	description: string;
 	contactEmail: string;
 	status: StatusConfig;
-	languages: LanguageEntry[];
-	bannerTitle: string;
-	bannerSubtitle: string;
-	bannerButtons: BannerButton[];
+	heroButtons: BannerButton[];
 	profileImageUrl: string;
 	bannerImageUrl: string;
+	neofetchRows: NeofetchRow[];
+	location: string;
+	tags: string[];
+	selectedWorkCount: number;
+	writingCount: number;
+	contactHeading: string;
+	contactSubtext: string;
+	socialLinks: SocialLink[];
+	footerCopyright: string;
+	footerTagline: string;
 }
 
 export interface AboutConfig {
@@ -36,6 +45,8 @@ export interface AboutConfig {
 	professionalSummary: string;
 	technicalSkills: SkillCategoryDto[];
 	coreCompetencies: string[];
+	bioTagline: string;
+	bioBody: string;
 }
 
 export interface ServiceConfig {
@@ -48,12 +59,19 @@ const DEFAULT_HOME: HomeConfig = {
 	description: '',
 	contactEmail: '',
 	status: {type: 'online'},
-	languages: [],
-	bannerTitle: '',
-	bannerSubtitle: '',
-	bannerButtons: [],
+	heroButtons: [],
 	profileImageUrl: '',
 	bannerImageUrl: '',
+	neofetchRows: [],
+	location: '',
+	tags: [],
+	selectedWorkCount: 3,
+	writingCount: 3,
+	contactHeading: "Let's build something & make it faster.",
+	contactSubtext: 'Open for engineering work and collaborations.',
+	socialLinks: [],
+	footerCopyright: '© 2026 AJ — Khesir',
+	footerTagline: 'direction B — "Terminal" · tech-first',
 };
 
 const DEFAULT_ABOUT: AboutConfig = {
@@ -65,6 +83,8 @@ const DEFAULT_ABOUT: AboutConfig = {
 	professionalSummary: '',
 	technicalSkills: [],
 	coreCompetencies: [],
+	bioTagline: '',
+	bioBody: '',
 };
 
 const DEFAULT_SERVICE: ServiceConfig = {services: []};

@@ -201,18 +201,36 @@ export interface BannerButton {
 	variant?: 'primary' | 'secondary';
 }
 
+export interface NeofetchRow {
+	key: string;
+	value: string;
+}
+
+export interface SocialLink {
+	label: string;
+	href: string;
+	icon: string;
+}
+
 export interface UpdateHomeConfigDto {
 	name: string;
 	role: string;
 	description: string;
 	contactEmail: string;
 	status: StatusConfig;
-	languages: LanguageEntry[];
-	bannerTitle: string;
-	bannerSubtitle: string;
-	bannerButtons: BannerButton[];
+	heroButtons: BannerButton[];
 	profileImageUrl?: string;
 	bannerImageUrl?: string;
+	neofetchRows: NeofetchRow[];
+	location: string;
+	tags: string[];
+	selectedWorkCount: number;
+	writingCount: number;
+	contactHeading: string;
+	contactSubtext: string;
+	socialLinks: SocialLink[];
+	footerCopyright: string;
+	footerTagline: string;
 }
 
 export interface UpdateAboutConfigDto {
@@ -224,6 +242,8 @@ export interface UpdateAboutConfigDto {
 	professionalSummary: string;
 	technicalSkills: SkillCategoryDto[];
 	coreCompetencies: string[];
+	bioTagline: string;
+	bioBody: string;
 }
 
 export interface UpdateServiceConfigDto {
@@ -311,6 +331,10 @@ export const cmsDeleteBlog = async (id: string) => {
 //     Hide Views    (checkbox)    — true = view count hidden on public page
 //     Hide Hearts   (checkbox)    — true = heart button hidden on public page
 //   Page content is stored as Notion blocks and returned as a markdown string.
+//
+//   GET /projects?page=1&pageSize=5  — returns lightweight project cards; the `markdown` field
+//                                       must be excluded from this response
+//   GET /projects/:id               — returns the full object including `markdown`
 //
 //   POST /api/projects
 //   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
@@ -575,17 +599,24 @@ export const cmsDeletePost = async (id: string) => {
 //
 //   Shape of the stored JSON (matches UpdateHomeConfigDto):
 //     {
-//       name:           string   — display name shown in hero + footer
-//       role:           string   — job title (blue subtitle)
-//       description:    string   — short bio (newlines preserved)
-//       contactEmail:   string   — used in contact section + services CTA
-//       status:         { type: "online"|"idle"|"dnd"|"custom", emoji?, message? }
-//       languages:      { icon: string (Iconify ID), label?: string }[]
-//       profileImageUrl: string  — profile photo URL (empty = default)
-//       bannerImageUrl:  string  — hero banner strip URL (empty = none)
-//       bannerTitle:     string  — availabanner headline
-//       bannerSubtitle:  string  — availabanner subtext
-//       bannerButtons:   BannerButton[]
+//       name:              string   — display name shown in hero + footer
+//       role:              string   — job title (blue subtitle)
+//       description:       string   — short bio (newlines preserved)
+//       contactEmail:      string   — used in contact section + services CTA
+//       status:            { type: "online"|"idle"|"dnd"|"custom", emoji?, message? }
+//       profileImageUrl:   string   — profile photo URL (empty = default)
+//       bannerImageUrl:    string   — hero banner strip URL (empty = none)
+//       heroButtons:       BannerButton[]
+//       neofetchRows:      { key: string, value: string }[]  — neofetch terminal rows
+//       location:          string   — location tag in hero meta row
+//       tags:              string[] — plain tags in hero meta row
+//       selectedWorkCount: number   — how many pinned projects to preview on home
+//       writingCount:      number   — how many blogs to preview on home
+//       contactHeading:    string   — h2 in the contact section
+//       contactSubtext:    string   — p below contact heading
+//       socialLinks:       { label: string, href: string, icon: string }[]
+//       footerCopyright:   string   — left side of footer
+//       footerTagline:     string   — right side of footer
 //     }
 //
 //   GET /api/config/home          — public, no auth
@@ -605,20 +636,34 @@ export const fetchHomeConfig = async () => {
 			description:
 				'I build scalable backend systems and ship clean, maintainable code.\n\nPassionate about backend architecture, game engineering, and writing code that lasts.',
 			status: {type: 'online', message: 'Available for work'},
-			languages: [
-				{icon: 'devicon:typescript', label: 'TypeScript'},
-				{icon: 'devicon:csharp', label: 'C#'},
-				{icon: 'devicon:cplusplus', label: 'C++'},
-				{icon: 'devicon:python', label: 'Python'},
-			],
 			profileImageUrl: '',
 			bannerImageUrl: '',
-			bannerTitle: 'Open for Freelance & Collaborations',
-			bannerSubtitle: "Let's work together to bring your ideas to life",
-			bannerButtons: [
-				{label: 'Contact Me', icon: 'mdi:email', action: 'contact'},
-				{label: 'Read Blogs', icon: 'mdi:file-document', to: 'blogs'},
+			heroButtons: [
+				{label: 'View work →', to: '/work'},
+				{label: '$ cat about.me', to: '/about'},
 			],
+			neofetchRows: [
+				{key: 'Role', value: 'Full-Stack · Toolmaker'},
+				{key: 'Uptime', value: 'building since 2020'},
+				{key: 'Editor', value: 'VS Code · Cursor'},
+				{key: 'Lang', value: 'TypeScript · C# · Py'},
+				{key: 'Stack', value: 'React · Flutter · Node'},
+				{key: 'Locale', value: 'PH · UTC+8'},
+			],
+			location: 'Philippines · UTC+8',
+			tags: ['agentic AI', 'APIs & tooling'],
+			selectedWorkCount: 3,
+			writingCount: 3,
+			contactHeading: "Let's build something & make it faster.",
+			contactSubtext: 'Open for engineering work and collaborations.',
+			socialLinks: [
+				{label: 'GitHub', href: 'https://github.com/khesir', icon: 'mdi:github'},
+				{label: 'LinkedIn', href: '#', icon: 'mdi:linkedin'},
+				{label: 'Twitter', href: '#', icon: 'mdi:twitter'},
+				{label: 'Email', href: 'mailto:contact@khesir.com', icon: 'mdi:email'},
+			],
+			footerCopyright: '© 2026 AJ — Khesir',
+			footerTagline: 'direction B — "Terminal" · tech-first',
 		};
 	const res = await axios.get(`${API}/config/home`);
 	return res.data;
@@ -648,9 +693,11 @@ export const cmsUpdateHomeConfig = async (payload: UpdateHomeConfigDto) => {
 //       location:            string   — e.g. "Remote / Flexible" (shown with pin icon)
 //       profileImageUrl:     string   — overrides home config profile image if set
 //       aboutButtons:        BannerButton[]
-//       professionalSummary: string   — markdown
+//       professionalSummary: string   — markdown, shown in page header (.plede)
 //       technicalSkills:     { category: string, items: string[] }[]
 //       coreCompetencies:    string[]
+//       bioTagline:          string   — short lead sentence shown in .prose
+//       bioBody:             string   — markdown, full bio shown in .prose
 //     }
 //
 //   GET /api/config/about          — public, no auth
@@ -700,6 +747,8 @@ export const fetchAboutConfig = async () => {
 				'CI/CD',
 				'Docker',
 			],
+			bioTagline: 'I build software — and I build the tools that build software.',
+			bioBody: "I'm a full-stack engineer shipping web and mobile apps in **TypeScript, C#, Python and Flutter**. I enjoy spotting the slow, repetitive parts of a workflow and replacing them with a tool, an API or an automation.\n\nLately a lot of that is AI-driven — wiring up **agentic workflows** with n8n and LLMs. Off the screen I'm at the gym or buried in a book. Always building something.",
 		};
 	const res = await axios.get(`${API}/config/about`);
 	return res.data;

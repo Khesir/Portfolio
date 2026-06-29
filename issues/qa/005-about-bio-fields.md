@@ -2,7 +2,7 @@
 id: issue-005
 title: "About bio fields"
 feature: about-config
-status: ready
+status: qa
 created_at: 2026-06-28
 tags: [afk, p1]
 ---
@@ -62,3 +62,5 @@ Yes — `TerminalAboutPage` test: mock `useAboutConfig` returning custom `bioTag
 ## Log
 
 _Updated as work progresses._
+
+Implemented 2026-06-29. Added bioTagline and bioBody to UpdateAboutConfigDto, mock defaults, AboutConfig hook, CMS editor (new Bio section), and TerminalAboutPage (replaces hardcoded prose). Added terminalAboutPage.test.tsx with 4 tests.

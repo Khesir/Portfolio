@@ -36,18 +36,79 @@ const POPOVER_STYLES = `
 @media (prefers-reduced-motion: reduce) { .pop { transition: opacity .16s ease; transform: none; } .pop.show { transform: none; } }
 `
 
+const PAGE_SIZE = 5
+
+function renderProjectRow(p: any, i: number, navigate: ReturnType<typeof useNavigate>) {
+  const id = p._id ?? p.id
+  const name = p.name ?? 'Untitled'
+  const year = p.releasedDate ? new Date(p.releasedDate).getFullYear() : ''
+  const languages: string[] = p.languages ?? []
+  const role: string = p.type ?? p.category ?? 'project'
+  const desc: string = p.description ?? ''
+  const imgUrl: string = p.imageUrl ?? ''
+  return (
+    <div
+      className="proj"
+      key={id}
+      onClick={() => navigate(`/work/view/${name.replace(/\s+/g, '-')}?id=${id}`)}
+      data-title={name}
+      data-role={role}
+      data-year={year}
+      data-desc={desc}
+      data-tags={languages.join(',')}
+      data-img={imgUrl}
+    >
+      <span className="idx">{String(i + 1).padStart(2, '0')}</span>
+      <div>
+        <div className="pt"><h4>{name}</h4></div>
+        <div className="ptags">
+          {languages.map((l, j) => <span className="tag" key={j}>{l}</span>)}
+        </div>
+      </div>
+      <span className="yr">{year}</span>
+    </div>
+  )
+}
+
 export default function TerminalWorkPage() {
-  const [featured, setFeatured] = useState<any | null>(null)
-  const [projects, setProjects] = useState<any[]>([])
+  const [pinnedItems, setPinnedItems] = useState<any[]>([])
+  const [allNonPinned, setAllNonPinned] = useState<any[]>([])
+  const [nonPinnedPage, setNonPinnedPage] = useState(1)
+  const [hasMore, setHasMore] = useState(false)
+  const [shownCount, setShownCount] = useState(PAGE_SIZE)
   const navigate = useNavigate()
 
   useEffect(() => {
     fetchFeaturedProjects().then((list: any[]) => {
-      const pinned = list.filter((p: any) => p.pinned)
-      setFeatured(pinned[0] ?? null)
+      setPinnedItems(list.filter((p: any) => p.pinned))
     })
-    fetchProjects().then((list: any[]) => setProjects(Array.isArray(list) ? list : []))
+    fetchProjects(1, PAGE_SIZE).then((list: any[]) => {
+      setAllNonPinned(Array.isArray(list) ? list : [])
+      setHasMore((Array.isArray(list) ? list : []).length >= PAGE_SIZE)
+    })
   }, [])
+
+  const pinnedIds = new Set(pinnedItems.map((p: any) => p._id ?? p.id))
+  const deduplicatedNonPinned = allNonPinned.filter((p: any) => !pinnedIds.has(p._id ?? p.id))
+
+  const visibleNonPinnedCount = Math.max(0, shownCount - pinnedItems.length)
+  const visibleNonPinned = deduplicatedNonPinned.slice(0, visibleNonPinnedCount)
+  const showMoreButton = hasMore || deduplicatedNonPinned.length > visibleNonPinnedCount
+
+  const loadMore = () => {
+    const newShownCount = shownCount + PAGE_SIZE
+    setShownCount(newShownCount)
+    const nonPinnedNeeded = Math.max(0, newShownCount - pinnedItems.length)
+    if (nonPinnedNeeded > deduplicatedNonPinned.length && hasMore) {
+      const nextPage = nonPinnedPage + 1
+      setNonPinnedPage(nextPage)
+      fetchProjects(nextPage, PAGE_SIZE).then((list: any[]) => {
+        const newItems = Array.isArray(list) ? list : []
+        setAllNonPinned(prev => [...prev, ...newItems.filter((p: any) => !pinnedIds.has(p._id ?? p.id))])
+        setHasMore(newItems.length >= PAGE_SIZE)
+      })
+    }
+  }
 
   useEffect(() => {
     const pop = document.getElementById('projPop')
@@ -115,7 +176,7 @@ export default function TerminalWorkPage() {
       handlers.forEach(({el, type, fn}) => el.removeEventListener(type, fn))
       pop.classList.remove('show')
     }
-  }, [projects])
+  }, [pinnedItems, allNonPinned, shownCount])
 
   return (
     <TerminalLayout>
@@ -127,75 +188,34 @@ export default function TerminalWorkPage() {
         <p className="plede">Software, tools and experiments — mostly where engineering and craft meet. A few favorites below.</p>
       </section>
 
-      <div className="sl"><span className="n">01</span><h2>featured</h2><span className="rule" /></div>
-      {featured ? (
-        <section
-          className="feature"
-          style={{ cursor: 'pointer' }}
-          onClick={() => navigate(`/work/view/${(featured.name ?? '').replace(/\s+/g, '-')}?id=${featured._id ?? featured.id}`)}
-        >
-          {featured.imageUrl
-            ? <div className="fimg"><img src={featured.imageUrl} alt={featured.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
-            : <div className="fimg ph"><span className="ph-label">project cover</span></div>
-          }
-          <div className="fbody">
-            <div className="pt">
-              <span className="yr">{featured.releasedDate ? new Date(featured.releasedDate).getFullYear() : ''}</span>
-            </div>
-            <h3>{featured.name}</h3>
-            <div className="ptags">
-              {(featured.languages ?? []).map((l: string, i: number) => <span className="tag" key={i}>{l}</span>)}
-            </div>
-          </div>
-        </section>
-      ) : (
-        <section className="feature fimg ph">
-          <p className="ph-label">No featured project yet.</p>
-        </section>
-      )}
+      <div className="sl"><span className="n">01</span><h2>pinned</h2><span className="rule" /></div>
+      <section className="projs">
+        {pinnedItems.map((p, i) => renderProjectRow(p, i, navigate))}
+        {pinnedItems.length === 0 && (
+          <p style={{ fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--ink-3)' }}>No pinned projects.</p>
+        )}
+      </section>
 
       <div className="sl">
         <span className="n">02</span>
         <h2>all_projects</h2>
         <span className="rule" />
-        {projects.length > 0 && <span className="more">{projects.length} repos</span>}
       </div>
       <section className="projs">
-        {projects.map((p, i) => {
-          const id = p._id ?? p.id
-          const name = p.name ?? 'Untitled'
-          const year = p.releasedDate ? new Date(p.releasedDate).getFullYear() : ''
-          const languages: string[] = p.languages ?? []
-          const role: string = p.type ?? p.category ?? 'project'
-          const desc: string = p.description ?? ''
-          const imgUrl: string = p.imageUrl ?? ''
-          return (
-            <div
-              className="proj"
-              key={id}
-              onClick={() => navigate(`/work/view/${name.replace(/\s+/g, '-')}?id=${id}`)}
-              data-title={name}
-              data-role={role}
-              data-year={year}
-              data-desc={desc}
-              data-tags={languages.join(',')}
-              data-img={imgUrl}
-            >
-              <span className="idx">{String(i + 1).padStart(2, '0')}</span>
-              <div>
-                <div className="pt"><h4>{name}</h4></div>
-                <div className="ptags">
-                  {languages.map((l, j) => <span className="tag" key={j}>{l}</span>)}
-                </div>
-              </div>
-              <span className="yr">{year}</span>
-            </div>
-          )
-        })}
-        {projects.length === 0 && (
-          <p style={{ fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--ink-3)' }}>No projects yet.</p>
+        {visibleNonPinned.map((p, i) => renderProjectRow(p, i, navigate))}
+        {visibleNonPinned.length === 0 && pinnedItems.length > 0 && (
+          <p style={{ fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--ink-3)' }}>No more projects.</p>
         )}
       </section>
+      {showMoreButton && (
+        <button
+          className="show-more"
+          style={{ fontFamily: 'var(--mono)', fontSize: '13px', cursor: 'pointer', marginTop: '12px' }}
+          onClick={loadMore}
+        >
+          show more
+        </button>
+      )}
 
       <TerminalContactSection />
 

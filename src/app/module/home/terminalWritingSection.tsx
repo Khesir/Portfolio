@@ -10,15 +10,15 @@ function fmtDate(iso: string): string {
 	return `${yyyy}.${mm}.${dd}`;
 }
 
-export function TerminalWritingSection() {
+export function TerminalWritingSection({count = 3}: {count?: number}) {
 	const [blogs, setBlogs] = useState<any[]>([]);
 	const navigate = useNavigate();
 
 	useEffect(() => {
 		fetchBlogs()
-			.then((data) => setBlogs(Array.isArray(data) ? data.slice(0, 3) : []))
+			.then((data) => setBlogs(Array.isArray(data) ? data.slice(0, count) : []))
 			.catch(() => setBlogs([]));
-	}, []);
+	}, [count]);
 
 	return (
 		<>

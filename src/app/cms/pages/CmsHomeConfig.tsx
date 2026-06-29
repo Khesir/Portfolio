@@ -5,13 +5,14 @@ import {
 	StatusType,
 	StatusConfig,
 	BannerButton,
-	LanguageEntry,
+	NeofetchRow,
+	SocialLink,
 } from '@/app/api/cms';
 import {toast} from 'sonner';
-import IconSelector from '../components/IconSelector';
 import ImageUpload from '../components/ImageUpload';
 import BannerButtonEditor from '../components/BannerButtonEditor';
-import {iconLabel} from '@/hooks/use-home-config';
+import TagInput from '../components/TagInput';
+import IconSelector from '../components/IconSelector';
 
 const STATUS_OPTIONS: {type: StatusType; label: string; color: string}[] = [
 	{type: 'online', label: 'Online', color: '#4ade80'},
@@ -33,12 +34,19 @@ export default function CmsHomeConfig() {
 	const [contactEmail, setContactEmail] = useState('');
 	const [description, setDescription] = useState('');
 	const [status, setStatus] = useState<StatusConfig>({type: 'online'});
-	const [languages, setLanguages] = useState<LanguageEntry[]>([]);
 	const [profileImageUrl, setProfileImageUrl] = useState('');
 	const [bannerImageUrl, setBannerImageUrl] = useState('');
-	const [bannerTitle, setBannerTitle] = useState('');
-	const [bannerSubtitle, setBannerSubtitle] = useState('');
-	const [bannerButtons, setBannerButtons] = useState<BannerButton[]>([]);
+	const [heroButtons, setHeroButtons] = useState<BannerButton[]>([]);
+	const [neofetchRows, setNeofetchRows] = useState<NeofetchRow[]>([]);
+	const [location, setLocation] = useState('');
+	const [tags, setTags] = useState<string[]>([]);
+	const [selectedWorkCount, setSelectedWorkCount] = useState(3);
+	const [writingCount, setWritingCount] = useState(3);
+	const [contactHeading, setContactHeading] = useState('');
+	const [contactSubtext, setContactSubtext] = useState('');
+	const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
+	const [footerCopyright, setFooterCopyright] = useState('');
+	const [footerTagline, setFooterTagline] = useState('');
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [savedAt, setSavedAt] = useState<Date | null>(null);
@@ -52,12 +60,19 @@ export default function CmsHomeConfig() {
 				setContactEmail(data?.contactEmail ?? '');
 				setDescription(data?.description ?? '');
 				setStatus(data?.status ?? {type: 'online'});
-				setLanguages(data?.languages ?? []);
 				setProfileImageUrl(data?.profileImageUrl ?? '');
 				setBannerImageUrl(data?.bannerImageUrl ?? '');
-				setBannerTitle(data?.bannerTitle ?? '');
-				setBannerSubtitle(data?.bannerSubtitle ?? '');
-				setBannerButtons(data?.bannerButtons ?? []);
+				setHeroButtons(data?.heroButtons ?? []);
+				setNeofetchRows(data?.neofetchRows ?? []);
+				setLocation(data?.location ?? '');
+				setTags(data?.tags ?? []);
+				setSelectedWorkCount(data?.selectedWorkCount ?? 3);
+				setWritingCount(data?.writingCount ?? 3);
+				setContactHeading(data?.contactHeading ?? '');
+				setContactSubtext(data?.contactSubtext ?? '');
+				setSocialLinks(data?.socialLinks ?? []);
+				setFooterCopyright(data?.footerCopyright ?? '');
+				setFooterTagline(data?.footerTagline ?? '');
 			})
 			.catch(() => toast.error('Failed to load config'))
 			.finally(() => setLoading(false));
@@ -73,12 +88,19 @@ export default function CmsHomeConfig() {
 				contactEmail,
 				description,
 				status,
-				languages,
 				profileImageUrl,
 				bannerImageUrl,
-				bannerTitle,
-				bannerSubtitle,
-				bannerButtons,
+				heroButtons,
+				neofetchRows,
+				location,
+				tags,
+				selectedWorkCount,
+				writingCount,
+				contactHeading,
+				contactSubtext,
+				socialLinks,
+				footerCopyright,
+				footerTagline,
 			});
 			setSavedAt(new Date());
 			toast.success('Home config saved');
@@ -90,20 +112,25 @@ export default function CmsHomeConfig() {
 	};
 
 	const updateBtn = (i: number, b: BannerButton) =>
-		setBannerButtons((prev) => prev.map((x, j) => (j === i ? b : x)));
+		setHeroButtons((prev) => prev.map((x, j) => (j === i ? b : x)));
 	const removeBtn = (i: number) =>
-		setBannerButtons((prev) => prev.filter((_, j) => j !== i));
+		setHeroButtons((prev) => prev.filter((_, j) => j !== i));
 	const addBtn = () =>
-		setBannerButtons((prev) => [...prev, {label: '', action: 'contact'}]);
+		setHeroButtons((prev) => [...prev, {label: '', action: 'contact'}]);
 
-	const updateLang = (i: number, patch: Partial<LanguageEntry>) =>
-		setLanguages((prev) =>
-			prev.map((x, j) => (j === i ? {...x, ...patch} : x)),
-		);
-	const removeLang = (i: number) =>
-		setLanguages((prev) => prev.filter((_, j) => j !== i));
-	const addLang = () =>
-		setLanguages((prev) => [...prev, {icon: '', label: ''}]);
+	const updateRow = (i: number, patch: Partial<NeofetchRow>) =>
+		setNeofetchRows((prev) => prev.map((x, j) => (j === i ? {...x, ...patch} : x)));
+	const removeRow = (i: number) =>
+		setNeofetchRows((prev) => prev.filter((_, j) => j !== i));
+	const addRow = () =>
+		setNeofetchRows((prev) => [...prev, {key: '', value: ''}]);
+
+	const updateLink = (i: number, patch: Partial<SocialLink>) =>
+		setSocialLinks((prev) => prev.map((x, j) => (j === i ? {...x, ...patch} : x)));
+	const removeLink = (i: number) =>
+		setSocialLinks((prev) => prev.filter((_, j) => j !== i));
+	const addLink = () =>
+		setSocialLinks((prev) => [...prev, {label: '', href: '', icon: ''}]);
 
 	if (loading) return <p>Loading...</p>;
 
@@ -121,41 +148,14 @@ export default function CmsHomeConfig() {
 
 			<form className="cms-form" onSubmit={handleSubmit}>
 				<div className="fsection">
-					<h2>Availability Banner</h2>
-					<div className="field">
-						<label>
-							Banner image <span className="opt">optional</span>
-						</label>
-						<ImageUpload value={bannerImageUrl} onChange={setBannerImageUrl} />
-					</div>
-					<div className="frow">
-						<div className="field">
-							<label>Title</label>
-							<input
-								type="text"
-								value={bannerTitle}
-								onChange={(e) => setBannerTitle(e.target.value)}
-								placeholder="Open for Freelance & Collaborations"
-							/>
-						</div>
-						<div className="field">
-							<label>Subtitle</label>
-							<input
-								type="text"
-								value={bannerSubtitle}
-								onChange={(e) => setBannerSubtitle(e.target.value)}
-								placeholder="Let's work together..."
-							/>
-						</div>
-					</div>
 					<div className="fhead">
-						<label>Buttons</label>
+						<h2>Hero Buttons</h2>
 						<button type="button" className="btn-ol" onClick={addBtn}>
 							Add button
 						</button>
 					</div>
 					<div className="rep">
-						{bannerButtons.map((btn, i) => (
+						{heroButtons.map((btn, i) => (
 							<BannerButtonEditor
 								key={i}
 								btn={btn}
@@ -164,6 +164,45 @@ export default function CmsHomeConfig() {
 								onRemove={removeBtn}
 							/>
 						))}
+					</div>
+					<div className="frow" style={{marginTop: 16}}>
+						<div className="field">
+							<label>Location</label>
+							<input
+								type="text"
+								value={location}
+								onChange={(e) => setLocation(e.target.value)}
+								placeholder="Philippines · UTC+8"
+							/>
+						</div>
+					</div>
+					<div className="field" style={{marginTop: 8}}>
+						<label>Tags</label>
+						<TagInput
+							value={tags}
+							onChange={setTags}
+							placeholder="Add tag, press Enter"
+						/>
+					</div>
+					<div className="frow" style={{marginTop: 8}}>
+						<div className="field">
+							<label>Selected work preview count</label>
+							<input
+								type="number"
+								min={1}
+								value={selectedWorkCount}
+								onChange={(e) => setSelectedWorkCount(Number(e.target.value))}
+							/>
+						</div>
+						<div className="field">
+							<label>Writing preview count</label>
+							<input
+								type="number"
+								min={1}
+								value={writingCount}
+								onChange={(e) => setWritingCount(Number(e.target.value))}
+							/>
+						</div>
 					</div>
 				</div>
 
@@ -200,6 +239,12 @@ export default function CmsHomeConfig() {
 					<div className="field">
 						<label>Profile image</label>
 						<ImageUpload value={profileImageUrl} onChange={setProfileImageUrl} />
+					</div>
+					<div className="field">
+						<label>
+							Banner image <span className="opt">optional</span>
+						</label>
+						<ImageUpload value={bannerImageUrl} onChange={setBannerImageUrl} />
 					</div>
 					<div className="frow">
 						<div className="field">
@@ -244,48 +289,125 @@ export default function CmsHomeConfig() {
 
 				<div className="fsection">
 					<div className="fhead">
-						<h2>Languages / Tech Stack</h2>
-						<button type="button" className="btn-ol" onClick={addLang}>
-							Add language
+						<h2>Neofetch</h2>
+						<button type="button" className="btn-ol" onClick={addRow}>
+							Add row
 						</button>
 					</div>
 					<div className="rep">
-						{languages.map((entry, i) => (
+						{neofetchRows.map((row, i) => (
 							<div key={i} className="rep-row">
 								<span className="grip">⠿</span>
-								<div className="ico">
-									{entry.label ||
-										iconLabel(entry.icon) ||
-										entry.icon.split(':').pop()?.slice(0, 3) ||
-										'?'}
-								</div>
 								<div className="rmain">
-									<div className="field">
-										<IconSelector
-											value={entry.icon}
-											onChange={(icon) => updateLang(i, {icon})}
-										/>
-									</div>
-									<div className="field">
-										<input
-											type="text"
-											value={entry.label ?? ''}
-											onChange={(e) =>
-												updateLang(i, {label: e.target.value})
-											}
-											placeholder={iconLabel(entry.icon) || 'Display name'}
-										/>
+									<div className="frow">
+										<div className="field">
+											<input
+												type="text"
+												value={row.key}
+												onChange={(e) => updateRow(i, {key: e.target.value})}
+												placeholder="Key (e.g. Role)"
+											/>
+										</div>
+										<div className="field">
+											<input
+												type="text"
+												value={row.value}
+												onChange={(e) => updateRow(i, {value: e.target.value})}
+												placeholder="Value (e.g. Full-Stack · Toolmaker)"
+											/>
+										</div>
 									</div>
 								</div>
-								<button
-									type="button"
-									className="rm"
-									onClick={() => removeLang(i)}
-								>
+								<button type="button" className="rm" onClick={() => removeRow(i)}>
 									Remove
 								</button>
 							</div>
 						))}
+					</div>
+				</div>
+
+				<div className="fsection">
+					<div className="fhead">
+						<h2>Footer &amp; Contact</h2>
+						<button type="button" className="btn-ol" onClick={addLink}>
+							Add social link
+						</button>
+					</div>
+					<div className="frow">
+						<div className="field">
+							<label>Contact heading</label>
+							<input
+								type="text"
+								value={contactHeading}
+								onChange={(e) => setContactHeading(e.target.value)}
+								placeholder="Let's build something..."
+							/>
+						</div>
+					</div>
+					<div className="field">
+						<label>Contact subtext</label>
+						<input
+							type="text"
+							value={contactSubtext}
+							onChange={(e) => setContactSubtext(e.target.value)}
+							placeholder="Open for engineering work..."
+						/>
+					</div>
+					<div className="rep" style={{marginTop: 8}}>
+						{socialLinks.map((link, i) => (
+							<div key={i} className="rep-row">
+								<span className="grip">⠿</span>
+								<div className="rmain">
+									<div className="frow">
+										<div className="field">
+											<input
+												type="text"
+												value={link.label}
+												onChange={(e) => updateLink(i, {label: e.target.value})}
+												placeholder="Label (e.g. GitHub)"
+											/>
+										</div>
+										<div className="field">
+											<input
+												type="text"
+												value={link.href}
+												onChange={(e) => updateLink(i, {href: e.target.value})}
+												placeholder="https://..."
+											/>
+										</div>
+										<div className="field">
+											<IconSelector
+												value={link.icon}
+												onChange={(icon) => updateLink(i, {icon})}
+											/>
+										</div>
+									</div>
+								</div>
+								<button type="button" className="rm" onClick={() => removeLink(i)}>
+									Remove
+								</button>
+							</div>
+						))}
+					</div>
+					<div className="frow" style={{marginTop: 16}}>
+						<div className="field">
+							<label>Footer copyright</label>
+							<input
+								type="text"
+								value={footerCopyright}
+								onChange={(e) => setFooterCopyright(e.target.value)}
+								placeholder="© 2026 AJ — Khesir"
+							/>
+						</div>
+						<div className="field">
+							<label>Footer tagline</label>
+							<input
+								type="text"
+								value={footerTagline}
+								onChange={(e) => setFooterTagline(e.target.value)}
+								placeholder='direction B — "Terminal" · tech-first'
+							/>
+						</div>
 					</div>
 				</div>
 

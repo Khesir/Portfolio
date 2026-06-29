@@ -59,8 +59,8 @@ export function TerminalLayout({children}: {children: ReactNode}) {
 			</div>
 
 			<footer className="foot">
-				<span>© 2026 AJ — Khesir</span>
-				<span>direction B — "Terminal" · tech-first</span>
+				<span>{config.footerCopyright}</span>
+				<span>{config.footerTagline}</span>
 			</footer>
 		</>
 	);

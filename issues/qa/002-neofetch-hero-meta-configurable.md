@@ -2,7 +2,7 @@
 id: issue-002
 title: "Neofetch rows + hero meta tags configurable"
 feature: home-config
-status: backlog
+status: qa
 created_at: 2026-06-28
 tags: [afk, p2]
 ---
@@ -65,4 +65,4 @@ The `TagInput` component is already used in `CmsProjects` and `CmsBlogs` — reu
 
 ## Log
 
-_Updated as work progresses._
+Implemented 2026-06-29. Added neofetchRows, location, tags to UpdateHomeConfigDto, fetchHomeConfig mock, HomeConfig interface, and DEFAULT_HOME. TerminalHomePage now renders neofetch rows from config.neofetchRows and .hmeta from config.location/tags. CmsHomeConfig has new Neofetch section (key-value list editor) and Hero section extensions (location, tags, count inputs). Added 5 tests to terminalHomePage.test.tsx.

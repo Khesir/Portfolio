@@ -21,10 +21,10 @@ function makeBlogs(count: number) {
 	}));
 }
 
-function renderComponent() {
+function renderComponent(props: {count?: number} = {}) {
 	return render(
 		<MemoryRouter>
-			<TerminalWritingSection />
+			<TerminalWritingSection {...props} />
 		</MemoryRouter>,
 	);
 }
@@ -49,7 +49,7 @@ describe('TerminalWritingSection', () => {
 		});
 	});
 
-	it('shows at most 3 blogs when 5 are returned', async () => {
+	it('shows at most count blogs when more are returned (default 3)', async () => {
 		mockFetchBlogs.mockResolvedValue(makeBlogs(5));
 		renderComponent();
 		await waitFor(() => {
@@ -58,6 +58,15 @@ describe('TerminalWritingSection', () => {
 		});
 		expect(screen.queryByText('Blog Post 4')).not.toBeInTheDocument();
 		expect(screen.queryByText('Blog Post 5')).not.toBeInTheDocument();
+	});
+
+	it('respects count prop when set to 1', async () => {
+		mockFetchBlogs.mockResolvedValue(makeBlogs(5));
+		renderComponent({count: 1});
+		await waitFor(() => {
+			expect(screen.getByText('Blog Post 1')).toBeInTheDocument();
+		});
+		expect(screen.queryByText('Blog Post 2')).not.toBeInTheDocument();
 	});
 
 	it('renders first tag as category chip', async () => {

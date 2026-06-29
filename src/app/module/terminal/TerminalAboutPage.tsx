@@ -3,13 +3,16 @@ import {TerminalLayout} from './TerminalLayout';
 import {useAboutConfig} from '@/hooks/use-home-config';
 import {TerminalContactSection} from '../home/terminalContactSection';
 import {fetchExperiences} from '@/app/api/experience';
+import {MarkDownComponent} from '@/app/_components/readPage/readingPage';
 
 export default function TerminalAboutPage() {
 	const {config: about} = useAboutConfig();
 	const [experiences, setExperiences] = useState<any[]>([]);
+	const [showingAll, setShowingAll] = useState(false);
+	const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
 	useEffect(() => {
-		fetchExperiences(10).then(setExperiences);
+		fetchExperiences(5).then(setExperiences);
 	}, []);
 
 	return (
@@ -25,9 +28,8 @@ export default function TerminalAboutPage() {
 					<img src={about.profileImageUrl || '/img/profile2.jpg'} alt="AJ" />
 				</div>
 				<div className="prose">
-					<p className="lead">I build software — and I build the tools that build software.</p>
-					<p>I'm a full-stack engineer shipping web and mobile apps in <strong>TypeScript, C#, Python and Flutter</strong>. I enjoy spotting the slow, repetitive parts of a workflow and replacing them with a tool, an API or an automation.</p>
-					<p>Lately a lot of that is AI-driven — wiring up <strong>agentic workflows</strong> with n8n and LLMs. Off the screen I'm at the gym or buried in a book. Always building something.</p>
+					{about.bioTagline && <p className="lead">{about.bioTagline}</p>}
+					{about.bioBody && <MarkDownComponent markdown={about.bioBody} />}
 				</div>
 			</section>
 
@@ -94,14 +96,29 @@ export default function TerminalAboutPage() {
 					const startYr = e.durationStart ? new Date(e.durationStart).getFullYear() : '';
 					const endYr = e.durationEnd ? String(new Date(e.durationEnd).getFullYear()).slice(-2) : null;
 					const yr = endYr ? `${startYr} — ${endYr}` : `${startYr} —`;
+					const isExpanded = expandedIdx === i;
 					return (
-						<div className="exp-row" key={i}>
-							<span className={`box${i === 0 ? ' now' : ''}`} />
-							<div>
-								<h4>{e.position}</h4>
-								<div className="place">{e.companyName} · {e.jobType}</div>
+						<div key={i}>
+							<div
+								className="exp-row"
+								style={{cursor: 'pointer'}}
+								onClick={() => setExpandedIdx(isExpanded ? null : i)}
+							>
+								<span className={`box${i === 0 ? ' now' : ''}`} />
+								<div>
+									<h4>{e.position}</h4>
+									<div className="place">{e.companyName} · {e.jobType}</div>
+								</div>
+								<span className="eyr">{yr}</span>
 							</div>
-							<span className="eyr">{yr}</span>
+							{isExpanded && (
+								<div className="exp-detail">
+									{e.pageMd
+										? <MarkDownComponent markdown={e.pageMd} />
+										: <p style={{fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--ink-3)'}}>No details available.</p>
+									}
+								</div>
+							)}
 						</div>
 					);
 				})}
@@ -114,6 +131,20 @@ export default function TerminalAboutPage() {
 						</div>
 						<span className="eyr">2025 —</span>
 					</div>
+				)}
+				{!showingAll && experiences.length === 5 && (
+					<button
+						className="show-more"
+						style={{fontFamily: 'var(--mono)', fontSize: '13px', cursor: 'pointer', marginTop: '12px'}}
+						onClick={() => {
+							fetchExperiences(20).then((list: any) => {
+								setExperiences(Array.isArray(list) ? list : []);
+								setShowingAll(true);
+							});
+						}}
+					>
+						show more
+					</button>
 				)}
 			</section>
 

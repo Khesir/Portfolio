@@ -22,10 +22,10 @@ function makeProject(overrides: object = {}) {
 	};
 }
 
-function renderSection() {
+function renderSection(props: {count?: number} = {}) {
 	return render(
 		<MemoryRouter>
-			<TerminalProjectsSection />
+			<TerminalProjectsSection {...props} />
 		</MemoryRouter>,
 	);
 }
@@ -51,7 +51,7 @@ describe('TerminalProjectsSection', () => {
 		expect(screen.queryByText('Not Pinned')).not.toBeInTheDocument();
 	});
 
-	it('shows at most 3 projects', async () => {
+	it('shows at most count projects (default 3)', async () => {
 		mockFetch.mockResolvedValue([
 			makeProject({name: 'P1'}),
 			makeProject({name: 'P2'}),
@@ -65,6 +65,31 @@ describe('TerminalProjectsSection', () => {
 		expect(screen.getByText('P3')).toBeInTheDocument();
 		expect(screen.queryByText('P4')).not.toBeInTheDocument();
 		expect(screen.queryByText('P5')).not.toBeInTheDocument();
+	});
+
+	it('respects count prop when set to 2', async () => {
+		mockFetch.mockResolvedValue([
+			makeProject({name: 'Q1'}),
+			makeProject({name: 'Q2'}),
+			makeProject({name: 'Q3'}),
+		]);
+		renderSection({count: 2});
+		await screen.findByText('Q1');
+		expect(screen.getByText('Q2')).toBeInTheDocument();
+		expect(screen.queryByText('Q3')).not.toBeInTheDocument();
+	});
+
+	it('respects count prop when set to 5', async () => {
+		mockFetch.mockResolvedValue([
+			makeProject({name: 'R1'}),
+			makeProject({name: 'R2'}),
+			makeProject({name: 'R3'}),
+			makeProject({name: 'R4'}),
+			makeProject({name: 'R5'}),
+		]);
+		renderSection({count: 5});
+		await screen.findByText('R1');
+		expect(screen.getByText('R5')).toBeInTheDocument();
 	});
 
 	it('shows empty state when no pinned projects', async () => {

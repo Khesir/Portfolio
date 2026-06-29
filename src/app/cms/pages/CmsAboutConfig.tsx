@@ -7,6 +7,7 @@ import {
 } from '@/app/api/cms';
 import {toast} from 'sonner';
 import TagInput from '../components/TagInput';
+import ImageUpload from '../components/ImageUpload';
 
 function relativeTime(date: Date): string {
 	const secs = Math.floor((Date.now() - date.getTime()) / 1000);
@@ -64,6 +65,8 @@ export default function CmsAboutConfig() {
 	const [professionalSummary, setProfessionalSummary] = useState('');
 	const [technicalSkills, setTechnicalSkills] = useState<SkillCategoryDto[]>([]);
 	const [coreCompetencies, setCoreCompetencies] = useState<string[]>([]);
+	const [bioTagline, setBioTagline] = useState('');
+	const [bioBody, setBioBody] = useState('');
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [savedAt, setSavedAt] = useState<Date | null>(null);
@@ -79,6 +82,8 @@ export default function CmsAboutConfig() {
 				setProfessionalSummary(data?.professionalSummary ?? '');
 				setTechnicalSkills(data?.technicalSkills ?? []);
 				setCoreCompetencies(data?.coreCompetencies ?? []);
+				setBioTagline(data?.bioTagline ?? '');
+				setBioBody(data?.bioBody ?? '');
 			})
 			.catch(() => toast.error('Failed to load about config'))
 			.finally(() => setLoading(false));
@@ -97,6 +102,8 @@ export default function CmsAboutConfig() {
 				professionalSummary,
 				technicalSkills,
 				coreCompetencies,
+				bioTagline,
+				bioBody,
 			});
 			setSavedAt(new Date());
 			toast.success('About config saved');
@@ -129,6 +136,35 @@ export default function CmsAboutConfig() {
 			</div>
 
 			<form className="cms-form" onSubmit={handleSubmit}>
+				<div className="fsection">
+					<h2>Profile</h2>
+					<ImageUpload
+						value={profileImageUrl}
+						onChange={setProfileImageUrl}
+					/>
+				</div>
+
+				<div className="fsection">
+					<h2>Bio</h2>
+					<div className="field">
+						<label>Tagline</label>
+						<input
+							type="text"
+							value={bioTagline}
+							onChange={(e) => setBioTagline(e.target.value)}
+							placeholder="I build software — and I build the tools that build software."
+						/>
+					</div>
+					<div className="field mono">
+						<label>Bio body · markdown</label>
+						<textarea
+							value={bioBody}
+							onChange={(e) => setBioBody(e.target.value)}
+							placeholder="I'm a full-stack engineer..."
+						/>
+					</div>
+				</div>
+
 				<div className="fsection">
 					<h2>
 						Professional summary{' '}

@@ -5,6 +5,8 @@ import TerminalHomePage from '../terminalHomePage';
 
 vi.mock('@/hooks/use-home-config', () => ({
 	useHomeConfig: vi.fn(),
+	useAboutConfig: vi.fn(() => ({config: {technicalSkills: [], coreCompetencies: []}, loading: false})),
+	useServiceConfig: vi.fn(() => ({config: {services: []}, loading: false})),
 }));
 
 import {useHomeConfig} from '@/hooks/use-home-config';
@@ -17,12 +19,25 @@ const DEFAULT_CONFIG = {
 	description: 'Building things with code.',
 	contactEmail: 'test@example.com',
 	status: {type: 'online' as const},
-	languages: [],
-	bannerTitle: '',
-	bannerSubtitle: '',
-	bannerButtons: [],
+	heroButtons: [
+		{label: 'View work →', to: '/work'},
+		{label: '$ cat about.me', to: '/about'},
+	],
 	profileImageUrl: 'https://example.com/photo.jpg',
 	bannerImageUrl: '',
+	neofetchRows: [
+		{key: 'Role', value: 'Full-Stack · Toolmaker'},
+		{key: 'Lang', value: 'TypeScript · C#'},
+	],
+	location: 'Philippines · UTC+8',
+	tags: ['agentic AI', 'APIs & tooling'],
+	selectedWorkCount: 3,
+	writingCount: 3,
+	contactHeading: "Let's build something & make it faster.",
+	contactSubtext: 'Open for engineering work and collaborations.',
+	socialLinks: [],
+	footerCopyright: '© 2026 AJ — Khesir',
+	footerTagline: 'direction B — "Terminal" · tech-first',
 };
 
 function renderAt(path: string) {
@@ -37,7 +52,7 @@ function renderAt(path: string) {
 describe('TerminalHomePage', () => {
 	it('renders the brand link', () => {
 		renderAt('/');
-		expect(screen.getByRole('link', {name: /AJ Rizaldo/i})).toBeInTheDocument();
+		expect(screen.getByRole('link', {name: /khesir/i})).toBeInTheDocument();
 	});
 
 	it('~/home nav link has the "on" active class when at /', () => {
@@ -52,10 +67,10 @@ describe('TerminalHomePage', () => {
 		expect(link).toHaveAttribute('href', '/about');
 	});
 
-	it('renders /work nav link pointing to /projects', () => {
+	it('renders /work nav link pointing to /work', () => {
 		renderAt('/');
 		const link = screen.getByRole('link', {name: '/work'});
-		expect(link).toHaveAttribute('href', '/projects');
+		expect(link).toHaveAttribute('href', '/work');
 	});
 
 	it('renders /blog nav link pointing to /blogs', () => {
@@ -81,16 +96,29 @@ describe('TerminalHomePage', () => {
 		expect(screen.getByText('Building things with code.')).toBeInTheDocument();
 	});
 
-	it('"View work →" link points to /projects', () => {
+	it('"View work →" link points to /work', () => {
 		renderAt('/');
 		const link = screen.getByRole('link', {name: 'View work →'});
-		expect(link).toHaveAttribute('href', '/projects');
+		expect(link).toHaveAttribute('href', '/work');
 	});
 
 	it('"$ cat about.me" link points to /about', () => {
 		renderAt('/');
 		const link = screen.getByRole('link', {name: '$ cat about.me'});
 		expect(link).toHaveAttribute('href', '/about');
+	});
+
+	it('renders heroButtons from config', () => {
+		mockUseHomeConfig.mockReturnValue({
+			config: {...DEFAULT_CONFIG, heroButtons: [{label: 'Custom Btn', to: '/custom'}]},
+			loading: false,
+		});
+		render(
+			<MemoryRouter initialEntries={['/']}>
+				<TerminalHomePage />
+			</MemoryRouter>,
+		);
+		expect(screen.getByRole('link', {name: 'Custom Btn'})).toBeInTheDocument();
 	});
 
 	it('shows "available for work" badge when status is online', () => {
@@ -116,5 +144,49 @@ describe('TerminalHomePage', () => {
 		);
 		const img = screen.getByAltText('Khesir');
 		expect(img).toHaveAttribute('src', '/img/Mee.png');
+	});
+
+	it('renders neofetchRows from config', () => {
+		renderAt('/');
+		expect(screen.getByText('Role')).toBeInTheDocument();
+		expect(screen.getByText('Full-Stack · Toolmaker')).toBeInTheDocument();
+		expect(screen.getByText('Lang')).toBeInTheDocument();
+	});
+
+	it('renders location in hmeta from config', () => {
+		renderAt('/');
+		expect(screen.getByText('Philippines · UTC+8')).toBeInTheDocument();
+	});
+
+	it('renders tags in hmeta from config', () => {
+		renderAt('/');
+		expect(screen.getByText('agentic AI')).toBeInTheDocument();
+		expect(screen.getByText('APIs & tooling')).toBeInTheDocument();
+	});
+
+	it('renders empty neofetchRows without crashing', () => {
+		mockUseHomeConfig.mockReturnValue({
+			config: {...DEFAULT_CONFIG, neofetchRows: []},
+			loading: false,
+		});
+		render(
+			<MemoryRouter initialEntries={['/']}>
+				<TerminalHomePage />
+			</MemoryRouter>,
+		);
+		expect(screen.queryByText('Role')).not.toBeInTheDocument();
+	});
+
+	it('renders empty tags without crashing', () => {
+		mockUseHomeConfig.mockReturnValue({
+			config: {...DEFAULT_CONFIG, tags: []},
+			loading: false,
+		});
+		render(
+			<MemoryRouter initialEntries={['/']}>
+				<TerminalHomePage />
+			</MemoryRouter>,
+		);
+		expect(screen.queryByText('agentic AI')).not.toBeInTheDocument();
 	});
 });

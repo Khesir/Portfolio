@@ -11,6 +11,7 @@ function fmtDate(iso: string): string {
 
 export default function TerminalBlogPage() {
 	const [blogs, setBlogs] = useState<any[]>([])
+	const [visibleCount, setVisibleCount] = useState(5)
 	const navigate = useNavigate()
 
 	useEffect(() => {
@@ -18,7 +19,7 @@ export default function TerminalBlogPage() {
 	}, [])
 
 	const latest = blogs[0] ?? null
-	const rest = blogs.slice(1)
+	const rest = blogs.slice(1, visibleCount)
 
 	return (
 		<TerminalLayout>
@@ -91,6 +92,16 @@ export default function TerminalBlogPage() {
 					<p style={{ fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--ink-3)' }}>No posts yet.</p>
 				)}
 			</section>
+
+			{blogs.length > visibleCount && (
+				<button
+					className="show-more"
+					style={{fontFamily: 'var(--mono)', fontSize: '13px', cursor: 'pointer', marginTop: '12px'}}
+					onClick={() => setVisibleCount(prev => prev + 5)}
+				>
+					show more
+				</button>
+			)}
 
 			<TerminalContactSection />
 		</TerminalLayout>

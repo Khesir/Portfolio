@@ -2,15 +2,15 @@ import {useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {fetchFeaturedProjects} from '@/app/api/projects';
 
-export function TerminalProjectsSection() {
+export function TerminalProjectsSection({count = 3}: {count?: number}) {
 	const [projects, setProjects] = useState<any[]>([]);
 	const navigate = useNavigate();
 
 	useEffect(() => {
 		fetchFeaturedProjects().then((data: any[]) => {
-			setProjects(data.filter((p) => p.pinned === true).slice(0, 3));
+			setProjects(data.filter((p) => p.pinned === true).slice(0, count));
 		});
-	}, []);
+	}, [count]);
 
 	return (
 		<>
