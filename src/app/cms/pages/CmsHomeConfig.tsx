@@ -5,273 +5,77 @@ import {
 	StatusType,
 	StatusConfig,
 	BannerButton,
-	LanguageEntry,
+	NeofetchRow,
+	SocialLink,
 } from '@/app/api/cms';
-import {Button} from '@/components/ui/Button';
-import {Input} from '@/components/ui/input';
-import {Label} from '@/components/ui/label';
-import {Textarea} from '@/components/ui/textarea';
-import {Separator} from '@/components/ui/separator';
-import {Icon} from '@iconify/react';
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-} from '@/components/ui/dialog';
 import {toast} from 'sonner';
-import IconSelector from '../components/IconSelector';
 import ImageUpload from '../components/ImageUpload';
+import {invalidateHomeCache} from '@/hooks/use-home-config';
 import BannerButtonEditor from '../components/BannerButtonEditor';
-import {iconLabel, getStatusStyle} from '@/hooks/use-home-config';
+import TagInput from '../components/TagInput';
+import IconSelector from '../components/IconSelector';
 
-// --- Status selector ---
-
-const STATUS_OPTIONS: {type: StatusType; label: string; dot: string}[] = [
-	{type: 'online', label: 'Online', dot: 'bg-green-500'},
-	{type: 'idle', label: 'Idle', dot: 'bg-yellow-400'},
-	{type: 'dnd', label: 'Do Not Disturb', dot: 'bg-red-500'},
-	{type: 'custom', label: 'Custom', dot: 'bg-slate-400'},
+const STATUS_OPTIONS: {type: StatusType; label: string; color: string}[] = [
+	{type: 'online', label: 'Online', color: '#4ade80'},
+	{type: 'idle', label: 'Idle', color: '#facc15'},
+	{type: 'dnd', label: 'Do Not Disturb', color: '#f87171'},
+	{type: 'custom', label: 'Custom', color: '#94a3b8'},
 ];
 
-function StatusSelector({
-	value,
-	onChange,
-}: {
-	value: StatusConfig;
-	onChange: (s: StatusConfig) => void;
-}) {
-	return (
-		<div className="space-y-3">
-			<div className="flex gap-2 flex-wrap">
-				{STATUS_OPTIONS.map(({type, label, dot}) => (
-					<button
-						key={type}
-						type="button"
-						onClick={() => onChange({...value, type})}
-						className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-colors ${
-							value.type === type
-								? 'border-slate-900 dark:border-slate-100 bg-slate-100 dark:bg-slate-800 font-medium'
-								: 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400'
-						}`}
-					>
-						<span className={`w-2.5 h-2.5 rounded-full ${dot}`} />
-						{label}
-					</button>
-				))}
-			</div>
-
-			{value.type === 'custom' && (
-				<div className="grid grid-cols-2 gap-3 pl-1">
-					<div className="space-y-1.5">
-						<Label className="text-xs">Emoji</Label>
-						<Input
-							value={value.emoji ?? ''}
-							onChange={(e) => onChange({...value, emoji: e.target.value})}
-							placeholder="💬"
-							className="text-sm"
-						/>
-					</div>
-					<div className="space-y-1.5">
-						<Label className="text-xs">Message</Label>
-						<Input
-							value={value.message ?? ''}
-							onChange={(e) => onChange({...value, message: e.target.value})}
-							placeholder="Working on something cool..."
-							className="text-sm"
-						/>
-					</div>
-				</div>
-			)}
-
-			{value.type !== 'custom' && (
-				<div className="pl-1 space-y-1.5">
-					<Label className="text-xs">
-						Custom message{' '}
-						<span className="text-slate-400 font-normal">optional</span>
-					</Label>
-					<Input
-						value={value.message ?? ''}
-						onChange={(e) => onChange({...value, message: e.target.value})}
-						placeholder="Available for work..."
-						className="text-sm"
-					/>
-				</div>
-			)}
-		</div>
-	);
+function relativeTime(date: Date): string {
+	const secs = Math.floor((Date.now() - date.getTime()) / 1000);
+	if (secs < 60) return 'just now';
+	if (secs < 3600) return `${Math.floor(secs / 60)}m ago`;
+	return `${Math.floor(secs / 3600)}h ago`;
 }
-
-// --- Preview ---
-
-function HomePreview({
-	name,
-	role,
-	description,
-	status,
-	languages,
-	profileImageUrl,
-	bannerImageUrl,
-	bannerTitle,
-	bannerSubtitle,
-	bannerButtons,
-}: {
-	name: string;
-	role: string;
-	description: string;
-	status: StatusConfig;
-	languages: LanguageEntry[];
-	profileImageUrl: string;
-	bannerImageUrl: string;
-	bannerTitle: string;
-	bannerSubtitle: string;
-	bannerButtons: BannerButton[];
-}) {
-	const style = getStatusStyle(status.type);
-
-	return (
-		<div className="space-y-4 p-1">
-			{/* Profile card */}
-			<div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden space-y-3">
-				{bannerImageUrl && (
-					<div className="h-16 w-full overflow-hidden">
-						<img
-							src={bannerImageUrl}
-							alt="Banner"
-							className="w-full h-full object-cover"
-						/>
-					</div>
-				)}
-				<div className="px-4 pb-4 space-y-2">
-					<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-2">
-						Profile Card
-					</p>
-					<div className="flex items-center gap-2">
-						<img
-							src={profileImageUrl || '/img/profile2.jpg'}
-							alt="Profile"
-							className="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-slate-700"
-						/>
-						<p className="font-bold text-base text-slate-900 dark:text-white">
-							{name || 'Your Name'}
-						</p>
-					</div>
-					{role && (
-						<p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
-							{role}
-						</p>
-					)}
-					{description && (
-						<p className="text-xs text-slate-600 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">
-							{description}
-						</p>
-					)}
-					{languages.length > 0 && (
-						<div className="flex flex-wrap gap-1.5 pt-1">
-							{languages.map((entry, i) => (
-								<div
-									key={i}
-									className="flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-md"
-								>
-									{entry.icon && (
-										<Icon icon={entry.icon} className="w-3.5 h-3.5" />
-									)}
-									<span className="text-xs">
-										{entry.label || iconLabel(entry.icon)}
-									</span>
-								</div>
-							))}
-						</div>
-					)}
-				</div>
-			</div>
-
-			{/* Availabanner */}
-			<div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-3">
-				<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-					Availabanner
-				</p>
-
-				{/* Status badge */}
-				<div
-					className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-full border text-xs font-medium ${style.pill}`}
-				>
-					{status.type === 'custom' && status.emoji ? (
-						<span>{status.emoji}</span>
-					) : (
-						<span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} />
-					)}
-					<span>
-						{status.type === 'custom'
-							? status.message || 'Custom Status'
-							: status.message || style.text}
-					</span>
-				</div>
-
-				{bannerTitle && (
-					<p className="font-bold text-sm text-slate-900 dark:text-white">
-						{bannerTitle}
-					</p>
-				)}
-				{bannerSubtitle && (
-					<p className="text-xs text-slate-500">{bannerSubtitle}</p>
-				)}
-
-				{bannerButtons.length > 0 && (
-					<div className="flex flex-wrap gap-2 pt-1">
-						{bannerButtons.map((btn, i) => (
-							<div
-								key={i}
-								className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border ${
-									(btn.variant ?? 'primary') === 'secondary'
-										? 'bg-transparent border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
-										: 'bg-slate-900 dark:bg-white border-transparent text-white dark:text-slate-900'
-								}`}
-							>
-								{btn.icon && <Icon icon={btn.icon} className="w-3 h-3" />}
-								{btn.label}
-							</div>
-						))}
-					</div>
-				)}
-			</div>
-		</div>
-	);
-}
-
-// --- Page ---
 
 export default function CmsHomeConfig() {
 	const [name, setName] = useState('');
+	const [secondName, setSecondName] = useState('');
 	const [role, setRole] = useState('');
 	const [contactEmail, setContactEmail] = useState('');
 	const [description, setDescription] = useState('');
 	const [status, setStatus] = useState<StatusConfig>({type: 'online'});
-	const [languages, setLanguages] = useState<LanguageEntry[]>([]);
 	const [profileImageUrl, setProfileImageUrl] = useState('');
 	const [bannerImageUrl, setBannerImageUrl] = useState('');
-	const [bannerTitle, setBannerTitle] = useState('');
-	const [bannerSubtitle, setBannerSubtitle] = useState('');
-	const [bannerButtons, setBannerButtons] = useState<BannerButton[]>([]);
+	const [heroButtons, setHeroButtons] = useState<BannerButton[]>([]);
+	const [neofetchRows, setNeofetchRows] = useState<NeofetchRow[]>([]);
+	const [location, setLocation] = useState('');
+	const [tags, setTags] = useState<string[]>([]);
+	const [selectedWorkCount, setSelectedWorkCount] = useState(3);
+	const [writingCount, setWritingCount] = useState(3);
+	const [contactHeading, setContactHeading] = useState('');
+	const [contactSubtext, setContactSubtext] = useState('');
+	const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
+	const [footerCopyright, setFooterCopyright] = useState('');
+	const [footerTagline, setFooterTagline] = useState('');
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
-	const [previewOpen, setPreviewOpen] = useState(false);
+	const [savedAt, setSavedAt] = useState<Date | null>(null);
 
 	useEffect(() => {
 		fetchHomeConfig()
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			.then((data: any) => {
 				setName(data?.name ?? '');
+				setSecondName(data?.secondName ?? '');
 				setRole(data?.role ?? '');
 				setContactEmail(data?.contactEmail ?? '');
 				setDescription(data?.description ?? '');
 				setStatus(data?.status ?? {type: 'online'});
-				setLanguages(data?.languages ?? []);
 				setProfileImageUrl(data?.profileImageUrl ?? '');
 				setBannerImageUrl(data?.bannerImageUrl ?? '');
-				setBannerTitle(data?.bannerTitle ?? '');
-				setBannerSubtitle(data?.bannerSubtitle ?? '');
-				setBannerButtons(data?.bannerButtons ?? []);
+				setHeroButtons(data?.heroButtons ?? []);
+				setNeofetchRows(data?.neofetchRows ?? []);
+				setLocation(data?.location ?? '');
+				setTags(data?.tags ?? []);
+				setSelectedWorkCount(data?.selectedWorkCount ?? 3);
+				setWritingCount(data?.writingCount ?? 3);
+				setContactHeading(data?.contactHeading ?? '');
+				setContactSubtext(data?.contactSubtext ?? '');
+				setSocialLinks(data?.socialLinks ?? []);
+				setFooterCopyright(data?.footerCopyright ?? '');
+				setFooterTagline(data?.footerTagline ?? '');
 			})
 			.catch(() => toast.error('Failed to load config'))
 			.finally(() => setLoading(false));
@@ -283,17 +87,27 @@ export default function CmsHomeConfig() {
 		try {
 			await cmsUpdateHomeConfig({
 				name,
+				secondName,
 				role,
 				contactEmail,
 				description,
 				status,
-				languages,
 				profileImageUrl,
 				bannerImageUrl,
-				bannerTitle,
-				bannerSubtitle,
-				bannerButtons,
+				heroButtons,
+				neofetchRows,
+				location,
+				tags,
+				selectedWorkCount,
+				writingCount,
+				contactHeading,
+				contactSubtext,
+				socialLinks,
+				footerCopyright,
+				footerTagline,
 			});
+			invalidateHomeCache();
+			setSavedAt(new Date());
 			toast.success('Home config saved');
 		} catch {
 			toast.error('Failed to save config');
@@ -303,243 +117,323 @@ export default function CmsHomeConfig() {
 	};
 
 	const updateBtn = (i: number, b: BannerButton) =>
-		setBannerButtons((prev) => prev.map((x, j) => (j === i ? b : x)));
+		setHeroButtons((prev) => prev.map((x, j) => (j === i ? b : x)));
 	const removeBtn = (i: number) =>
-		setBannerButtons((prev) => prev.filter((_, j) => j !== i));
+		setHeroButtons((prev) => prev.filter((_, j) => j !== i));
 	const addBtn = () =>
-		setBannerButtons((prev) => [...prev, {label: '', action: 'contact'}]);
+		setHeroButtons((prev) => [...prev, {label: '', action: 'contact'}]);
 
-	const updateLang = (i: number, patch: Partial<LanguageEntry>) =>
-		setLanguages((prev) =>
-			prev.map((x, j) => (j === i ? {...x, ...patch} : x)),
-		);
-	const removeLang = (i: number) =>
-		setLanguages((prev) => prev.filter((_, j) => j !== i));
-	const addLang = () =>
-		setLanguages((prev) => [...prev, {icon: '', label: ''}]);
+	const updateRow = (i: number, patch: Partial<NeofetchRow>) =>
+		setNeofetchRows((prev) => prev.map((x, j) => (j === i ? {...x, ...patch} : x)));
+	const removeRow = (i: number) =>
+		setNeofetchRows((prev) => prev.filter((_, j) => j !== i));
+	const addRow = () =>
+		setNeofetchRows((prev) => [...prev, {key: '', value: ''}]);
 
-	if (loading) return <p className="text-slate-400 text-sm">Loading...</p>;
+	const updateLink = (i: number, patch: Partial<SocialLink>) =>
+		setSocialLinks((prev) => prev.map((x, j) => (j === i ? {...x, ...patch} : x)));
+	const removeLink = (i: number) =>
+		setSocialLinks((prev) => prev.filter((_, j) => j !== i));
+	const addLink = () =>
+		setSocialLinks((prev) => [...prev, {label: '', href: '', icon: ''}]);
+
+	if (loading) return <p>Loading...</p>;
 
 	return (
 		<>
-			<div>
-				<div className="flex items-center justify-between mb-6">
-					<h1 className="text-2xl font-semibold">Home Config</h1>
-					<Button
-						type="button"
-						variant="outline"
-						onClick={() => setPreviewOpen(true)}
-					>
-						Preview
-					</Button>
+			<div className="cms-top">
+				<div>
+					<h1 className="cms-h1">Home Config</h1>
+					<div className="sub">aj@khesir:~$ vim ./pages/home.json</div>
 				</div>
-
-				<form onSubmit={handleSubmit} className="space-y-8">
-					{/* Availabanner */}
-					<section className="space-y-4">
-						<h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-							Availabanner
-						</h2>
-						<div className="space-y-1.5">
-							<Label>
-								Banner Image{' '}
-								<span className="text-slate-400 font-normal text-xs">
-									optional — falls back to default
-								</span>
-							</Label>
-							<ImageUpload
-								value={bannerImageUrl}
-								onChange={setBannerImageUrl}
-							/>
-						</div>
-						<div className="grid grid-cols-2 gap-4">
-							<div className="space-y-1.5">
-								<Label>Title</Label>
-								<Input
-									value={bannerTitle}
-									onChange={(e) => setBannerTitle(e.target.value)}
-									placeholder="Open for Freelance & Collaborations"
-								/>
-							</div>
-							<div className="space-y-1.5">
-								<Label>Subtitle</Label>
-								<Input
-									value={bannerSubtitle}
-									onChange={(e) => setBannerSubtitle(e.target.value)}
-									placeholder="Let's work together..."
-								/>
-							</div>
-						</div>
-
-						<div className="space-y-3">
-							<div className="flex items-center justify-between">
-								<Label>Buttons</Label>
-								<Button type="button" variant="outline" onClick={addBtn}>
-									Add Button
-								</Button>
-							</div>
-							{bannerButtons.length === 0 && (
-								<p className="text-sm text-slate-400">No buttons yet.</p>
-							)}
-							{bannerButtons.map((btn, i) => (
-								<BannerButtonEditor
-									key={i}
-									btn={btn}
-									index={i}
-									onChange={updateBtn}
-									onRemove={removeBtn}
-								/>
-							))}
-						</div>
-					</section>
-
-					<Separator />
-
-					{/* Status */}
-					<section className="space-y-4">
-						<h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-							Status
-						</h2>
-						<StatusSelector value={status} onChange={setStatus} />
-					</section>
-
-					<Separator />
-
-					{/* Profile */}
-					<section className="space-y-4">
-						<h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-							Profile
-						</h2>
-						<div className="space-y-1.5">
-							<Label>
-								Profile Image{' '}
-								<span className="text-slate-400 font-normal text-xs">
-									optional — falls back to default
-								</span>
-							</Label>
-							<ImageUpload
-								value={profileImageUrl}
-								onChange={setProfileImageUrl}
-							/>
-						</div>
-						<div className="grid grid-cols-2 gap-4">
-							<div className="space-y-1.5">
-								<Label>Name</Label>
-								<Input
-									value={name}
-									onChange={(e) => setName(e.target.value)}
-									placeholder="Khesir (AJ)"
-								/>
-							</div>
-							<div className="space-y-1.5">
-								<Label>Role</Label>
-								<Input
-									value={role}
-									onChange={(e) => setRole(e.target.value)}
-									placeholder="Software Engineer"
-								/>
-							</div>
-						</div>
-						<div className="space-y-1.5">
-							<Label>Contact Email</Label>
-							<Input
-								type="email"
-								value={contactEmail}
-								onChange={(e) => setContactEmail(e.target.value)}
-								placeholder="contact@example.com"
-							/>
-						</div>
-						<div className="space-y-1.5">
-							<Label>
-								Short Description{' '}
-								<span className="text-slate-400 font-normal text-xs">
-									line breaks are preserved
-								</span>
-							</Label>
-							<Textarea
-								value={description}
-								onChange={(e) => setDescription(e.target.value)}
-								className="min-h-28 resize-y"
-								placeholder={
-									'I build scalable systems...\n\nPassionate about clean architecture.'
-								}
-							/>
-						</div>
-					</section>
-
-					<Separator />
-
-					{/* Languages */}
-					<section className="space-y-4">
-						<div className="flex items-center justify-between">
-							<h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-								Languages / Tech Stack
-							</h2>
-							<Button type="button" variant="outline" onClick={addLang}>
-								Add Language
-							</Button>
-						</div>
-						{languages.length === 0 && (
-							<p className="text-sm text-slate-400">No languages yet.</p>
-						)}
-						<div className="space-y-2">
-							{languages.map((entry, i) => (
-								<div key={i} className="flex items-center gap-2">
-									<div className="flex-1">
-										<IconSelector
-											value={entry.icon}
-											onChange={(icon) => updateLang(i, {icon})}
-										/>
-									</div>
-									<Input
-										value={entry.label ?? ''}
-										onChange={(e) => updateLang(i, {label: e.target.value})}
-										placeholder={iconLabel(entry.icon) || 'Display name'}
-										className="w-36 text-sm shrink-0"
-									/>
-									<button
-										type="button"
-										onClick={() => removeLang(i)}
-										className="text-xs text-red-400 hover:text-red-600 shrink-0"
-									>
-										Remove
-									</button>
-								</div>
-							))}
-						</div>
-					</section>
-
-					<div className="pt-2">
-						<Button type="submit" disabled={saving}>
-							{saving ? 'Saving...' : 'Save Home Config'}
-						</Button>
-					</div>
-				</form>
+				<a className="btn-ol" href="/" target="_blank" rel="noreferrer">
+					Preview ↗
+				</a>
 			</div>
 
-			{/* Preview Dialog */}
-			<Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-				<DialogContent
-					className="overflow-auto resize max-w-none max-h-[90vh]"
-					style={{width: 540, minWidth: 400, minHeight: 340}}
-				>
-					<DialogHeader>
-						<DialogTitle>Home Page Preview</DialogTitle>
-					</DialogHeader>
-					<HomePreview
-						name={name}
-						role={role}
-						description={description}
-						status={status}
-						languages={languages}
-						profileImageUrl={profileImageUrl}
-						bannerImageUrl={bannerImageUrl}
-						bannerTitle={bannerTitle}
-						bannerSubtitle={bannerSubtitle}
-						bannerButtons={bannerButtons}
-					/>
-				</DialogContent>
-			</Dialog>
+			<form className="cms-form" onSubmit={handleSubmit}>
+				<div className="fsection">
+					<div className="fhead">
+						<h2>Hero Buttons</h2>
+						<button type="button" className="btn-ol" onClick={addBtn}>
+							Add button
+						</button>
+					</div>
+					<div className="rep">
+						{heroButtons.map((btn, i) => (
+							<BannerButtonEditor
+								key={i}
+								btn={btn}
+								index={i}
+								onChange={updateBtn}
+								onRemove={removeBtn}
+							/>
+						))}
+					</div>
+					<div className="frow" style={{marginTop: 16}}>
+						<div className="field">
+							<label>Location</label>
+							<input
+								type="text"
+								value={location}
+								onChange={(e) => setLocation(e.target.value)}
+								placeholder="Philippines · UTC+8"
+							/>
+						</div>
+					</div>
+					<div className="field" style={{marginTop: 8}}>
+						<label>Tags</label>
+						<TagInput
+							value={tags}
+							onChange={setTags}
+							placeholder="Add tag, press Enter"
+						/>
+					</div>
+					<div className="frow" style={{marginTop: 8}}>
+						<div className="field">
+							<label>Selected work preview count</label>
+							<input
+								type="number"
+								min={1}
+								value={selectedWorkCount}
+								onChange={(e) => setSelectedWorkCount(Number(e.target.value))}
+							/>
+						</div>
+						<div className="field">
+							<label>Writing preview count</label>
+							<input
+								type="number"
+								min={1}
+								value={writingCount}
+								onChange={(e) => setWritingCount(Number(e.target.value))}
+							/>
+						</div>
+					</div>
+				</div>
+
+				<div className="fsection">
+					<h2>Status</h2>
+					<div className="status-pills">
+						{STATUS_OPTIONS.map(({type, label, color}) => (
+							<button
+								key={type}
+								type="button"
+								className={status.type === type ? 'sp on' : 'sp'}
+								onClick={() => setStatus({...status, type})}
+							>
+								<span className="d" style={{background: color}} />
+								{label}
+							</button>
+						))}
+					</div>
+					<div className="field" style={{marginTop: 16}}>
+						<label>
+							Custom message <span className="opt">optional</span>
+						</label>
+						<input
+							type="text"
+							value={status.message ?? ''}
+							onChange={(e) => setStatus({...status, message: e.target.value})}
+							placeholder="Available for work..."
+						/>
+					</div>
+				</div>
+
+				<div className="fsection">
+					<h2>Profile</h2>
+					<div className="field">
+						<label>Profile image</label>
+						<ImageUpload value={profileImageUrl} onChange={setProfileImageUrl} />
+					</div>
+					<div className="field">
+						<label>
+							Banner image <span className="opt">optional</span>
+						</label>
+						<ImageUpload value={bannerImageUrl} onChange={setBannerImageUrl} />
+					</div>
+					<div className="frow">
+						<div className="field">
+							<label>Name</label>
+							<input
+								type="text"
+								value={name}
+								onChange={(e) => setName(e.target.value)}
+								placeholder="AJ"
+							/>
+						</div>
+						<div className="field">
+							<label>Second Name</label>
+							<input
+								type="text"
+								value={secondName}
+								onChange={(e) => setSecondName(e.target.value)}
+								placeholder="Khesir"
+							/>
+						</div>
+						<div className="field">
+							<label>Role</label>
+							<input
+								type="text"
+								value={role}
+								onChange={(e) => setRole(e.target.value)}
+								placeholder="Software Engineer"
+							/>
+						</div>
+					</div>
+					<div className="field">
+						<label>Contact email</label>
+						<input
+							type="email"
+							value={contactEmail}
+							onChange={(e) => setContactEmail(e.target.value)}
+							placeholder="contact@example.com"
+						/>
+					</div>
+					<div className="field">
+						<label>Short description</label>
+						<textarea
+							value={description}
+							onChange={(e) => setDescription(e.target.value)}
+							placeholder={
+								'I build scalable systems...\n\nPassionate about clean architecture.'
+							}
+						/>
+					</div>
+				</div>
+
+				<div className="fsection">
+					<div className="fhead">
+						<h2>Neofetch</h2>
+						<button type="button" className="btn-ol" onClick={addRow}>
+							Add row
+						</button>
+					</div>
+					<div className="rep">
+						{neofetchRows.map((row, i) => (
+							<div key={i} className="rep-row">
+								<span className="grip">⠿</span>
+								<div className="rmain">
+									<div className="frow">
+										<div className="field">
+											<input
+												type="text"
+												value={row.key}
+												onChange={(e) => updateRow(i, {key: e.target.value})}
+												placeholder="Key (e.g. Role)"
+											/>
+										</div>
+										<div className="field">
+											<input
+												type="text"
+												value={row.value}
+												onChange={(e) => updateRow(i, {value: e.target.value})}
+												placeholder="Value (e.g. Full-Stack · Toolmaker)"
+											/>
+										</div>
+									</div>
+								</div>
+								<button type="button" className="rm" onClick={() => removeRow(i)}>
+									Remove
+								</button>
+							</div>
+						))}
+					</div>
+				</div>
+
+				<div className="fsection">
+					<div className="fhead">
+						<h2>Footer &amp; Contact</h2>
+						<button type="button" className="btn-ol" onClick={addLink}>
+							Add social link
+						</button>
+					</div>
+					<div className="frow">
+						<div className="field">
+							<label>Contact heading</label>
+							<input
+								type="text"
+								value={contactHeading}
+								onChange={(e) => setContactHeading(e.target.value)}
+								placeholder="Let's build something..."
+							/>
+						</div>
+					</div>
+					<div className="field">
+						<label>Contact subtext</label>
+						<input
+							type="text"
+							value={contactSubtext}
+							onChange={(e) => setContactSubtext(e.target.value)}
+							placeholder="Open for engineering work..."
+						/>
+					</div>
+					<div className="rep" style={{marginTop: 8}}>
+						{socialLinks.map((link, i) => (
+							<div key={i} className="rep-row">
+								<span className="grip">⠿</span>
+								<div className="rmain">
+									<div className="frow">
+										<div className="field">
+											<input
+												type="text"
+												value={link.label}
+												onChange={(e) => updateLink(i, {label: e.target.value})}
+												placeholder="Label (e.g. GitHub)"
+											/>
+										</div>
+										<div className="field">
+											<input
+												type="text"
+												value={link.href}
+												onChange={(e) => updateLink(i, {href: e.target.value})}
+												placeholder="https://..."
+											/>
+										</div>
+										<div className="field">
+											<IconSelector
+												value={link.icon}
+												onChange={(icon) => updateLink(i, {icon})}
+											/>
+										</div>
+									</div>
+								</div>
+								<button type="button" className="rm" onClick={() => removeLink(i)}>
+									Remove
+								</button>
+							</div>
+						))}
+					</div>
+					<div className="frow" style={{marginTop: 16}}>
+						<div className="field">
+							<label>Footer copyright</label>
+							<input
+								type="text"
+								value={footerCopyright}
+								onChange={(e) => setFooterCopyright(e.target.value)}
+								placeholder="© 2026 AJ — Khesir"
+							/>
+						</div>
+						<div className="field">
+							<label>Footer tagline</label>
+							<input
+								type="text"
+								value={footerTagline}
+								onChange={(e) => setFooterTagline(e.target.value)}
+								placeholder='direction B — "Terminal" · tech-first'
+							/>
+						</div>
+					</div>
+				</div>
+
+				<div className="save-bar">
+					<button className="btn-new" type="submit" disabled={saving}>
+						{saving ? 'Saving...' : 'Save home config'}
+					</button>
+					{savedAt && (
+						<span className="hint">last saved {relativeTime(savedAt)}</span>
+					)}
+				</div>
+			</form>
 		</>
 	);
 }

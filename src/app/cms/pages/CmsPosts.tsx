@@ -1,40 +1,25 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {
-	fetchPostsCms,
-	cmsDeletePost,
-	cmsUpdatePost,
-	PostDto,
-} from '@/app/api/cms';
-import {Button} from '@/components/ui/Button';
+import {fetchPostsCms, cmsDeletePost, cmsUpdatePost, PostDto} from '@/app/api/cms';
 import {toast} from 'sonner';
-import {Skeleton} from '@/components/ui/skeleton';
-import {EyeOff, Heart, Pencil, Trash2, Pin} from 'lucide-react';
 
-function timeAgo(iso: string) {
+function relativeTime(iso: string) {
 	const diff = Date.now() - new Date(iso).getTime();
 	const m = Math.floor(diff / 60000);
 	if (m < 60) return `${m}m ago`;
 	const h = Math.floor(m / 60);
 	if (h < 24) return `${h}h ago`;
 	const d = Math.floor(h / 24);
-	if (d < 30) return `${d}d ago`;
-	return new Date(iso).toLocaleDateString('en-US', {
-		month: 'short',
-		day: 'numeric',
-		year: 'numeric',
-	});
+	if (d < 7) return `${d}d ago`;
+	return `${Math.floor(d / 7)}w ago`;
 }
 
 export default function CmsPosts() {
 	const navigate = useNavigate();
 	const [posts, setPosts] = useState<PostDto[]>([]);
-	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetchPostsCms()
-			.then(setPosts)
-			.finally(() => setLoading(false));
+		fetchPostsCms().then(setPosts);
 	}, []);
 
 	const handleDelete = async (id: string) => {
@@ -44,7 +29,7 @@ export default function CmsPosts() {
 		toast.success('Post deleted');
 	};
 
-	const handleTogglePin = async (post: PostDto) => {
+	const handlePin = async (post: PostDto) => {
 		await cmsUpdatePost(post.id, {pinned: !post.pinned});
 		setPosts((prev) =>
 			prev.map((p) => (p.id === post.id ? {...p, pinned: !post.pinned} : p)),
@@ -53,98 +38,59 @@ export default function CmsPosts() {
 	};
 
 	return (
-		<div>
-			<div className="flex items-center justify-between mb-6">
-				<h1 className="text-2xl font-semibold">Posts</h1>
-				<Button onClick={() => navigate('/cms/posts/new')}>+ New Post</Button>
-			</div>
-
-			{loading ? (
-				<div className="space-y-3">
-					{[1, 2, 3].map((i) => (
-						<Skeleton key={i} className="h-24 w-full rounded-xl" />
-					))}
+		<>
+			<div className="cms-top">
+				<div>
+					<h1 className="cms-h1">Posts</h1>
+					<div className="sub">
+						aj@khesir:~$ ls ./posts · {posts.length} entries
+					</div>
 				</div>
-			) : posts.length === 0 ? (
-				<p className="text-slate-400 text-sm">No posts yet.</p>
-			) : (
-				<div className="space-y-3">
-					{posts.map((post) => (
-						<div
-							key={post.id}
-							className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex gap-4"
-						>
-							<div className="flex-1 min-w-0 space-y-1.5">
-								<p className="text-sm text-slate-900 dark:text-white leading-relaxed line-clamp-2">
-									{post.content}
-								</p>
-								<div className="flex items-center gap-3 flex-wrap">
-									<span className="text-xs text-slate-400">
-										{timeAgo(post.createdAt)}
+				<button className="btn-new" onClick={() => navigate('/cms/posts/new')}>
+					+ New Post
+				</button>
+			</div>
+			<div className="cms-posts">
+				{posts.map((post) => (
+					<div className="cpost" key={post.id}>
+						<div className="cbody">
+							<div className="ctext">{post.content}</div>
+							<div className="cmeta">
+								<span className="t">{relativeTime(post.createdAt)}</span>
+								{post.pinned && <span className="cbadge pin">pinned</span>}
+								{post.draft && <span className="cbadge draft">draft</span>}
+								{post.tags.map((t) => (
+									<span className="htag" key={t}>
+										#{t}
 									</span>
-									{post.pinned && (
-										<span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1">
-											<Pin size={10} className="fill-current" /> Pinned
-										</span>
-									)}
-									{post.draft && (
-										<span className="text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium">
-											Draft
-										</span>
-									)}
-									{post.tags.map((t) => (
-										<span
-											key={t}
-											className="text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500"
-										>
-											#{t}
-										</span>
-									))}
-									<div className="flex items-center gap-2 ml-auto">
-										{post.hideViews && (
-											<EyeOff size={12} className="text-slate-400" />
-										)}
-										{post.hideHearts && (
-											<Heart size={12} className="text-slate-400" />
-										)}
-									</div>
-								</div>
-							</div>
-							<div className="flex items-start gap-1 shrink-0">
-								<button
-									type="button"
-									onClick={() => handleTogglePin(post)}
-									title={post.pinned ? 'Unpin' : 'Pin'}
-									className={`p-1.5 rounded transition-colors ${
-										post.pinned
-											? 'text-amber-500 bg-amber-50 dark:bg-amber-950/30'
-											: 'text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30'
-									}`}
-								>
-									<Pin
-										size={14}
-										className={post.pinned ? 'fill-current' : ''}
-									/>
-								</button>
-								<button
-									type="button"
-									onClick={() => navigate(`/cms/posts/${post.id}/edit`)}
-									className="p-1.5 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-								>
-									<Pencil size={14} />
-								</button>
-								<button
-									type="button"
-									onClick={() => handleDelete(post.id)}
-									className="p-1.5 rounded text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-								>
-									<Trash2 size={14} />
-								</button>
+								))}
 							</div>
 						</div>
-					))}
-				</div>
-			)}
-		</div>
+						<div className="cacts">
+							<button
+								className={`pin${post.pinned ? ' on' : ''}`}
+								onClick={() => handlePin(post)}
+							>
+								<svg viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeWidth={1.6}>
+									<path d="M12 17v5M9 3h6l-1 7 3 3H7l3-3z" />
+								</svg>
+							</button>
+							<button onClick={() => navigate(`/cms/posts/${post.id}/edit`)}>
+								<svg viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeWidth={1.6}>
+									<path d="M12 20h9" />
+									<path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+								</svg>
+							</button>
+							<button className="del" onClick={() => handleDelete(post.id)}>
+								<svg viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeWidth={1.6}>
+									<polyline points="3 6 5 6 21 6" />
+									<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+								</svg>
+							</button>
+						</div>
+					</div>
+				))}
+			</div>
+		</>
 	);
 }

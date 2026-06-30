@@ -1,7 +1,5 @@
 import {useRef, useState} from 'react';
 import {cmsUploadImage} from '@/app/api/cms';
-import {Input} from '@/components/ui/input';
-import {Button} from '@/components/ui/Button';
 import {toast} from 'sonner';
 
 interface ImageUploadProps {
@@ -34,27 +32,35 @@ export default function ImageUpload({
 	};
 
 	return (
-		<div className="space-y-2">
-			<div className="flex gap-2">
-				<Input
+		<div style={{display: 'flex', flexDirection: 'column', gap: 10}}>
+			<div style={{display: 'flex', gap: 8}}>
+				<input
+					type="text"
 					value={value}
 					onChange={(e) => onChange(e.target.value)}
 					placeholder={placeholder}
-					className="flex-1"
+					style={{
+						flex: 1,
+						background: 'rgba(255,255,255,.03)',
+						border: '1px solid var(--line)',
+						borderRadius: 9, padding: '10px 13px',
+						fontFamily: 'var(--sans)', fontSize: 14,
+						color: 'var(--ink)', outline: 'none',
+					}}
 				/>
-				<Button
+				<button
 					type="button"
-					variant="outline"
+					className="btn-ol"
 					disabled={uploading}
 					onClick={() => fileRef.current?.click()}
 				>
 					{uploading ? 'Uploading...' : 'Upload'}
-				</Button>
+				</button>
 				<input
 					ref={fileRef}
 					type="file"
 					accept="image/*"
-					className="hidden"
+					style={{display: 'none'}}
 					onChange={handleFile}
 				/>
 			</div>
@@ -62,7 +68,10 @@ export default function ImageUpload({
 				<img
 					src={value}
 					alt="preview"
-					className="h-20 w-auto rounded border border-slate-200 dark:border-slate-700 object-cover"
+					style={{
+						height: 80, width: 'auto', objectFit: 'cover',
+						borderRadius: 10, border: '1px solid var(--line-2)',
+					}}
 				/>
 			)}
 		</div>

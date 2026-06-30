@@ -179,6 +179,12 @@ export interface SkillCategoryDto {
 	items: string[];
 }
 
+export interface OffTheClockItem {
+	label: string;
+	description: string;
+	icon: string;
+}
+
 export type StatusType = 'online' | 'idle' | 'dnd' | 'custom';
 
 export interface StatusConfig {
@@ -201,18 +207,37 @@ export interface BannerButton {
 	variant?: 'primary' | 'secondary';
 }
 
+export interface NeofetchRow {
+	key: string;
+	value: string;
+}
+
+export interface SocialLink {
+	label: string;
+	href: string;
+	icon: string;
+}
+
 export interface UpdateHomeConfigDto {
 	name: string;
+	secondName: string;
 	role: string;
 	description: string;
 	contactEmail: string;
 	status: StatusConfig;
-	languages: LanguageEntry[];
-	bannerTitle: string;
-	bannerSubtitle: string;
-	bannerButtons: BannerButton[];
+	heroButtons: BannerButton[];
 	profileImageUrl?: string;
 	bannerImageUrl?: string;
+	neofetchRows: NeofetchRow[];
+	location: string;
+	tags: string[];
+	selectedWorkCount: number;
+	writingCount: number;
+	contactHeading: string;
+	contactSubtext: string;
+	socialLinks: SocialLink[];
+	footerCopyright: string;
+	footerTagline: string;
 }
 
 export interface UpdateAboutConfigDto {
@@ -223,11 +248,20 @@ export interface UpdateAboutConfigDto {
 	aboutButtons: BannerButton[];
 	professionalSummary: string;
 	technicalSkills: SkillCategoryDto[];
-	coreCompetencies: string[];
+	bioTagline: string;
+	bioBody: string;
+	offTheClock: OffTheClockItem[];
 }
 
 export interface UpdateServiceConfigDto {
 	services: ServiceDto[];
+	greeting: string;
+	headline: string;
+	roleLabel: string;
+	siteUrl: string;
+	profileImageUrl: string;
+	contactEmail: string;
+	socialLinks: SocialLink[];
 }
 
 // =============================================================================
@@ -311,6 +345,10 @@ export const cmsDeleteBlog = async (id: string) => {
 //     Hide Views    (checkbox)    — true = view count hidden on public page
 //     Hide Hearts   (checkbox)    — true = heart button hidden on public page
 //   Page content is stored as Notion blocks and returned as a markdown string.
+//
+//   GET /projects?page=1&pageSize=5  — returns lightweight project cards; the `markdown` field
+//                                       must be excluded from this response
+//   GET /projects/:id               — returns the full object including `markdown`
 //
 //   POST /api/projects
 //   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
@@ -575,17 +613,24 @@ export const cmsDeletePost = async (id: string) => {
 //
 //   Shape of the stored JSON (matches UpdateHomeConfigDto):
 //     {
-//       name:           string   — display name shown in hero + footer
-//       role:           string   — job title (blue subtitle)
-//       description:    string   — short bio (newlines preserved)
-//       contactEmail:   string   — used in contact section + services CTA
-//       status:         { type: "online"|"idle"|"dnd"|"custom", emoji?, message? }
-//       languages:      { icon: string (Iconify ID), label?: string }[]
-//       profileImageUrl: string  — profile photo URL (empty = default)
-//       bannerImageUrl:  string  — hero banner strip URL (empty = none)
-//       bannerTitle:     string  — availabanner headline
-//       bannerSubtitle:  string  — availabanner subtext
-//       bannerButtons:   BannerButton[]
+//       name:              string   — display name shown in hero + footer
+//       role:              string   — job title (blue subtitle)
+//       description:       string   — short bio (newlines preserved)
+//       contactEmail:      string   — used in contact section + services CTA
+//       status:            { type: "online"|"idle"|"dnd"|"custom", emoji?, message? }
+//       profileImageUrl:   string   — profile photo URL (empty = default)
+//       bannerImageUrl:    string   — hero banner strip URL (empty = none)
+//       heroButtons:       BannerButton[]
+//       neofetchRows:      { key: string, value: string }[]  — neofetch terminal rows
+//       location:          string   — location tag in hero meta row
+//       tags:              string[] — plain tags in hero meta row
+//       selectedWorkCount: number   — how many pinned projects to preview on home
+//       writingCount:      number   — how many blogs to preview on home
+//       contactHeading:    string   — h2 in the contact section
+//       contactSubtext:    string   — p below contact heading
+//       socialLinks:       { label: string, href: string, icon: string }[]
+//       footerCopyright:   string   — left side of footer
+//       footerTagline:     string   — right side of footer
 //     }
 //
 //   GET /api/config/home          — public, no auth
@@ -599,26 +644,41 @@ export const cmsDeletePost = async (id: string) => {
 export const fetchHomeConfig = async () => {
 	if (useEnvironment.getState().isDevelopment())
 		return {
-			name: 'Khesir (AJ)',
+			name: 'AJ',
+			secondName: 'Khesir',
 			role: 'Software Engineer',
 			contactEmail: 'contact@khesir.com',
 			description:
 				'I build scalable backend systems and ship clean, maintainable code.\n\nPassionate about backend architecture, game engineering, and writing code that lasts.',
 			status: {type: 'online', message: 'Available for work'},
-			languages: [
-				{icon: 'devicon:typescript', label: 'TypeScript'},
-				{icon: 'devicon:csharp', label: 'C#'},
-				{icon: 'devicon:cplusplus', label: 'C++'},
-				{icon: 'devicon:python', label: 'Python'},
-			],
 			profileImageUrl: '',
 			bannerImageUrl: '',
-			bannerTitle: 'Open for Freelance & Collaborations',
-			bannerSubtitle: "Let's work together to bring your ideas to life",
-			bannerButtons: [
-				{label: 'Contact Me', icon: 'mdi:email', action: 'contact'},
-				{label: 'Read Blogs', icon: 'mdi:file-document', to: 'blogs'},
+			heroButtons: [
+				{label: 'View work →', to: '/work'},
+				{label: '$ cat about.me', to: '/about'},
 			],
+			neofetchRows: [
+				{key: 'Role', value: 'Full-Stack · Toolmaker'},
+				{key: 'Uptime', value: 'building since 2020'},
+				{key: 'Editor', value: 'VS Code · Cursor'},
+				{key: 'Lang', value: 'TypeScript · C# · Py'},
+				{key: 'Stack', value: 'React · Flutter · Node'},
+				{key: 'Locale', value: 'PH · UTC+8'},
+			],
+			location: 'Philippines · UTC+8',
+			tags: ['agentic AI', 'APIs & tooling'],
+			selectedWorkCount: 3,
+			writingCount: 3,
+			contactHeading: "Let's build something & make it faster.",
+			contactSubtext: 'Open for engineering work and collaborations.',
+			socialLinks: [
+				{label: 'GitHub', href: 'https://github.com/khesir', icon: 'mdi:github'},
+				{label: 'LinkedIn', href: '#', icon: 'mdi:linkedin'},
+				{label: 'Twitter', href: '#', icon: 'mdi:twitter'},
+				{label: 'Email', href: 'mailto:contact@khesir.com', icon: 'mdi:email'},
+			],
+			footerCopyright: '© 2026 AJ — Khesir',
+			footerTagline: 'direction B — "Terminal" · tech-first',
 		};
 	const res = await axios.get(`${API}/config/home`);
 	return res.data;
@@ -648,9 +708,11 @@ export const cmsUpdateHomeConfig = async (payload: UpdateHomeConfigDto) => {
 //       location:            string   — e.g. "Remote / Flexible" (shown with pin icon)
 //       profileImageUrl:     string   — overrides home config profile image if set
 //       aboutButtons:        BannerButton[]
-//       professionalSummary: string   — markdown
+//       professionalSummary: string   — markdown, shown in page header (.plede)
 //       technicalSkills:     { category: string, items: string[] }[]
-//       coreCompetencies:    string[]
+//       bioTagline:          string   — short lead sentence shown in .prose
+//       bioBody:             string   — markdown, full bio shown in .prose
+//       offTheClock:         { label: string, description: string, icon: string }[]
 //     }
 //
 //   GET /api/config/about          — public, no auth
@@ -693,12 +755,11 @@ export const fetchAboutConfig = async () => {
 				},
 				{category: 'Game Dev', items: ['Unity', 'C#', 'Lua', 'C++']},
 			],
-			coreCompetencies: [
-				'System Design',
-				'REST API Design',
-				'Game Architecture',
-				'CI/CD',
-				'Docker',
+			bioTagline: 'I build software — and I build the tools that build software.',
+			bioBody: "I'm a full-stack engineer shipping web and mobile apps in **TypeScript, C#, Python and Flutter**. I enjoy spotting the slow, repetitive parts of a workflow and replacing them with a tool, an API or an automation.\n\nLately a lot of that is AI-driven — wiring up **agentic workflows** with n8n and LLMs. Always building something.",
+			offTheClock: [
+				{label: 'At the gym', description: 'Lifting and staying consistent.', icon: 'mdi:dumbbell'},
+				{label: 'Reading', description: 'Buried in a book — mostly non-fiction.', icon: 'mdi:book-open-variant'},
 			],
 		};
 	const res = await axios.get(`${API}/config/about`);
@@ -724,6 +785,13 @@ export const cmsUpdateAboutConfig = async (payload: UpdateAboutConfigDto) => {
 //
 //   Shape of the stored JSON (matches UpdateServiceConfigDto):
 //     {
+//       greeting:        string   — front face greeting line (e.g. "Hey —")
+//       headline:        string   — front face headline
+//       roleLabel:       string   — front face role/identity line
+//       siteUrl:         string   — front face URL label (e.g. "khesir.dev")
+//       profileImageUrl: string   — front face avatar image URL (empty = no image)
+//       contactEmail:    string   — back footer preferred contact email
+//       socialLinks:     { label: string, href: string, icon: string }[]  — back footer icon links
 //       services: {
 //         icon:        string   — Iconify icon ID (e.g. "mdi:server")
 //         title:       string   — service heading
@@ -744,6 +812,17 @@ export const cmsUpdateAboutConfig = async (payload: UpdateAboutConfigDto) => {
 export const fetchServiceConfig = async () => {
 	if (useEnvironment.getState().isDevelopment())
 		return {
+			greeting: 'Hey —',
+			headline: "here's what I can help with.",
+			roleLabel: 'AJ · Khesir // Full-Stack & Toolmaker',
+			siteUrl: 'khesir',
+			profileImageUrl: '',
+			contactEmail: 'hello@khesir.dev',
+			socialLinks: [
+				{label: 'Twitter / X', href: 'https://x.com/khesir_dev', icon: 'ri:twitter-x-fill'},
+				{label: 'Discord', href: '#', icon: 'ic:baseline-discord'},
+				{label: 'Email', href: 'mailto:hello@khesir.dev', icon: 'mdi:email'},
+			],
 			services: [
 				{
 					icon: 'mdi:server',
@@ -783,6 +862,214 @@ export const cmsUpdateServiceConfig = async (
 	const res = await axios.put(`${API}/config/services`, payload, {
 		headers: authHeader(),
 	});
+	return res.data;
+};
+
+export interface CreateCertificationDto {
+	title: string;
+	issuer: string;
+	category: string;
+	issuedDate: string;
+	credentialId?: string;
+	description?: string;
+	proofUrl?: string;
+	proofType?: 'link' | 'image';
+	icon?: string;
+	draft?: boolean;
+}
+export type UpdateCertificationDto = Partial<CreateCertificationDto>;
+
+export interface CreateRecommendationDto {
+	name: string;
+	role: string;
+	company: string;
+	quote: string;
+	sourceType?: 'linkedin' | 'email' | 'other';
+	sourceUrl?: string;
+	featured?: boolean;
+	hidden?: boolean;
+}
+export type UpdateRecommendationDto = Partial<CreateRecommendationDto>;
+
+// =============================================================================
+// CERTIFICATIONS
+// =============================================================================
+//
+// BACKEND GUIDE
+//
+//   Certifications are stored in your own database (not Notion) since they are
+//   structured records without rich page content.
+//
+//   Suggested schema (PostgreSQL / Supabase):
+//
+//     CREATE TABLE certifications (
+//       id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+//       title        TEXT NOT NULL,
+//       issuer       TEXT NOT NULL,
+//       category     TEXT NOT NULL,        -- "Cloud" | "AI / ML" | "Engineering" | "DevOps" | "Backend" | "Game" | custom
+//       issued_date  TEXT NOT NULL,        -- e.g. "2025" or "2025-01"
+//       credential_id TEXT,               -- optional ID shown in meta line
+//       description  TEXT,
+//       proof_url    TEXT,
+//       proof_type   TEXT DEFAULT 'link', -- "link" | "image"
+//       icon         TEXT,               -- Iconify icon ID e.g. "mdi:cloud-outline"
+//       draft        BOOLEAN DEFAULT true,
+//       created_at   TIMESTAMPTZ DEFAULT now()
+//     );
+//
+//   Public feed — returns only non-draft certs, ordered by issued_date DESC:
+//   GET /api/certifications?pageSize=N
+//   Response 200: CertificationDto[]
+//
+//   Single item (public):
+//   GET /api/certifications/:id
+//   Response 200: { result: CertificationDto }
+//
+//   CMS list (all including drafts, auth required):
+//   GET /api/certifications/cms
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Response 200: CertificationDto[]
+//
+//   POST /api/certifications
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Body:    CreateCertificationDto (JSON)
+//   Response 201: { id: string, ...cert }
+//
+//   PUT /api/certifications/:id
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Body:    UpdateCertificationDto (JSON) — partial
+//   Response 200: { id: string, ...cert }
+//
+//   DELETE /api/certifications/:id
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Response 200: {}
+
+export const fetchCertificationsCms = async () => {
+	if (useEnvironment.getState().isDevelopment()) return [];
+	const res = await axios.get(`${API}/certifications/cms`, {headers: authHeader()});
+	return res.data;
+};
+
+export const cmsCreateCertification = async (payload: CreateCertificationDto) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('createCertification');
+	const res = await axios.post(`${API}/certifications`, payload, {headers: authHeader()});
+	ApiCache.invalidate('certifications:list:100');
+	ApiCache.invalidate('certifications:list:4');
+	return res.data;
+};
+
+export const cmsUpdateCertification = async (id: string, payload: UpdateCertificationDto) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('updateCertification');
+	const res = await axios.put(`${API}/certifications/${id}`, payload, {headers: authHeader()});
+	ApiCache.invalidate('certifications:list:100');
+	ApiCache.invalidate('certifications:list:4');
+	ApiCache.invalidate(`certifications:id:${id}`);
+	return res.data;
+};
+
+export const cmsDeleteCertification = async (id: string) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('deleteCertification');
+	const res = await axios.delete(`${API}/certifications/${id}`, {headers: authHeader()});
+	ApiCache.invalidate('certifications:list:100');
+	ApiCache.invalidate('certifications:list:4');
+	ApiCache.invalidate(`certifications:id:${id}`);
+	return res.data;
+};
+
+// =============================================================================
+// RECOMMENDATIONS
+// =============================================================================
+//
+// BACKEND GUIDE
+//
+//   Recommendations are stored in your own database.
+//
+//   Suggested schema (PostgreSQL / Supabase):
+//
+//     CREATE TABLE recommendations (
+//       id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+//       name        TEXT NOT NULL,
+//       role        TEXT NOT NULL,
+//       company     TEXT NOT NULL,
+//       quote       TEXT NOT NULL,
+//       source_type TEXT DEFAULT 'linkedin',  -- "linkedin" | "email" | "other"
+//       source_url  TEXT,
+//       featured    BOOLEAN DEFAULT false,    -- shown on home page
+//       hidden      BOOLEAN DEFAULT false,    -- excluded from public feed
+//       created_at  TIMESTAMPTZ DEFAULT now()
+//     );
+//
+//   Public feed — returns all non-hidden recs. Optional ?featured=true filter:
+//   GET /api/recommendations
+//   GET /api/recommendations?featured=true
+//   Response 200: RecommendationDto[]
+//
+//   Single item (public):
+//   GET /api/recommendations/:id
+//   Response 200: { result: RecommendationDto }
+//
+//   CMS list (all including hidden, auth required):
+//   GET /api/recommendations/cms
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Response 200: RecommendationDto[]
+//
+//   POST /api/recommendations
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Body:    CreateRecommendationDto (JSON)
+//   Response 201: { id: string, ...rec }
+//
+//   PUT /api/recommendations/:id
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Body:    UpdateRecommendationDto (JSON) — partial
+//   Response 200: { id: string, ...rec }
+//
+//   DELETE /api/recommendations/:id
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Response 200: {}
+//
+//   Toggle featured (convenience endpoint):
+//   PUT /api/recommendations/:id/feature
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Body:    { featured: boolean }
+//   Response 200: { id: string, featured: boolean }
+
+export const fetchRecommendationsCms = async () => {
+	if (useEnvironment.getState().isDevelopment()) return [];
+	const res = await axios.get(`${API}/recommendations/cms`, {headers: authHeader()});
+	return res.data;
+};
+
+export const cmsCreateRecommendation = async (payload: CreateRecommendationDto) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('createRecommendation');
+	const res = await axios.post(`${API}/recommendations`, payload, {headers: authHeader()});
+	ApiCache.invalidate('recommendations:list');
+	ApiCache.invalidate('recommendations:featured');
+	return res.data;
+};
+
+export const cmsUpdateRecommendation = async (id: string, payload: UpdateRecommendationDto) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('updateRecommendation');
+	const res = await axios.put(`${API}/recommendations/${id}`, payload, {headers: authHeader()});
+	ApiCache.invalidate('recommendations:list');
+	ApiCache.invalidate('recommendations:featured');
+	ApiCache.invalidate(`recommendations:id:${id}`);
+	return res.data;
+};
+
+export const cmsDeleteRecommendation = async (id: string) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('deleteRecommendation');
+	const res = await axios.delete(`${API}/recommendations/${id}`, {headers: authHeader()});
+	ApiCache.invalidate('recommendations:list');
+	ApiCache.invalidate('recommendations:featured');
+	ApiCache.invalidate(`recommendations:id:${id}`);
+	return res.data;
+};
+
+export const cmsToggleRecommendationFeatured = async (id: string, featured: boolean) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('toggleRecommendationFeatured');
+	const res = await axios.put(`${API}/recommendations/${id}/feature`, {featured}, {headers: authHeader()});
+	ApiCache.invalidate('recommendations:list');
+	ApiCache.invalidate('recommendations:featured');
 	return res.data;
 };
 

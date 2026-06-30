@@ -3,19 +3,18 @@ import {useEnvironment} from '@/hooks/use-environment-store';
 import {mockProjects, getMockDetailById} from '@/lib/mockData';
 import {ApiCache} from '@/lib/apiCache';
 
-export const fetchProjects = async () => {
+export const fetchProjects = async (page: number = 1, pageSize: number = 5) => {
 	const {isDevelopment} = useEnvironment.getState();
 
 	if (isDevelopment()) {
-		await new Promise((resolve) => setTimeout(resolve, 600));
-		return mockProjects;
+		return mockProjects.slice((page - 1) * pageSize, page * pageSize);
 	}
 
-	const key = 'projects:list';
+	const key = `projects:list:${page}:${pageSize}`;
 	const cached = ApiCache.get(key);
 	if (cached) return cached;
 
-	const res = await axios.get(`${import.meta.env.VITE_API_URL}/projects`);
+	const res = await axios.get(`${import.meta.env.VITE_API_URL}/projects?page=${page}&pageSize=${pageSize}`);
 	ApiCache.set(key, res.data);
 	return res.data;
 };

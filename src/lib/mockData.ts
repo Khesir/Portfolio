@@ -490,47 +490,15 @@ export const mockProjects = [
 export const mockExperiences = [
   {
     id: 'mock-exp-1',
-    properties: {
-      Position: {
-        title: [
-          {
-            plain_text: 'Senior Fullstack Developer',
-          },
-        ],
-      },
-      CompanyName: {
-        rich_text: [
-          {
-            plain_text: 'Tech Innovations Inc.',
-          },
-        ],
-      },
-      JobType: {
-        select: {
-          name: 'Remote',
-        },
-      },
-      EmploymentType: {
-        select: {
-          name: 'Full-time',
-        },
-      },
-      Duration: {
-        date: {
-          start: '2023-01-15',
-          end: null,
-        },
-      },
-      Image: {
-        files: [
-          {
-            file: {
-              url: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800',
-            },
-          },
-        ],
-      },
-      pageMd: `## Overview
+    position: 'Senior Fullstack Developer',
+    companyName: 'Tech Innovations Inc.',
+    jobType: 'Remote',
+    employmentType: 'Full-time',
+    durationStart: '2023-01-15',
+    durationEnd: null,
+    imageUrl: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800',
+    highlightSkills: ['React', 'TypeScript', 'Node.js', 'AWS'],
+    pageMd: `## Overview
 
 As a Senior Fullstack Developer at Tech Innovations Inc., I lead the development of cutting-edge web applications using modern technologies.
 
@@ -553,97 +521,18 @@ As a Senior Fullstack Developer at Tech Innovations Inc., I lead the development
 - Reduced application load time by 60%
 - Implemented automated testing, increasing coverage to 85%
 - Successfully launched 3 major features ahead of schedule`,
-    },
-    highlightSkills: [
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'React',
-              },
-            ],
-          },
-        },
-      },
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'TypeScript',
-              },
-            ],
-          },
-        },
-      },
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'Node.js',
-              },
-            ],
-          },
-        },
-      },
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'AWS',
-              },
-            ],
-          },
-        },
-      },
-    ],
   },
   {
     id: 'mock-exp-2',
-    properties: {
-      Position: {
-        title: [
-          {
-            plain_text: 'Fullstack Developer',
-          },
-        ],
-      },
-      CompanyName: {
-        rich_text: [
-          {
-            plain_text: 'StartUp Solutions',
-          },
-        ],
-      },
-      JobType: {
-        select: {
-          name: 'Hybrid',
-        },
-      },
-      EmploymentType: {
-        select: {
-          name: 'Full-time',
-        },
-      },
-      Duration: {
-        date: {
-          start: '2021-06-01',
-          end: '2022-12-31',
-        },
-      },
-      Image: {
-        files: [
-          {
-            file: {
-              url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800',
-            },
-          },
-        ],
-      },
-      pageMd: `## Overview
+    position: 'Fullstack Developer',
+    companyName: 'StartUp Solutions',
+    jobType: 'Hybrid',
+    employmentType: 'Full-time',
+    durationStart: '2021-06-01',
+    durationEnd: '2022-12-31',
+    imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800',
+    highlightSkills: ['JavaScript', 'Next.js', 'MongoDB'],
+    pageMd: `## Overview
 
 Developed and maintained multiple client-facing applications in a fast-paced startup environment.
 
@@ -666,42 +555,6 @@ Developed and maintained multiple client-facing applications in a fast-paced sta
 - Built 5 production applications from scratch
 - Improved database query performance by 40%
 - Implemented real-time features using WebSockets`,
-    },
-    highlightSkills: [
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'JavaScript',
-              },
-            ],
-          },
-        },
-      },
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'Next.js',
-              },
-            ],
-          },
-        },
-      },
-      {
-        properties: {
-          Name: {
-            title: [
-              {
-                plain_text: 'MongoDB',
-              },
-            ],
-          },
-        },
-      },
-    ],
   },
 ];
 
@@ -848,6 +701,134 @@ This project taught me the importance of:
     },
   },
 };
+
+export const mockCertifications = [
+  {
+    id: 'mock-cert-1',
+    title: 'AWS Solutions Architect — Associate',
+    issuer: 'Amazon Web Services',
+    category: 'Cloud',
+    issuedDate: '2025',
+    credentialId: 'AWS-SAA-26',
+    description: 'Architecting resilient, cost-aware systems on AWS — compute, networking, storage and the trade-offs between them.',
+    proofUrl: '#',
+    proofType: 'link',
+    icon: 'mdi:cloud-outline',
+    draft: false,
+  },
+  {
+    id: 'mock-cert-2',
+    title: 'Google Cloud Associate Cloud Engineer',
+    issuer: 'Google Cloud',
+    category: 'Cloud',
+    issuedDate: '2024',
+    credentialId: 'GCP-ACE-24',
+    description: 'Deploying and operating workloads on GCP — IAM, compute, managed services and day-two operations.',
+    proofUrl: '#',
+    proofType: 'link',
+    icon: 'mdi:cloud-outline',
+    draft: false,
+  },
+  {
+    id: 'mock-cert-3',
+    title: 'TensorFlow Developer Certificate',
+    issuer: 'Google',
+    category: 'AI / ML',
+    issuedDate: '2025',
+    credentialId: '',
+    description: 'Building and training neural networks for vision, text and time-series — from data pipeline to deployed model.',
+    proofUrl: '#',
+    proofType: 'link',
+    icon: 'mdi:chip',
+    draft: false,
+  },
+  {
+    id: 'mock-cert-4',
+    title: 'Deep Learning Specialization',
+    issuer: 'DeepLearning.AI',
+    category: 'AI / ML',
+    issuedDate: '2024',
+    credentialId: '5-course series',
+    description: 'Foundations through to sequence models and practical tuning — the theory behind the agent work I do now.',
+    proofUrl: '#',
+    proofType: 'image',
+    icon: 'mdi:chip',
+    draft: false,
+  },
+  {
+    id: 'mock-cert-5',
+    title: 'Meta Front-End Developer',
+    issuer: 'Meta',
+    category: 'Engineering',
+    issuedDate: '2023',
+    credentialId: 'Professional Certificate',
+    description: 'Production React, responsive UI and the testing + version-control practices behind shipping front-end at scale.',
+    proofUrl: '#',
+    proofType: 'link',
+    icon: 'mdi:code-braces',
+    draft: false,
+  },
+  {
+    id: 'mock-cert-6',
+    title: 'Docker Certified Associate',
+    issuer: 'Docker',
+    category: 'DevOps',
+    issuedDate: '2024',
+    credentialId: '',
+    description: 'Containerizing apps and orchestrating them reliably — images, networking, volumes and multi-service compose.',
+    proofUrl: '#',
+    proofType: 'link',
+    icon: 'mdi:package-variant',
+    draft: false,
+  },
+];
+
+export const mockRecommendations = [
+  {
+    id: 'mock-reco-1',
+    name: 'Maria Santos',
+    role: 'Engineering Manager',
+    company: 'Northwind',
+    quote: 'AJ has a rare instinct for the slow parts of a workflow. He built us an internal API and a couple of automations that quietly cut a day of busywork out of every release. The kind of engineer who makes the whole team faster.',
+    sourceType: 'linkedin',
+    sourceUrl: '#',
+    featured: true,
+    hidden: false,
+  },
+  {
+    id: 'mock-reco-2',
+    name: 'David Cruz',
+    role: 'CTO',
+    company: 'Stackforge',
+    quote: "We handed him an ambiguous tooling problem and got back something better than we'd scoped — clean, documented and fast. He ships, and he leaves the codebase better than he found it.",
+    sourceType: 'linkedin',
+    sourceUrl: '#',
+    featured: true,
+    hidden: false,
+  },
+  {
+    id: 'mock-reco-3',
+    name: 'Lena Park',
+    role: 'Product Lead',
+    company: 'Orbital',
+    quote: "Working with AJ felt like adding two engineers. He'd spot the thing we were about to spend a week on and have a small tool for it by the next standup. Calm, precise, generous with what he knows.",
+    sourceType: 'linkedin',
+    sourceUrl: '#',
+    featured: false,
+    hidden: false,
+  },
+  {
+    id: 'mock-reco-4',
+    name: 'Sam Okafor',
+    role: 'Tech Lead',
+    company: 'Ferro',
+    quote: "He mentored half our junior team without ever making it feel like mentoring. Code reviews from AJ are basically a free course in building maintainable software.",
+    sourceType: 'email',
+    sourceUrl: '',
+    featured: false,
+    hidden: true,
+  },
+];
 
 // Helper function to get mock detail by ID
 export const getMockDetailById = (id: string, type: 'blogs' | 'projects') => {

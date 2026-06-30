@@ -1,56 +1,64 @@
-import {BrowserRouter, Route, Routes as Router} from 'react-router-dom';
+import {BrowserRouter, Route, Routes as Router, useLocation} from 'react-router-dom';
 import {LoadingScreen} from '@/components/LoadingScreen';
+import type {ReactNode} from 'react';
+
+function ConditionalLoadingScreen({children}: {children: ReactNode}) {
+	const {pathname} = useLocation();
+	if (pathname.startsWith('/cms')) return <>{children}</>;
+	if (pathname === '/services') return <>{children}</>;
+	return <LoadingScreen>{children}</LoadingScreen>;
+}
 
 import SandBoxPage from './sandbox/SandBoxPage';
 import CmsApp from './cms/CmsApp';
 import {GuestchatPage} from './module/guestChat/guestchatPage';
 import {ReadPage} from './_components/readPage/readingPage';
 import {BaseLayout} from '@/app/layouts/pagelayout';
-import AboutMe from './module/aboutme/aboutMe';
 import {ServicePage} from './module/services/servicePage';
 import SkillSetPage from './module/skillset/skillset';
-import {BlogPage} from './module/blogs/blogPage';
-import Homepage from './module/home/homePage';
+import TerminalHomePage from './module/home/terminalHomePage';
+import TerminalWorkPage from './module/terminal/TerminalWorkPage';
+import TerminalAboutPage from './module/terminal/TerminalAboutPage';
+import TerminalBlogPage from './module/terminal/TerminalBlogPage';
+import BlogReadPage from './module/terminal/BlogReadPage';
+import ProjectReadPage from './module/terminal/ProjectReadPage';
 import {ProgressPage} from './module/progress/progress';
 import {PostsPage} from './module/posts/postsPage';
-import {ProjectPage} from './module/projects/projectPage';
 import {ExperiencePage} from './module/experiences/experiencePage';
 import {NotFoundPage} from './module/notFound/notFoundPage';
+import CertificationPage from './module/certifications/certificationPage';
+import RecommendationPage from './module/recommendations/recommendationPage';
 
 export default function App() {
 	return (
 		<BrowserRouter>
-			<LoadingScreen>
+			<ConditionalLoadingScreen>
 				<Router>
 					<Route element={<BaseLayout />}>
 						<Route path="progress-report" element={<ProgressPage />} />
-						<Route path="about" element={<AboutMe />} />
 						<Route path="guest-book" element={<GuestchatPage />} />
-						<Route path="blogs" element={<BlogPage />} />
-						<Route path="projects" element={<ProjectPage />} />
-						<Route index element={<Homepage />} />
-						<Route path="services" element={<ServicePage />} />
 						<Route path="experiences" element={<ExperiencePage />} />
 						<Route path="posts" element={<PostsPage />} />
-						<Route
-							path="blogs/view/:title"
-							element={<ReadPage name="blogs" />}
-						/>
-						<Route
-							path="projects/view/:title"
-							element={<ReadPage name="projects" />}
-						/>
-						{/* <Route
+							{/* <Route
 						path="/progress/view/:title"
 						element={<ReadPage name="progress" />}
 					/> */}
 					</Route>
 					<Route path="sandbox" element={<SandBoxPage />} />
+					<Route path="services" element={<ServicePage />} />
+					<Route path="certifications" element={<CertificationPage />} />
+					<Route path="recommendations" element={<RecommendationPage />} />
+					<Route path="work" element={<TerminalWorkPage />} />
+					<Route path="about" element={<TerminalAboutPage />} />
+					<Route path="blogs" element={<TerminalBlogPage />} />
+					<Route path="blogs/view/:title" element={<BlogReadPage />} />
+					<Route path="work/view/:title" element={<ProjectReadPage />} />
+					<Route index element={<TerminalHomePage />} />
 					<Route path="cms/*" element={<CmsApp />} />
 					<Route path="*" element={<NotFoundPage />} />
 					<Route path="skillset" element={<SkillSetPage />} />
 				</Router>
-			</LoadingScreen>
+			</ConditionalLoadingScreen>
 		</BrowserRouter>
 	);
 }

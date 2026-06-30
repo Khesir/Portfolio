@@ -1,84 +1,16 @@
 import {useEffect, useState} from 'react';
-import {fetchServiceConfig, cmsUpdateServiceConfig, ServiceDto} from '@/app/api/cms';
-import {Dialog, DialogContent, DialogHeader, DialogTitle} from '@/components/ui/dialog';
-import {Button} from '@/components/ui/Button';
-import {Input} from '@/components/ui/input';
-import {Label} from '@/components/ui/label';
-import {Textarea} from '@/components/ui/textarea';
+import {fetchServiceConfig, cmsUpdateServiceConfig, ServiceDto, SocialLink} from '@/app/api/cms';
 import {toast} from 'sonner';
-import {Icon} from '@iconify/react';
 import TagInput from '../components/TagInput';
 import IconSelector from '../components/IconSelector';
+import ImageUpload from '../components/ImageUpload';
 
-// --- Live preview ---
-
-function ServicePreview({services}: {services: ServiceDto[]}) {
-	if (services.length === 0) {
-		return (
-			<div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
-				<p className="text-slate-400 text-xs italic">
-					Add a service to see a preview.
-				</p>
-			</div>
-		);
-	}
-
-	return (
-		<div className="space-y-2">
-			{services.map((service, i) => (
-				<div
-					key={i}
-					className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 flex gap-3"
-				>
-					{/* Icon */}
-					<div className="w-9 h-9 shrink-0 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 flex items-center justify-center">
-						{service.icon ? (
-							<Icon
-								icon={service.icon}
-								className="w-5 h-5 text-blue-600 dark:text-blue-400"
-							/>
-						) : (
-							<span className="text-blue-300 text-xs">?</span>
-						)}
-					</div>
-
-					{/* Content */}
-					<div className="flex-1 min-w-0 space-y-1.5">
-						<div className="flex items-center gap-2 flex-wrap">
-							<p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
-								{service.title || 'Untitled'}
-							</p>
-							{service.mainTag && (
-								<span className="text-xs px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-									{service.mainTag}
-								</span>
-							)}
-						</div>
-						{service.description && (
-							<p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-								{service.description}
-							</p>
-						)}
-						{service.tags.length > 0 && (
-							<div className="flex flex-wrap gap-1">
-								{service.tags.map((tag) => (
-									<span
-										key={tag}
-										className="text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
-									>
-										{tag}
-									</span>
-								))}
-							</div>
-						)}
-					</div>
-				</div>
-			))}
-		</div>
-	);
+function relativeTime(date: Date): string {
+	const secs = Math.floor((Date.now() - date.getTime()) / 1000);
+	if (secs < 60) return 'just now';
+	if (secs < 3600) return `${Math.floor(secs / 60)}m ago`;
+	return `${Math.floor(secs / 3600)}h ago`;
 }
-
-// --- Service card editor ---
 
 function ServiceCard({
 	service,
@@ -95,84 +27,114 @@ function ServiceCard({
 		onChange(index, {...service, ...patch});
 
 	return (
-		<div className="rounded-lg border border-slate-200 dark:border-slate-800 p-4 space-y-3">
-			<div className="flex items-center justify-between">
-				<span className="text-sm font-medium text-slate-500">
-					Service {index + 1}
-				</span>
-				<button
-					type="button"
-					onClick={() => onRemove(index)}
-					className="text-xs text-red-400 hover:text-red-600 transition-colors"
-				>
-					Remove
-				</button>
+		<div className="rep-row" style={{alignItems: 'flex-start'}}>
+			<span className="grip">⠿</span>
+			<div className="ico">
+				{service.icon.split(':').pop()?.slice(0, 3) || '?'}
 			</div>
-
-			<div className="space-y-1.5">
-				<Label className="text-xs">Icon</Label>
-				<IconSelector
-					value={service.icon}
-					onChange={(icon) => set({icon})}
-					placeholder="mdi:server"
-				/>
-			</div>
-
-			<div className="grid grid-cols-2 gap-3">
-				<div className="space-y-1.5">
-					<Label className="text-xs">Title</Label>
-					<Input
-						value={service.title}
-						onChange={(e) => set({title: e.target.value})}
-						placeholder="Web Development"
-						className="text-sm"
+			<div className="rmain">
+				<div className="rt">
+					{service.title || 'Untitled'}
+					{service.mainTag && (
+						<span className="tag" style={{marginLeft: 8}}>
+							{service.mainTag}
+						</span>
+					)}
+				</div>
+				{service.description && (
+					<div className="rs">{service.description}</div>
+				)}
+				{service.tags.length > 0 && (
+					<div className="chips" style={{marginTop: 6}}>
+						{service.tags.map((tag) => (
+							<span key={tag} className="tag">
+								{tag}
+							</span>
+						))}
+					</div>
+				)}
+				<div className="field" style={{marginTop: 14}}>
+					<label>Icon</label>
+					<IconSelector
+						value={service.icon}
+						onChange={(icon) => set({icon})}
+						placeholder="mdi:server"
 					/>
 				</div>
-				<div className="space-y-1.5">
-					<Label className="text-xs">Main Tag</Label>
-					<Input
-						value={service.mainTag}
-						onChange={(e) => set({mainTag: e.target.value})}
-						placeholder="Backend"
-						className="text-sm"
+				<div className="frow">
+					<div className="field">
+						<label>Title</label>
+						<input
+							type="text"
+							value={service.title}
+							onChange={(e) => set({title: e.target.value})}
+							placeholder="Web Development"
+						/>
+					</div>
+					<div className="field">
+						<label>Main tag</label>
+						<input
+							type="text"
+							value={service.mainTag}
+							onChange={(e) => set({mainTag: e.target.value})}
+							placeholder="Backend"
+						/>
+					</div>
+				</div>
+				<div className="field">
+					<label>Description</label>
+					<textarea
+						value={service.description}
+						onChange={(e) => set({description: e.target.value})}
+						placeholder="What this service covers..."
+					/>
+				</div>
+				<div className="field">
+					<label>Stack tags</label>
+					<TagInput
+						value={service.tags}
+						onChange={(tags) => set({tags})}
+						placeholder="React, Node.js — press Enter"
 					/>
 				</div>
 			</div>
-
-			<div className="space-y-1.5">
-				<Label className="text-xs">Description</Label>
-				<Textarea
-					value={service.description}
-					onChange={(e) => set({description: e.target.value})}
-					placeholder="What this service covers..."
-					className="text-sm min-h-20 resize-y"
-				/>
-			</div>
-
-			<div className="space-y-1.5">
-				<Label className="text-xs">Stack Tags</Label>
-				<TagInput
-					value={service.tags}
-					onChange={(tags) => set({tags})}
-					placeholder="React, Node.js — press Enter"
-				/>
-			</div>
+			<button
+				type="button"
+				className="rm"
+				onClick={() => onRemove(index)}
+			>
+				Remove
+			</button>
 		</div>
 	);
 }
 
-// --- Page ---
-
 export default function CmsServiceConfig() {
 	const [services, setServices] = useState<ServiceDto[]>([]);
+	const [greeting, setGreeting] = useState('');
+	const [headline, setHeadline] = useState('');
+	const [roleLabel, setRoleLabel] = useState('');
+	const [siteUrl, setSiteUrl] = useState('');
+	const [profileImageUrl, setProfileImageUrl] = useState('');
+	const [contactEmail, setContactEmail] = useState('');
+	const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
-	const [previewOpen, setPreviewOpen] = useState(false);
+	const [savedAt, setSavedAt] = useState<Date | null>(null);
 
 	useEffect(() => {
 		fetchServiceConfig()
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			.then((data: any) => setServices(data?.services ?? []))
+			.then((data: any) => {
+				setServices(data?.services ?? []);
+				setGreeting(data?.greeting ?? '');
+				setHeadline(data?.headline ?? '');
+				setRoleLabel(data?.roleLabel ?? '');
+				setSiteUrl(data?.siteUrl ?? '');
+				setProfileImageUrl(data?.profileImageUrl ?? '');
+				setContactEmail(data?.contactEmail ?? '');
+				setSocialLinks(data?.socialLinks ?? []);
+			})
 			.catch(() => toast.error('Failed to load service config'))
 			.finally(() => setLoading(false));
 	}, []);
@@ -181,7 +143,8 @@ export default function CmsServiceConfig() {
 		e.preventDefault();
 		setSaving(true);
 		try {
-			await cmsUpdateServiceConfig({services});
+			await cmsUpdateServiceConfig({services, greeting, headline, roleLabel, siteUrl, profileImageUrl, contactEmail, socialLinks});
+			setSavedAt(new Date());
 			toast.success('Services saved');
 		} catch {
 			toast.error('Failed to save services');
@@ -195,60 +158,194 @@ export default function CmsServiceConfig() {
 	const removeService = (index: number) =>
 		setServices((prev) => prev.filter((_, i) => i !== index));
 	const addService = () =>
-		setServices((prev) => [...prev, {icon: '', title: '', mainTag: '', description: '', tags: []}]);
+		setServices((prev) => [
+			...prev,
+			{icon: '', title: '', mainTag: '', description: '', tags: []},
+		]);
 
-	if (loading) return <p className="text-slate-400 text-sm">Loading...</p>;
+	if (loading) return <p>Loading...</p>;
 
 	return (
 		<>
-		<div>
-			<div className="flex items-center justify-between mb-6">
-				<h1 className="text-2xl font-semibold">Services Config</h1>
-				<div className="flex items-center gap-2">
-					<Button type="button" variant="outline" onClick={() => setPreviewOpen(true)}>
-						Preview
-					</Button>
-					<Button type="button" variant="outline" onClick={addService}>
-						Add Service
-					</Button>
+			<div className="cms-top">
+				<div>
+					<h1 className="cms-h1">Services Config</h1>
+					<div className="sub">aj@khesir:~$ vim ./pages/services.json</div>
 				</div>
+				<a
+					className="btn-ol"
+					href="/work"
+					target="_blank"
+					rel="noreferrer"
+				>
+					Preview ↗
+				</a>
 			</div>
-			<form onSubmit={handleSubmit} className="space-y-4">
-				{services.length === 0 && (
-					<p className="text-sm text-slate-400">
-						No services yet. Click &quot;Add Service&quot; to get started.
-					</p>
-				)}
-				{services.map((service, i) => (
-					<ServiceCard
-						key={i}
-						service={service}
-						index={i}
-						onChange={updateService}
-						onRemove={removeService}
-					/>
-				))}
-				{services.length > 0 && (
-					<div className="pt-2">
-						<Button type="submit" disabled={saving}>
-							{saving ? 'Saving...' : 'Save Services'}
-						</Button>
-					</div>
-				)}
-			</form>
-		</div>
 
-		<Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-			<DialogContent
-				className="overflow-auto resize max-w-none max-h-[90vh]"
-				style={{width: 540, minWidth: 400, minHeight: 340}}
-			>
-				<DialogHeader>
-					<DialogTitle>Services Preview</DialogTitle>
-				</DialogHeader>
-				<ServicePreview services={services} />
-			</DialogContent>
-		</Dialog>
+			<form className="cms-form" onSubmit={handleSubmit}>
+				<div className="fsection">
+					<h2>Card Copy</h2>
+					<ImageUpload
+						value={profileImageUrl}
+						onChange={setProfileImageUrl}
+					/>
+					<div className="frow">
+						<div className="field">
+							<label>Greeting</label>
+							<input
+								type="text"
+								value={greeting}
+								onChange={(e) => setGreeting(e.target.value)}
+								placeholder="Hey, I'm"
+							/>
+						</div>
+						<div className="field">
+							<label>Role label</label>
+							<input
+								type="text"
+								value={roleLabel}
+								onChange={(e) => setRoleLabel(e.target.value)}
+								placeholder="Full-stack Engineer"
+							/>
+						</div>
+					</div>
+					<div className="field">
+						<label>Headline</label>
+						<input
+							type="text"
+							value={headline}
+							onChange={(e) => setHeadline(e.target.value)}
+							placeholder="I build things for the web."
+						/>
+					</div>
+					<div className="field">
+						<label>Site URL</label>
+						<input
+							type="text"
+							value={siteUrl}
+							onChange={(e) => setSiteUrl(e.target.value)}
+							placeholder="https://yoursite.com"
+						/>
+					</div>
+				</div>
+
+				<div className="fsection">
+					<div className="fhead">
+						<h2>Contact</h2>
+					</div>
+					<div className="field">
+						<label>Contact email</label>
+						<input
+							type="text"
+							value={contactEmail}
+							onChange={(e) => setContactEmail(e.target.value)}
+							placeholder="you@example.com"
+						/>
+					</div>
+					<div className="fhead" style={{marginTop: 16}}>
+						<h3>Social links</h3>
+						<button
+							type="button"
+							className="btn-ol"
+							onClick={() =>
+								setSocialLinks((prev) => [...prev, {label: '', href: '', icon: ''}])
+							}
+						>
+							Add link
+						</button>
+					</div>
+					<div className="rep">
+						{socialLinks.map((link, i) => (
+							<div key={i} className="rep-row" style={{alignItems: 'flex-start'}}>
+								<div className="rmain">
+									<div className="frow">
+										<div className="field">
+											<label>Label</label>
+											<input
+												type="text"
+												value={link.label}
+												onChange={(e) =>
+													setSocialLinks((prev) =>
+														prev.map((x, j) =>
+															j === i ? {...x, label: e.target.value} : x,
+														),
+													)
+												}
+												placeholder="GitHub"
+											/>
+										</div>
+										<div className="field">
+											<label>URL</label>
+											<input
+												type="text"
+												value={link.href}
+												onChange={(e) =>
+													setSocialLinks((prev) =>
+														prev.map((x, j) =>
+															j === i ? {...x, href: e.target.value} : x,
+														),
+													)
+												}
+												placeholder="https://github.com/you"
+											/>
+										</div>
+									</div>
+									<div className="field" style={{marginTop: 8}}>
+										<label>Icon</label>
+										<IconSelector
+											value={link.icon}
+											onChange={(icon) =>
+												setSocialLinks((prev) =>
+													prev.map((x, j) => (j === i ? {...x, icon} : x)),
+												)
+											}
+											placeholder="mdi:github"
+										/>
+									</div>
+								</div>
+								<button
+									type="button"
+									className="rm"
+									onClick={() =>
+										setSocialLinks((prev) => prev.filter((_, j) => j !== i))
+									}
+								>
+									Remove
+								</button>
+							</div>
+						))}
+					</div>
+				</div>
+
+				<div className="fsection">
+					<div className="fhead">
+						<h2>Services</h2>
+						<button type="button" className="btn-ol" onClick={addService}>
+							Add service
+						</button>
+					</div>
+					<div className="rep">
+						{services.map((service, i) => (
+							<ServiceCard
+								key={i}
+								service={service}
+								index={i}
+								onChange={updateService}
+								onRemove={removeService}
+							/>
+						))}
+					</div>
+				</div>
+
+				<div className="save-bar">
+					<button className="btn-new" type="submit" disabled={saving}>
+						{saving ? 'Saving...' : 'Save services config'}
+					</button>
+					{savedAt && (
+						<span className="hint">last saved {relativeTime(savedAt)}</span>
+					)}
+				</div>
+			</form>
 		</>
 	);
 }

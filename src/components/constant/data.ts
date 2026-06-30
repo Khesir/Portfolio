@@ -46,7 +46,7 @@ export const navdata = [
 	{
 		name: 'Works',
 		isActive: false,
-		link: '/projects',
+		link: '/work',
 		emoji: Briefcase,
 	},
 	{

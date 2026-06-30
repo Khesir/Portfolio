@@ -16,4 +16,10 @@ export default defineConfig({
 	define: {
 		'process.env.VITE_TOKEN': JSON.stringify(process.env.VITE_TOKEN),
 	},
+
+	test: {
+		environment: 'jsdom',
+		globals: true,
+		setupFiles: ['./src/test-setup.ts'],
+	},
 });

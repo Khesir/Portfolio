@@ -14,6 +14,10 @@ import CmsPostEditor from './pages/CmsPostEditor';
 import CmsHomeConfig from './pages/CmsHomeConfig';
 import CmsAboutConfig from './pages/CmsAboutConfig';
 import CmsServiceConfig from './pages/CmsServiceConfig';
+import CmsCertifications from './pages/CmsCertifications';
+import CmsCertificationEditor from './pages/CmsCertificationEditor';
+import CmsRecommendations from './pages/CmsRecommendations';
+import CmsRecommendationEditor from './pages/CmsRecommendationEditor';
 
 export default function CmsApp() {
 	const {authenticated} = useCmsAuth();
@@ -36,6 +40,12 @@ export default function CmsApp() {
 				<Route path="posts" element={<CmsPosts />} />
 				<Route path="posts/new" element={<CmsPostEditor />} />
 				<Route path="posts/:id/edit" element={<CmsPostEditor />} />
+				<Route path="certifications" element={<CmsCertifications />} />
+				<Route path="certifications/new" element={<CmsCertificationEditor />} />
+				<Route path="certifications/:id/edit" element={<CmsCertificationEditor />} />
+				<Route path="recommendations" element={<CmsRecommendations />} />
+				<Route path="recommendations/new" element={<CmsRecommendationEditor />} />
+				<Route path="recommendations/:id/edit" element={<CmsRecommendationEditor />} />
 				<Route path="home-config" element={<CmsHomeConfig />} />
 				<Route path="about-config" element={<CmsAboutConfig />} />
 				<Route path="service-config" element={<CmsServiceConfig />} />

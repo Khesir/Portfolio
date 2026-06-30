@@ -1,5 +1,12 @@
 import {Navbar} from '@/components/navbar';
 import {useHomeConfig} from '@/hooks/use-home-config';
+import {Icon} from '@iconify/react';
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface ContentLayoutProps {
 	children: React.ReactNode;
@@ -15,13 +22,32 @@ export function Layout({children}: ContentLayoutProps) {
 			</div>
 			<footer className="border-t border-slate-200 dark:border-slate-700 mt-20">
 				<div className="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
-					<p>© {new Date().getFullYear()} {config.name || 'Khesir (Aj)'}</p>
-					<div className="flex gap-5">
-						<a href="https://github.com/khesir" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 dark:hover:text-white transition-colors">GitHub</a>
-						<a href="https://x.com/khesirr" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 dark:hover:text-white transition-colors">Twitter</a>
-						<a href="https://www.twitch.tv/khesir" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 dark:hover:text-white transition-colors">Twitch</a>
-						<a href="/#contact" className="hover:text-slate-900 dark:hover:text-white transition-colors">Contact</a>
-					</div>
+					<p>{config.footerCopyright || `© ${new Date().getFullYear()} ${config.name || 'Khesir (Aj)'}`}</p>
+					{config.socialLinks.length > 0 && (
+						<TooltipProvider>
+							<div className="flex gap-4">
+								{config.socialLinks.map((link, i) => (
+									<Tooltip key={i}>
+										<TooltipTrigger asChild>
+											<a
+												href={link.href}
+												target={link.href.startsWith('mailto:') ? undefined : '_blank'}
+												rel="noopener noreferrer"
+												className="hover:text-slate-900 dark:hover:text-white transition-colors"
+											>
+												{link.icon ? (
+													<Icon icon={link.icon} className="w-5 h-5" />
+												) : (
+													link.label
+												)}
+											</a>
+										</TooltipTrigger>
+										<TooltipContent>{link.label}</TooltipContent>
+									</Tooltip>
+								))}
+							</div>
+						</TooltipProvider>
+					)}
 				</div>
 			</footer>
 		</div>

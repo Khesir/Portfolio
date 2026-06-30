@@ -8,23 +8,35 @@ import {
 	StatusConfig,
 	BannerButton,
 	LanguageEntry,
+	NeofetchRow,
+	SocialLink,
+	OffTheClockItem,
 } from '@/app/api/cms';
 
-export type {StatusConfig, BannerButton, LanguageEntry};
+export type {StatusConfig, BannerButton, LanguageEntry, NeofetchRow, SocialLink, OffTheClockItem};
 export type {StatusType} from '@/app/api/cms';
 
 export interface HomeConfig {
 	name: string;
+	secondName: string;
 	role: string;
 	description: string;
 	contactEmail: string;
 	status: StatusConfig;
-	languages: LanguageEntry[];
-	bannerTitle: string;
-	bannerSubtitle: string;
-	bannerButtons: BannerButton[];
+	heroButtons: BannerButton[];
 	profileImageUrl: string;
 	bannerImageUrl: string;
+	neofetchRows: NeofetchRow[];
+	location: string;
+	tags: string[];
+	languages: LanguageEntry[];
+	selectedWorkCount: number;
+	writingCount: number;
+	contactHeading: string;
+	contactSubtext: string;
+	socialLinks: SocialLink[];
+	footerCopyright: string;
+	footerTagline: string;
 }
 
 export interface AboutConfig {
@@ -35,25 +47,43 @@ export interface AboutConfig {
 	aboutButtons: BannerButton[];
 	professionalSummary: string;
 	technicalSkills: SkillCategoryDto[];
-	coreCompetencies: string[];
+	bioTagline: string;
+	bioBody: string;
+	offTheClock: OffTheClockItem[];
 }
 
 export interface ServiceConfig {
 	services: ServiceDto[];
+	greeting: string;
+	headline: string;
+	roleLabel: string;
+	siteUrl: string;
+	profileImageUrl: string;
+	contactEmail: string;
+	socialLinks: SocialLink[];
 }
 
 const DEFAULT_HOME: HomeConfig = {
 	name: '',
+	secondName: '',
 	role: '',
 	description: '',
 	contactEmail: '',
 	status: {type: 'online'},
-	languages: [],
-	bannerTitle: '',
-	bannerSubtitle: '',
-	bannerButtons: [],
+	heroButtons: [],
 	profileImageUrl: '',
 	bannerImageUrl: '',
+	neofetchRows: [],
+	location: '',
+	tags: [],
+	languages: [],
+	selectedWorkCount: 3,
+	writingCount: 3,
+	contactHeading: "Let's build something & make it faster.",
+	contactSubtext: 'Open for engineering work and collaborations.',
+	socialLinks: [],
+	footerCopyright: '© 2026 AJ — Khesir',
+	footerTagline: 'direction B — "Terminal" · tech-first',
 };
 
 const DEFAULT_ABOUT: AboutConfig = {
@@ -64,10 +94,21 @@ const DEFAULT_ABOUT: AboutConfig = {
 	aboutButtons: [],
 	professionalSummary: '',
 	technicalSkills: [],
-	coreCompetencies: [],
+	bioTagline: '',
+	bioBody: '',
+	offTheClock: [] as OffTheClockItem[],
 };
 
-const DEFAULT_SERVICE: ServiceConfig = {services: []};
+const DEFAULT_SERVICE: ServiceConfig = {
+	services: [],
+	greeting: 'Hey —',
+	headline: "here's what I can help with.",
+	roleLabel: 'AJ · Khesir // Full-Stack & Toolmaker',
+	siteUrl: 'khesir',
+	profileImageUrl: '',
+	contactEmail: '',
+	socialLinks: [],
+};
 
 // Module-level cache
 let _homeCache: HomeConfig | null = null;
@@ -76,6 +117,21 @@ let _aboutCache: AboutConfig | null = null;
 let _aboutPromise: Promise<AboutConfig> | null = null;
 let _serviceCache: ServiceConfig | null = null;
 let _servicePromise: Promise<ServiceConfig> | null = null;
+
+export function invalidateAboutCache() {
+	_aboutCache = null;
+	_aboutPromise = null;
+}
+
+export function invalidateHomeCache() {
+	_homeCache = null;
+	_homePromise = null;
+}
+
+export function invalidateServiceCache() {
+	_serviceCache = null;
+	_servicePromise = null;
+}
 
 function makeLoader<T>(
 	getCache: () => T | null,
@@ -138,7 +194,6 @@ export function useHomeConfig() {
 	const [config, setConfig] = useState<HomeConfig>(_homeCache ?? DEFAULT_HOME);
 	const [loading, setLoading] = useState(!_homeCache);
 	useEffect(() => {
-		if (_homeCache) return;
 		loadHome().then((cfg) => { setConfig(cfg); setLoading(false); });
 	}, []);
 	return {config, loading};
@@ -148,7 +203,6 @@ export function useAboutConfig() {
 	const [config, setConfig] = useState<AboutConfig>(_aboutCache ?? DEFAULT_ABOUT);
 	const [loading, setLoading] = useState(!_aboutCache);
 	useEffect(() => {
-		if (_aboutCache) return;
 		loadAbout().then((cfg) => { setConfig(cfg); setLoading(false); });
 	}, []);
 	return {config, loading};
