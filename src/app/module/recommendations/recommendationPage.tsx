@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import {fetchRecommendations} from '@/app/api/recommendations';
 import {TerminalLayout} from '../terminal/TerminalLayout';
-import {TerminalContactSection} from '../home/TerminalContactSection';
+import {TerminalContactSection} from '../home/terminalContactSection';
 import {motion} from 'framer-motion';
 
 const headContainer = {

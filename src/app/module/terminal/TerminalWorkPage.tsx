@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {TerminalLayout} from './TerminalLayout'
-import {TerminalContactSection} from '../home/TerminalContactSection'
+import {TerminalContactSection} from '../home/terminalContactSection'
 import {fetchFeaturedProjects, fetchProjects} from '@/app/api/projects'
 import {useNavigate} from 'react-router-dom'
 import {useState, useEffect} from 'react'

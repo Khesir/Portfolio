@@ -2,7 +2,7 @@ import {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import {fetchCertifications} from '@/app/api/certifications';
 import {TerminalLayout} from '../terminal/TerminalLayout';
-import {TerminalContactSection} from '../home/TerminalContactSection';
+import {TerminalContactSection} from '../home/terminalContactSection';
 import {Icon} from '@iconify/react';
 import {motion} from 'framer-motion';
 

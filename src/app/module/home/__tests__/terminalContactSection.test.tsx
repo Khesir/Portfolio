@@ -1,7 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter} from 'react-router-dom';
 import {describe, it, expect, vi} from 'vitest';
-import {TerminalContactSection} from '../TerminalContactSection';
+import {TerminalContactSection} from '../terminalContactSection';
 
 vi.mock('@/hooks/use-home-config', () => ({
 	useHomeConfig: vi.fn(),
