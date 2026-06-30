@@ -1,5 +1,5 @@
 import {TerminalLayout} from './TerminalLayout'
-import {TerminalContactSection} from '../home/terminalContactSection'
+import {TerminalContactSection} from '../home/TerminalContactSection'
 import {fetchBlogs} from '@/app/api/blogs'
 import {useNavigate} from 'react-router-dom'
 import {useState, useEffect} from 'react'

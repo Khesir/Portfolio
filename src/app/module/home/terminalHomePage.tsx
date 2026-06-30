@@ -7,7 +7,7 @@ import {TerminalProjectsSection} from './terminalProjectsSection';
 import {TerminalWritingSection} from './terminalWritingSection';
 import {TerminalCertificationsSection} from './terminalCertificationsSection';
 import {TerminalRecommendationsSection} from './terminalRecommendationsSection';
-import {TerminalContactSection} from './terminalContactSection';
+import {TerminalContactSection} from './TerminalContactSection';
 import {motion, AnimatePresence} from 'framer-motion';
 
 const heroContainer = {

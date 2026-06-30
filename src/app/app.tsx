@@ -12,7 +12,6 @@ function ConditionalLoadingScreen({children}: {children: ReactNode}) {
 import SandBoxPage from './sandbox/SandBoxPage';
 import CmsApp from './cms/CmsApp';
 import {GuestchatPage} from './module/guestChat/guestchatPage';
-import {ReadPage} from './_components/readPage/readingPage';
 import {BaseLayout} from '@/app/layouts/pagelayout';
 import {ServicePage} from './module/services/servicePage';
 import SkillSetPage from './module/skillset/skillset';
