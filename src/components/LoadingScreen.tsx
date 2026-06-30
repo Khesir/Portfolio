@@ -31,7 +31,7 @@ function CheckIcon() {
 	);
 }
 
-function stepClass(index: number, active: number, done: number): string {
+function stepClass(index: number, active: number, _done: number): string {
 	if (index < active) return 'bstep done';
 	if (index === active) return 'bstep active';
 	return 'bstep pending';

@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {TerminalLayout} from './TerminalLayout';
 import {useAboutConfig} from '@/hooks/use-home-config';
-import {TerminalContactSection} from '../home/terminalContactSection';
+import {TerminalContactSection} from '../home/TerminalContactSection';
 import {fetchExperiences} from '@/app/api/experience';
 import {MarkDownComponent} from '@/app/_components/readPage/readingPage';
 import {Icon} from '@iconify/react';

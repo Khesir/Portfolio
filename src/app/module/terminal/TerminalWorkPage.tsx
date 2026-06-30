@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {TerminalLayout} from './TerminalLayout'
-import {TerminalContactSection} from '../home/terminalContactSection'
+import {TerminalContactSection} from '../home/TerminalContactSection'
 import {fetchFeaturedProjects, fetchProjects} from '@/app/api/projects'
 import {useNavigate} from 'react-router-dom'
 import {useState, useEffect} from 'react'
@@ -155,13 +155,13 @@ export default function TerminalWorkPage() {
 		}
 
 		function place(x: number, y: number) {
-			const w = pop.offsetWidth, h = pop.offsetHeight
+			const w = pop!.offsetWidth, h = pop!.offsetHeight
 			let left = x + GAP, top = y - h / 2
 			if (left + w > window.innerWidth - 12) left = x - GAP - w
 			if (left < 12) left = 12
 			top = Math.max(12, Math.min(top, window.innerHeight - h - 12))
-			pop.style.left = left + 'px'
-			pop.style.top = top + 'px'
+			pop!.style.left = left + 'px'
+			pop!.style.top = top + 'px'
 		}
 
 		const handlers: Array<{el: HTMLElement; type: string; fn: EventListener}> = []

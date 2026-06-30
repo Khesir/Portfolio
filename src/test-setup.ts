@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 
 const mockIntersectionObserver = vi.fn(() => ({
 	observe: vi.fn(),

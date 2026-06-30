@@ -37,6 +37,9 @@ export interface HomeConfig {
 	socialLinks: SocialLink[];
 	footerCopyright: string;
 	footerTagline: string;
+	bannerTitle?: string;
+	bannerSubtitle?: string;
+	bannerButtons: BannerButton[];
 }
 
 export interface AboutConfig {
@@ -84,6 +87,7 @@ const DEFAULT_HOME: HomeConfig = {
 	socialLinks: [],
 	footerCopyright: '© 2026 AJ — Khesir',
 	footerTagline: 'direction B — "Terminal" · tech-first',
+	bannerButtons: [],
 };
 
 const DEFAULT_ABOUT: AboutConfig = {
