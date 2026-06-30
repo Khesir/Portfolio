@@ -2,7 +2,7 @@
 id: issue-002
 title: "CMS service config editor extensions"
 feature: service-card
-status: qa
+status: done
 created_at: 2026-06-29
 tags: [afk, p2]
 ---
@@ -61,3 +61,4 @@ The save handler currently only sends `{ services }`. It must be updated to send
 _Updated as work progresses._
 
 Implemented 2026-06-29. Added "Card Copy" fsection above Services with ImageUpload for profileImageUrl and text inputs for greeting, headline, roleLabel, siteUrl. Added "Contact" fsection with contactEmail text input and a rep/rep-row socialLinks list editor where each row has label, href, and IconSelector icon fields with add/remove controls. ImageUpload imported from existing CMS component; all state and save handler were already wired from issue 001.
+QA approved by user on 2026-06-30.

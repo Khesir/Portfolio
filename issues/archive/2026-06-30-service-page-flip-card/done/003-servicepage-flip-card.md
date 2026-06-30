@@ -2,7 +2,7 @@
 id: issue-003
 title: "ServicePage flip card (public)"
 feature: service-card
-status: qa
+status: done
 created_at: 2026-06-29
 tags: [afk, p1]
 ---
@@ -88,3 +88,4 @@ Prior art for Framer Motion entrance animations: `servicePage.tsx` (current impl
 ## Log
 
 Implemented 2026-06-29. Rewrote `servicePage.tsx` as a Framer Motion flip card (440×600px, responsive to 360px below 520px) with front face showing greeting/headline/roleLabel/siteUrl/avatar and back face listing services with icons, mainTag badges, descriptions, social link icons, and a contact email. Added `IntersectionObserver` mock to `src/test-setup.ts` and wrote 8 passing tests in `src/app/module/services/__tests__/servicePage.test.tsx` covering all specified cases including flip interaction, empty states, and loading skeleton.
+QA approved by user on 2026-06-30.

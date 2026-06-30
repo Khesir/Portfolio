@@ -2,7 +2,7 @@
 id: issue-001
 title: "Service config schema extension"
 feature: service-card
-status: qa
+status: done
 created_at: 2026-06-29
 tags: [afk, p1]
 ---
@@ -64,3 +64,4 @@ Default mock values should match what the design showed: greeting `"Hey —"`, h
 ## Log
 
 Implemented 2026-06-29. Extended UpdateServiceConfigDto, ServiceConfig interface, DEFAULT_SERVICE, and fetchServiceConfig mock with 7 new fields (greeting, headline, roleLabel, siteUrl, profileImageUrl, contactEmail, socialLinks). Updated CmsServiceConfig state/save handler to carry new fields. Updated backend guide comment in cms.ts.
+QA approved by user on 2026-06-30.

@@ -31,6 +31,7 @@ function relativeTime(date: Date): string {
 
 export default function CmsHomeConfig() {
 	const [name, setName] = useState('');
+	const [secondName, setSecondName] = useState('');
 	const [role, setRole] = useState('');
 	const [contactEmail, setContactEmail] = useState('');
 	const [description, setDescription] = useState('');
@@ -57,6 +58,7 @@ export default function CmsHomeConfig() {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			.then((data: any) => {
 				setName(data?.name ?? '');
+				setSecondName(data?.secondName ?? '');
 				setRole(data?.role ?? '');
 				setContactEmail(data?.contactEmail ?? '');
 				setDescription(data?.description ?? '');
@@ -85,6 +87,7 @@ export default function CmsHomeConfig() {
 		try {
 			await cmsUpdateHomeConfig({
 				name,
+				secondName,
 				role,
 				contactEmail,
 				description,
@@ -255,7 +258,16 @@ export default function CmsHomeConfig() {
 								type="text"
 								value={name}
 								onChange={(e) => setName(e.target.value)}
-								placeholder="Khesir (AJ)"
+								placeholder="AJ"
+							/>
+						</div>
+						<div className="field">
+							<label>Second Name</label>
+							<input
+								type="text"
+								value={secondName}
+								onChange={(e) => setSecondName(e.target.value)}
+								placeholder="Khesir"
 							/>
 						</div>
 						<div className="field">

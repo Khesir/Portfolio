@@ -26,6 +26,8 @@ import {ProgressPage} from './module/progress/progress';
 import {PostsPage} from './module/posts/postsPage';
 import {ExperiencePage} from './module/experiences/experiencePage';
 import {NotFoundPage} from './module/notFound/notFoundPage';
+import CertificationPage from './module/certifications/certificationPage';
+import RecommendationPage from './module/recommendations/recommendationPage';
 
 export default function App() {
 	return (
@@ -44,6 +46,8 @@ export default function App() {
 					</Route>
 					<Route path="sandbox" element={<SandBoxPage />} />
 					<Route path="services" element={<ServicePage />} />
+					<Route path="certifications" element={<CertificationPage />} />
+					<Route path="recommendations" element={<RecommendationPage />} />
 					<Route path="work" element={<TerminalWorkPage />} />
 					<Route path="about" element={<TerminalAboutPage />} />
 					<Route path="blogs" element={<TerminalBlogPage />} />

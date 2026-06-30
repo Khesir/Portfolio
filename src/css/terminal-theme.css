@@ -229,6 +229,35 @@ body {
 .focus .fa:hover { color: var(--ink); gap: 13px; }
 .focus .fa:hover .k { color: var(--accent); border-color: rgba(var(--accent-rgb),.4); }
 
+/* ---- certifications ---- */
+.certs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.cert { display: grid; grid-template-columns: 46px 1fr; gap: 16px; background: linear-gradient(180deg, var(--panel), var(--panel-2)); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 22px 24px; transition: border-color .15s, transform .15s; }
+.cert:hover { border-color: rgba(var(--accent-rgb),.35); transform: translateY(-2px); }
+.cert .ci { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent); background: rgba(var(--accent-rgb),.1); border: 1px solid rgba(var(--accent-rgb),.25); flex-shrink: 0; }
+.cert .ci svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+.cert .ccat { font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.cert h4 { font-family: var(--serif); font-size: 22px; font-weight: 400; margin: 5px 0 0; line-height: 1.08; }
+.cert .cmeta { font-family: var(--mono); font-size: 11.5px; color: var(--ink-4); margin-top: 8px; display: flex; gap: 12px; flex-wrap: wrap; }
+.cert p { color: var(--ink-2); font-size: 13.5px; line-height: 1.55; margin: 11px 0 0; }
+.cert .cproof { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 12px; color: var(--accent); text-decoration: none; margin-top: 13px; transition: gap .15s; }
+.cert .cproof svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.cert .cproof:hover { gap: 10px; }
+
+/* ---- recommendations ---- */
+.recos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.reco { display: flex; flex-direction: column; background: linear-gradient(180deg, var(--panel), var(--panel-2)); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 26px 28px; transition: border-color .15s, transform .15s; }
+.reco:hover { border-color: rgba(var(--accent-rgb),.3); transform: translateY(-2px); }
+.reco .quo { font-family: var(--serif); font-size: 46px; line-height: .6; color: var(--accent); height: 26px; }
+.reco blockquote { margin: 0; font-size: 15.5px; line-height: 1.62; color: var(--ink); font-style: normal; flex: 1; }
+.reco .who { display: flex; align-items: center; gap: 13px; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+.reco .who .av { width: 42px; height: 42px; border-radius: 999px; overflow: hidden; flex-shrink: 0; background: rgba(var(--accent-rgb),.12); border: 1px solid var(--line-2); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 14px; color: var(--accent); }
+.reco .who .av img { width: 100%; height: 100%; object-fit: cover; }
+.reco .who .nm2 { font-size: 14.5px; color: var(--ink); }
+.reco .who .rl { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); margin-top: 3px; }
+.reco .who .lk { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; color: var(--ink-3); text-decoration: none; transition: color .15s; }
+.reco .who .lk svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+.reco .who .lk:hover { color: var(--accent); }
+
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; }
   .bento { grid-template-columns: 1fr; }
@@ -243,4 +272,5 @@ body {
   .focus { grid-template-columns: 1fr; gap: 18px; }
   .post { grid-template-columns: 1fr; gap: 8px; }
   .post .pmeta { order: -1; }
+  .certs, .recos { grid-template-columns: 1fr; }
 }

@@ -18,6 +18,7 @@ export type {StatusType} from '@/app/api/cms';
 
 export interface HomeConfig {
 	name: string;
+	secondName: string;
 	role: string;
 	description: string;
 	contactEmail: string;
@@ -64,6 +65,7 @@ export interface ServiceConfig {
 
 const DEFAULT_HOME: HomeConfig = {
 	name: '',
+	secondName: '',
 	role: '',
 	description: '',
 	contactEmail: '',

@@ -220,6 +220,7 @@ export interface SocialLink {
 
 export interface UpdateHomeConfigDto {
 	name: string;
+	secondName: string;
 	role: string;
 	description: string;
 	contactEmail: string;
@@ -643,7 +644,8 @@ export const cmsDeletePost = async (id: string) => {
 export const fetchHomeConfig = async () => {
 	if (useEnvironment.getState().isDevelopment())
 		return {
-			name: 'Khesir (AJ)',
+			name: 'AJ',
+			secondName: 'Khesir',
 			role: 'Software Engineer',
 			contactEmail: 'contact@khesir.com',
 			description:
@@ -860,6 +862,214 @@ export const cmsUpdateServiceConfig = async (
 	const res = await axios.put(`${API}/config/services`, payload, {
 		headers: authHeader(),
 	});
+	return res.data;
+};
+
+export interface CreateCertificationDto {
+	title: string;
+	issuer: string;
+	category: string;
+	issuedDate: string;
+	credentialId?: string;
+	description?: string;
+	proofUrl?: string;
+	proofType?: 'link' | 'image';
+	icon?: string;
+	draft?: boolean;
+}
+export type UpdateCertificationDto = Partial<CreateCertificationDto>;
+
+export interface CreateRecommendationDto {
+	name: string;
+	role: string;
+	company: string;
+	quote: string;
+	sourceType?: 'linkedin' | 'email' | 'other';
+	sourceUrl?: string;
+	featured?: boolean;
+	hidden?: boolean;
+}
+export type UpdateRecommendationDto = Partial<CreateRecommendationDto>;
+
+// =============================================================================
+// CERTIFICATIONS
+// =============================================================================
+//
+// BACKEND GUIDE
+//
+//   Certifications are stored in your own database (not Notion) since they are
+//   structured records without rich page content.
+//
+//   Suggested schema (PostgreSQL / Supabase):
+//
+//     CREATE TABLE certifications (
+//       id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+//       title        TEXT NOT NULL,
+//       issuer       TEXT NOT NULL,
+//       category     TEXT NOT NULL,        -- "Cloud" | "AI / ML" | "Engineering" | "DevOps" | "Backend" | "Game" | custom
+//       issued_date  TEXT NOT NULL,        -- e.g. "2025" or "2025-01"
+//       credential_id TEXT,               -- optional ID shown in meta line
+//       description  TEXT,
+//       proof_url    TEXT,
+//       proof_type   TEXT DEFAULT 'link', -- "link" | "image"
+//       icon         TEXT,               -- Iconify icon ID e.g. "mdi:cloud-outline"
+//       draft        BOOLEAN DEFAULT true,
+//       created_at   TIMESTAMPTZ DEFAULT now()
+//     );
+//
+//   Public feed — returns only non-draft certs, ordered by issued_date DESC:
+//   GET /api/certifications?pageSize=N
+//   Response 200: CertificationDto[]
+//
+//   Single item (public):
+//   GET /api/certifications/:id
+//   Response 200: { result: CertificationDto }
+//
+//   CMS list (all including drafts, auth required):
+//   GET /api/certifications/cms
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Response 200: CertificationDto[]
+//
+//   POST /api/certifications
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Body:    CreateCertificationDto (JSON)
+//   Response 201: { id: string, ...cert }
+//
+//   PUT /api/certifications/:id
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Body:    UpdateCertificationDto (JSON) — partial
+//   Response 200: { id: string, ...cert }
+//
+//   DELETE /api/certifications/:id
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Response 200: {}
+
+export const fetchCertificationsCms = async () => {
+	if (useEnvironment.getState().isDevelopment()) return [];
+	const res = await axios.get(`${API}/certifications/cms`, {headers: authHeader()});
+	return res.data;
+};
+
+export const cmsCreateCertification = async (payload: CreateCertificationDto) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('createCertification');
+	const res = await axios.post(`${API}/certifications`, payload, {headers: authHeader()});
+	ApiCache.invalidate('certifications:list:100');
+	ApiCache.invalidate('certifications:list:4');
+	return res.data;
+};
+
+export const cmsUpdateCertification = async (id: string, payload: UpdateCertificationDto) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('updateCertification');
+	const res = await axios.put(`${API}/certifications/${id}`, payload, {headers: authHeader()});
+	ApiCache.invalidate('certifications:list:100');
+	ApiCache.invalidate('certifications:list:4');
+	ApiCache.invalidate(`certifications:id:${id}`);
+	return res.data;
+};
+
+export const cmsDeleteCertification = async (id: string) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('deleteCertification');
+	const res = await axios.delete(`${API}/certifications/${id}`, {headers: authHeader()});
+	ApiCache.invalidate('certifications:list:100');
+	ApiCache.invalidate('certifications:list:4');
+	ApiCache.invalidate(`certifications:id:${id}`);
+	return res.data;
+};
+
+// =============================================================================
+// RECOMMENDATIONS
+// =============================================================================
+//
+// BACKEND GUIDE
+//
+//   Recommendations are stored in your own database.
+//
+//   Suggested schema (PostgreSQL / Supabase):
+//
+//     CREATE TABLE recommendations (
+//       id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+//       name        TEXT NOT NULL,
+//       role        TEXT NOT NULL,
+//       company     TEXT NOT NULL,
+//       quote       TEXT NOT NULL,
+//       source_type TEXT DEFAULT 'linkedin',  -- "linkedin" | "email" | "other"
+//       source_url  TEXT,
+//       featured    BOOLEAN DEFAULT false,    -- shown on home page
+//       hidden      BOOLEAN DEFAULT false,    -- excluded from public feed
+//       created_at  TIMESTAMPTZ DEFAULT now()
+//     );
+//
+//   Public feed — returns all non-hidden recs. Optional ?featured=true filter:
+//   GET /api/recommendations
+//   GET /api/recommendations?featured=true
+//   Response 200: RecommendationDto[]
+//
+//   Single item (public):
+//   GET /api/recommendations/:id
+//   Response 200: { result: RecommendationDto }
+//
+//   CMS list (all including hidden, auth required):
+//   GET /api/recommendations/cms
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Response 200: RecommendationDto[]
+//
+//   POST /api/recommendations
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Body:    CreateRecommendationDto (JSON)
+//   Response 201: { id: string, ...rec }
+//
+//   PUT /api/recommendations/:id
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Body:    UpdateRecommendationDto (JSON) — partial
+//   Response 200: { id: string, ...rec }
+//
+//   DELETE /api/recommendations/:id
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Response 200: {}
+//
+//   Toggle featured (convenience endpoint):
+//   PUT /api/recommendations/:id/feature
+//   Headers: Authorization: Bearer <VITE_CMS_PASSWORD>
+//   Body:    { featured: boolean }
+//   Response 200: { id: string, featured: boolean }
+
+export const fetchRecommendationsCms = async () => {
+	if (useEnvironment.getState().isDevelopment()) return [];
+	const res = await axios.get(`${API}/recommendations/cms`, {headers: authHeader()});
+	return res.data;
+};
+
+export const cmsCreateRecommendation = async (payload: CreateRecommendationDto) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('createRecommendation');
+	const res = await axios.post(`${API}/recommendations`, payload, {headers: authHeader()});
+	ApiCache.invalidate('recommendations:list');
+	ApiCache.invalidate('recommendations:featured');
+	return res.data;
+};
+
+export const cmsUpdateRecommendation = async (id: string, payload: UpdateRecommendationDto) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('updateRecommendation');
+	const res = await axios.put(`${API}/recommendations/${id}`, payload, {headers: authHeader()});
+	ApiCache.invalidate('recommendations:list');
+	ApiCache.invalidate('recommendations:featured');
+	ApiCache.invalidate(`recommendations:id:${id}`);
+	return res.data;
+};
+
+export const cmsDeleteRecommendation = async (id: string) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('deleteRecommendation');
+	const res = await axios.delete(`${API}/recommendations/${id}`, {headers: authHeader()});
+	ApiCache.invalidate('recommendations:list');
+	ApiCache.invalidate('recommendations:featured');
+	ApiCache.invalidate(`recommendations:id:${id}`);
+	return res.data;
+};
+
+export const cmsToggleRecommendationFeatured = async (id: string, featured: boolean) => {
+	if (useEnvironment.getState().isDevelopment()) return devSkip('toggleRecommendationFeatured');
+	const res = await axios.put(`${API}/recommendations/${id}/feature`, {featured}, {headers: authHeader()});
+	ApiCache.invalidate('recommendations:list');
+	ApiCache.invalidate('recommendations:featured');
 	return res.data;
 };
 

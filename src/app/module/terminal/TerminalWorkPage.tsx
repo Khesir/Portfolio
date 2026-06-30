@@ -90,6 +90,7 @@ function ProjectRow({p, i, navigate}: {p: any; i: number; navigate: ReturnType<t
 
 export default function TerminalWorkPage() {
 	const [pinnedItems, setPinnedItems] = useState<any[]>([])
+	const [pinnedLoaded, setPinnedLoaded] = useState(false)
 	const [allNonPinned, setAllNonPinned] = useState<any[]>([])
 	const [nonPinnedPage, setNonPinnedPage] = useState(1)
 	const [hasMore, setHasMore] = useState(false)
@@ -99,6 +100,7 @@ export default function TerminalWorkPage() {
 	useEffect(() => {
 		fetchFeaturedProjects().then((list: any[]) => {
 			setPinnedItems(list.filter((p: any) => p.pinned))
+			setPinnedLoaded(true)
 		})
 		fetchProjects(1, PAGE_SIZE).then((list: any[]) => {
 			setAllNonPinned(Array.isArray(list) ? list : [])
@@ -221,7 +223,7 @@ export default function TerminalWorkPage() {
 				viewport={{once: true, amount: 0.1}}
 			>
 				{pinnedItems.map((p, i) => <ProjectRow key={p._id ?? p.id} p={p} i={i} navigate={navigate} />)}
-				{pinnedItems.length === 0 && (
+				{pinnedLoaded && pinnedItems.length === 0 && (
 					<p style={{fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--ink-3)'}}>No pinned projects.</p>
 				)}
 			</motion.section>

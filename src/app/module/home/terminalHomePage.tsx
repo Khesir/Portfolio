@@ -5,6 +5,8 @@ import {TerminalLayout} from '../terminal/TerminalLayout';
 import {TerminalStackSection} from './terminalStackSection';
 import {TerminalProjectsSection} from './terminalProjectsSection';
 import {TerminalWritingSection} from './terminalWritingSection';
+import {TerminalCertificationsSection} from './terminalCertificationsSection';
+import {TerminalRecommendationsSection} from './terminalRecommendationsSection';
 import {TerminalContactSection} from './terminalContactSection';
 import {motion, AnimatePresence} from 'framer-motion';
 
@@ -29,7 +31,7 @@ export default function TerminalHomePage() {
 						<b>aj@khesir</b>:~$ whoami
 					</motion.div>
 					<motion.h1 variants={heroItem} className="hname">
-						{config.name} <span style={{color: 'var(--accent)'}}>/</span> Khesir
+						{config.name} <span style={{color: 'var(--accent)'}}>/</span> {config.secondName || 'Khesir'}
 					</motion.h1>
 					<motion.div variants={heroItem} className="hrole">{config.role}</motion.div>
 					<motion.p variants={heroItem} className="hblurb">{config.description}</motion.p>
@@ -127,6 +129,8 @@ export default function TerminalHomePage() {
 			<TerminalStackSection />
 			<TerminalProjectsSection count={config.selectedWorkCount} />
 			<TerminalWritingSection count={config.writingCount} />
+			<TerminalCertificationsSection />
+			<TerminalRecommendationsSection />
 			<TerminalContactSection />
 		</TerminalLayout>
 	);
