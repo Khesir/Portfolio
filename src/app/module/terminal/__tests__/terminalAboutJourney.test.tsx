@@ -1,7 +1,21 @@
 import {render, screen, fireEvent, waitFor} from '@testing-library/react'
 import {MemoryRouter} from 'react-router-dom'
-import {describe, it, expect, vi, beforeEach} from 'vitest'
+import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest'
 import TerminalAboutPage from '../TerminalAboutPage'
+
+// The shared test-setup.ts mocks IntersectionObserver as a plain vi.fn(), which
+// framer-motion's `whileInView`/`viewport` props cannot invoke as a constructor
+// (`new IntersectionObserver()` throws "not a constructor"). This is a pre-existing,
+// already-flagged issue affecting ~70 tests repo-wide (see issue 002 notes) — it is
+// not something this ticket is scoped to fix globally. To keep this file's own
+// assertions meaningful (rather than failing on an unrelated environment error),
+// we override with a real class locally, scoped to this file only.
+class MockIntersectionObserver {
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
+}
+window.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver
 
 vi.mock('@/hooks/use-home-config', () => ({
   useAboutConfig: vi.fn(),
@@ -91,5 +105,34 @@ describe('TerminalAboutPage — journey section', () => {
     fireEvent.click(screen.getByText('Position 1').closest('.exp-row')!)
     expect(screen.queryByText(/Content for 0/)).not.toBeInTheDocument()
     expect(screen.getByText(/Content for 1/)).toBeInTheDocument()
+  })
+})
+
+describe('TerminalAboutPage — journey section under VITE_HOME_LAYOUT flag', () => {
+  beforeEach(() => { vi.clearAllMocks() })
+  afterEach(() => { vi.unstubAllEnvs() })
+
+  it('omits the journey section when VITE_HOME_LAYOUT is "single"', async () => {
+    vi.stubEnv('VITE_HOME_LAYOUT', 'single')
+    mockFetchExperiences.mockResolvedValue(makeExps(5))
+    renderPage()
+    await waitFor(() => expect(mockFetchExperiences).not.toHaveBeenCalled())
+    expect(screen.queryByText('journey')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Position \d/)).not.toBeInTheDocument()
+  })
+
+  it('renders the journey section when VITE_HOME_LAYOUT is "multi"', async () => {
+    vi.stubEnv('VITE_HOME_LAYOUT', 'multi')
+    mockFetchExperiences.mockResolvedValue(makeExps(5))
+    renderPage()
+    expect(screen.getByText('journey')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getAllByText(/Position \d/).length).toBe(5))
+  })
+
+  it('renders the journey section when VITE_HOME_LAYOUT is unset', async () => {
+    mockFetchExperiences.mockResolvedValue(makeExps(5))
+    renderPage()
+    expect(screen.getByText('journey')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getAllByText(/Position \d/).length).toBe(5))
   })
 })

@@ -16,6 +16,7 @@ import {BaseLayout} from '@/app/layouts/pagelayout';
 import {ServicePage} from './module/services/servicePage';
 import SkillSetPage from './module/skillset/skillset';
 import TerminalHomePage from './module/home/terminalHomePage';
+import TerminalDashboardPage from './module/dashboard/TerminalDashboardPage';
 import TerminalWorkPage from './module/terminal/TerminalWorkPage';
 import TerminalAboutPage from './module/terminal/TerminalAboutPage';
 import TerminalBlogPage from './module/terminal/TerminalBlogPage';
@@ -27,6 +28,13 @@ import {ExperiencePage} from './module/experiences/experiencePage';
 import {NotFoundPage} from './module/notFound/notFoundPage';
 import CertificationPage from './module/certifications/certificationPage';
 import RecommendationPage from './module/recommendations/recommendationPage';
+
+// Single source of truth for the home-layout flag decision so it's easy to
+// audit/test. Unset or "multi" -> current TerminalHomePage; "single" -> the
+// new TerminalDashboardPage shell.
+function isSingleHomeLayout(): boolean {
+	return import.meta.env.VITE_HOME_LAYOUT === 'single';
+}
 
 export default function App() {
 	return (
@@ -52,7 +60,7 @@ export default function App() {
 					<Route path="blogs" element={<TerminalBlogPage />} />
 					<Route path="blogs/view/:title" element={<BlogReadPage />} />
 					<Route path="work/view/:title" element={<ProjectReadPage />} />
-					<Route index element={<TerminalHomePage />} />
+					<Route index element={isSingleHomeLayout() ? <TerminalDashboardPage /> : <TerminalHomePage />} />
 					<Route path="cms/*" element={<CmsApp />} />
 					<Route path="*" element={<NotFoundPage />} />
 					<Route path="skillset" element={<SkillSetPage />} />

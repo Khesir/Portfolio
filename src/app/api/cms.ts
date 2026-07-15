@@ -114,6 +114,7 @@ export interface CreateProjectDto {
 	languages?: string[];
 	url?: string;
 	deployment?: string;
+	category?: string;
 	markdown?: string;
 	draft?: boolean;
 	hideViews?: boolean;
