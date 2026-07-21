@@ -1,56 +1,46 @@
 import {render, screen} from '@testing-library/react';
-import {describe, it, expect, vi, afterEach} from 'vitest';
-
-vi.mock('@/components/LoadingScreen', () => ({
-	LoadingScreen: ({children}: {children: React.ReactNode}) => <>{children}</>,
-}));
-
-vi.mock('../module/home/terminalHomePage', () => ({
-	default: () => <div data-testid="terminal-home-page">home</div>,
-}));
+import {describe, it, expect, afterEach, vi} from 'vitest';
 
 vi.mock('../module/dashboard/TerminalDashboardPage', () => ({
 	default: () => <div data-testid="terminal-dashboard-page">dashboard</div>,
 }));
 
-vi.mock('../module/terminal/TerminalAboutPage', () => ({
-	default: () => <div data-testid="terminal-about-page">about</div>,
+vi.mock('../module/terminal/ProjectReadPage', () => ({
+	default: () => <div data-testid="project-read-page">project read</div>,
 }));
 
 import App from '../app';
 
 afterEach(() => {
-	vi.unstubAllEnvs();
 	window.history.pushState({}, '', '/');
 });
 
-describe('index route (/) — VITE_HOME_LAYOUT flag', () => {
-	it('renders TerminalHomePage when the flag is unset', () => {
-		render(<App />);
-		expect(screen.getByTestId('terminal-home-page')).toBeInTheDocument();
-		expect(screen.queryByTestId('terminal-dashboard-page')).not.toBeInTheDocument();
-	});
-
-	it('renders TerminalHomePage when the flag is "multi"', () => {
-		vi.stubEnv('VITE_HOME_LAYOUT', 'multi');
-		render(<App />);
-		expect(screen.getByTestId('terminal-home-page')).toBeInTheDocument();
-		expect(screen.queryByTestId('terminal-dashboard-page')).not.toBeInTheDocument();
-	});
-
-	it('renders TerminalDashboardPage when the flag is "single"', () => {
-		vi.stubEnv('VITE_HOME_LAYOUT', 'single');
+describe('App routing', () => {
+	it('renders TerminalDashboardPage at the index route', () => {
 		render(<App />);
 		expect(screen.getByTestId('terminal-dashboard-page')).toBeInTheDocument();
-		expect(screen.queryByTestId('terminal-home-page')).not.toBeInTheDocument();
 	});
 
-	it('does not affect other routes, e.g. /about, regardless of flag value', () => {
-		vi.stubEnv('VITE_HOME_LAYOUT', 'single');
+	it('renders ProjectReadPage at /work/view/:title', () => {
+		window.history.pushState({}, '', '/work/view/some-project');
+		render(<App />);
+		expect(screen.getByTestId('project-read-page')).toBeInTheDocument();
+	});
+
+	it('does not render the dashboard for a previously-existing route like /about', () => {
 		window.history.pushState({}, '', '/about');
 		render(<App />);
-		expect(screen.getByTestId('terminal-about-page')).toBeInTheDocument();
-		expect(screen.queryByTestId('terminal-home-page')).not.toBeInTheDocument();
 		expect(screen.queryByTestId('terminal-dashboard-page')).not.toBeInTheDocument();
+		expect(screen.queryByTestId('project-read-page')).not.toBeInTheDocument();
+	});
+
+	it('does not render anything for other previously-existing routes like /work or /blogs', () => {
+		window.history.pushState({}, '', '/work');
+		const {container: workContainer} = render(<App />);
+		expect(workContainer.textContent).toBe('');
+
+		window.history.pushState({}, '', '/blogs');
+		const {container: blogsContainer} = render(<App />);
+		expect(blogsContainer.textContent).toBe('');
 	});
 });

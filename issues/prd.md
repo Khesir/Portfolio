@@ -1,112 +1,113 @@
-# PRD: Dashboard Home — single-screen profile + journey + work view
+# PRD: Backend-free single-page portfolio (Khesir Home v2)
 
 **Status:** Draft
-**Date:** 2026-07-13
+**Date:** 2026-07-21
 
 ---
 
 ## Problem Statement
 
-The current `/` (`TerminalHomePage`) is a long, vertically-scrolling page (hero/neofetch → stack → selected work → writing → certifications → recommendations → contact). A visitor who wants the essentials — who Khesir is, their career journey, and what they've built — has to scroll through several unrelated sections to piece it together, and the actual project list on `/work` is a flat text-row list with no visual preview grid or way to filter by discipline (dev / illustration / tech art).
+The portfolio currently depends on a remote backend (`VITE_API_URL`, Notion-backed content, a custom CMS) for every piece of content — projects, journey/experience, blogs, certifications, recommendations, home/about/service config. That backend does not exist as part of this repo and is a maintenance/hosting burden the owner (Khesir) no longer wants for a personal site. The site is also spread across a dozen routes (`/about`, `/blogs`, `/certifications`, `/recommendations`, `/experiences`, `/services`, `/skillset`, `/progress-report`, `/guest-book`, `/posts`, `/sandbox`, `/cms/*`) even though the actual content the owner cares about showing — who they are, their career journey, and their work — fits in one screen, per the new design mockup `Khesir - Home v2 (midfi).html`.
 
-A new design mockup ("Khesir Portfolio - Standalone.html", internal label `Home v2 — midfi`) proposes a single, non-scrolling dashboard screen that puts profile, career journey, and a filterable project grid in one view, replacing the current scrolling homepage experience.
+Additionally, the in-progress implementation of that new design (`TerminalDashboardPage` behind `VITE_HOME_LAYOUT=single`) does not match the mockup: wrong accent color (blue instead of amber), circular avatar instead of rounded-square, a flat list instead of a dotted timeline for the journey section, Contact rendered before Journey instead of after, and a uniform grid instead of a 2-column masonry work layout.
 
 ---
 
 ## Solution
 
-Build a new page, `TerminalDashboardPage`, that renders the two-pane dashboard from the mockup: a left sidebar (avatar, role, availability status, bio, location, a scrollable Journey timeline, and contact/social links) and a right panel (a "Work" heading with piece count, category filter tabs — All / Dev / Illustration / Tech Art — and a two-column card grid of projects with pinned and role badges). The page has no shared site chrome (no top nav, no footer) — it is rendered exactly as designed, standalone.
-
-This page becomes the `/` route only when a new build-time flag, `VITE_HOME_LAYOUT=single`, is set. When unset or set to `"multi"` (the default), `/` continues to render the existing `TerminalHomePage` unchanged. The existing `/about`, `/work`, `/blog`, and detail routes are untouched and remain reachable in both modes, except that `/about` suppresses its own Journey section when `VITE_HOME_LAYOUT=single` (since Journey is now canonically shown on the dashboard).
-
-`TerminalHomePage` and its sections (stack, writing, certifications, recommendations, hero/neofetch) are not deleted — they simply stop being mounted at any route when the flag is `"single"`.
-
-A new `category` field (`'dev' | 'illustration' | 'tech-art'`) is added to projects so the filter tabs and per-card role badge have real data to work with, editable via a new `<select>` in the CMS project editor. This is a frontend + CMS change only — the `personal-backend` repo is a separate codebase and is out of scope; the field is expected to be stored there as a plain string column (no new table/enum type needed at the DB layer), and the CMS/frontend will treat it as a plain string.
+1. Rebuild the dashboard/home screen (`TerminalDashboardPage` and its children) to pixel-match `Khesir - Home v2 (midfi).html`: amber accent scoped to this screen, rounded-square avatar, dotted timeline journey (current entry highlighted), Contact after Journey, 2-column masonry work grid with pinned (`feat`/star badge) and multi-image (`stack`/count badge) treatment.
+2. Strip `app.tsx` down to two routes: `/` (the dashboard) and `/work/view/:title` (the project reader page). All other route registrations are removed; their module folders and code are left in place, untouched, just unreachable.
+3. Rebuild the project reader page (`ProjectReadPage`) without the `TerminalLayout` nav/footer chrome (bare wrapper) and without the views/hearts engagement feature (no legitimate way to persist a shared counter without some backend, and a fake/local-only counter was rejected as more confusing than none).
+4. Replace every remaining data dependency (projects, journey/experience) with static JSON files shipped in the frontend under a `data/` folder, read directly (no `axios`, no `VITE_API_URL`, no CMS, no mock/dev-branching indirection). Project data gains an `images: string[]` field to support the mockup's multi-image gallery badge and reader-page gallery.
 
 ---
 
 ## User Stories
 
-1. As a visitor landing on `/` with the dashboard enabled, I want to see Khesir's profile (avatar, name, role, availability, bio, location) at a glance, so that I immediately understand who they are without scrolling.
-2. As a visitor, I want to see a career Journey timeline in the same view as the profile, so that I can understand their background without navigating to a separate About page.
-3. As a visitor, I want the Journey list to scroll independently within its own panel when it overflows, so that browsing my career history doesn't require scrolling the whole page.
-4. As a visitor, I want to see all of Khesir's work in a visual card grid (not a flat text list) with thumbnail, title, description, tags, and year, so that I can quickly scan their portfolio.
-5. As a visitor, I want pinned/featured work to be visually marked, so that I know which pieces the owner considers most representative.
-6. As a visitor, I want to filter the work grid by category (All / Dev / Illustration / Tech Art), so that I can find the kind of work I'm interested in without scrolling past everything else.
-7. As a visitor, I want the work grid to scroll independently within its own panel when it overflows, so that browsing the full portfolio doesn't require scrolling the whole page.
-8. As a visitor, I want to reach a project's full detail page by clicking its card, so that I can read the complete case study.
-9. As a visitor, I want contact and social links (email, Discord, X) sourced from the site's real configuration (not placeholder links), so that they actually work.
-10. As a visitor on a narrow/mobile viewport, I want the dashboard to reflow into a single scrollable column, so that the experience remains usable on small screens.
-11. As the site owner, I want the previous homepage (hero, stack, writing, certifications, recommendations) preserved in the codebase but not linked from anywhere, so that I don't lose the work already shipped and can restore it by flipping an env var if needed.
-12. As the site owner, I want to control which homepage experience is live via a single build-time environment variable (`VITE_HOME_LAYOUT`), so that I can switch between the multi-page and single-dashboard experience per environment without a code change or redeploself.
-13. As the site owner, I want `/about`, `/work`, `/blog`, and all detail pages to keep working exactly as they do today regardless of which homepage mode is active, so that existing deep links and site navigation aren't broken.
-14. As the site owner, I want `/about`'s Journey section hidden automatically when the dashboard is live, so that I don't maintain (or visually duplicate) the same career history in two places.
-15. As the site owner, I want to assign a category (Dev / Illustration / Tech Art) to each project from the CMS, so that the dashboard's filter tabs and role badges reflect real, intentional categorization rather than guesswork.
-16. As the site owner, I want projects created before this change (with no category set) to still appear under "All" without breaking the page, so that I don't have to backfill data before this ships.
-17. As a developer, I want the new dashboard page isolated in its own module (`src/app/module/dashboard/`), so that it doesn't get tangled with the existing `home` or `terminal` module's components, which have different layouts and data needs.
-18. As a developer, I want the env-flag read in one place per concern (routing choice, About's Journey visibility) rather than scattered inline checks, so that the flag's behavior is easy to audit and test.
+1. As a visitor, I want to land on a single dashboard-style screen showing who Khesir is, their career journey, and their work, so that I don't have to click through multiple pages to get the essentials.
+2. As a visitor, I want the profile avatar shown as a rounded-square image, so that the visual identity matches the intended brand design.
+3. As a visitor, I want to see Khesir's career journey as a vertical timeline with the current role visually distinguished, so that I can quickly scan their progression and see what they're doing now.
+4. As a visitor, I want the "Get in touch" contact block to appear after the journey timeline (not before it), so that the reading order matches profile → journey → contact.
+5. As a visitor, I want the work section to show project cards in a 2-column masonry layout with the amber accent color, so that it matches the intended design instead of the current blue uniform-grid look.
+6. As a visitor, I want to filter the work grid by category (All / Dev / Illustration / Tech Art), so that I can narrow down to the kind of work I'm interested in.
+7. As a visitor, I want pinned projects visually marked with a star badge, so that I can see which work Khesir considers most representative.
+8. As a visitor, I want projects with more than one image to show a "multiple images" badge, so that I know there's a gallery to explore.
+9. As a visitor, I want to click a project card and land on a dedicated reader page for that project, so that I can read its full write-up.
+10. As a visitor, I want the project reader page to show a bare page (no site navbar or footer), so that it reads like a focused article/reader view rather than a full site page.
+11. As a visitor, I want the project reader page to show all of a project's images (not just one), so that I can see the full visual gallery for projects that have one.
+12. As a visitor navigating the reader page, I want the "no more page-to-page navigation" reality reflected honestly — i.e. no leftover links to now-removed routes (`/about`, `/work`, `/blog` nav, "back to /work" link) — so that I never hit a dead link.
+13. As the site owner, I want all content (projects, journey entries, profile info) to live in local JSON files inside the frontend, so that I can edit and redeploy the site without running or paying for a backend.
+14. As the site owner, I want the previous CMS, API client, mock-data layer, and environment-based dev/prod branching removed from the data-fetching path, so that the codebase doesn't carry dead complexity for a backend that no longer exists.
+15. As the site owner, I want the unused route modules (about, blogs, certifications, recommendations, experiences, services, skillset, progress, guest-book, posts, sandbox, cms) left on disk untouched, so that their code/content is available to revisit later without a git-archaeology exercise.
+16. As the site owner, I want to avoid shipping a fake or non-persistent hearts/views counter, so that visitors are never shown numbers that don't mean anything.
+17. As a developer maintaining this codebase, I want the new JSON-reading data functions to have the same call shape as the functions they replace (e.g. still return arrays/objects the components already expect), so that component code doesn't need a parallel rewrite beyond the data source swap.
 
 ---
 
 ## Implementation Decisions
 
-**New module & page**
-- New module `src/app/module/dashboard/` containing `TerminalDashboardPage.tsx` and its own subcomponents for the sidebar (profile + Journey) and the work grid (filterable card list). These are new components, not extensions of `terminalProjectsSection.tsx` or `TerminalWorkPage.tsx`, since the layout, card design, and interaction model (internal scroll regions, masonry-style two-column grid, filter tabs) differ substantially from both existing implementations.
-- `TerminalDashboardPage` renders with no shared chrome — it does not use `TerminalLayout` (no top nav, no footer). It is visually a centered card matching the mockup's proportions and internal structure (30/70 split, internal scroll on both the Journey list and the Work grid, filter tabs, two-column card masonry, responsive single-column stacking below the mockup's existing `620px` breakpoint).
-- Data sources reuse existing hooks/APIs: `useHomeConfig`/`useAboutConfig` for profile, avatar, bio, location, status, and contact/social data; `fetchExperiences` for Journey; `fetchFeaturedProjects` + `fetchProjects` for the Work grid (fetched without pagination — all pinned and all non-pinned projects loaded in one pass, since the panel relies on internal scroll rather than a show-more control, matching the mockup's design).
-- Journey items in the dashboard sidebar are static (no click-to-expand), unlike `/about`'s Journey rows which expand inline to show `pageMd`. This intentionally differs from `/about`'s interaction model to match the mockup as designed.
-- Contact/social section is wired to `config.socialLinks` and the real contact email instead of the mockup's placeholder `href="#"` links.
+### Routing (`src/app/app.tsx`)
+- Remove all `<Route>` entries except: index route → `TerminalDashboardPage`, and `path="work/view/:title"` → `ProjectReadPage`.
+- Remove the `VITE_HOME_LAYOUT` single/multi flag and `isSingleHomeLayout()` — the dashboard is now the only home, unconditionally.
+- Remove the `ConditionalLoadingScreen`'s now-dead branches for `/cms` and `/services` (those routes no longer exist) — simplify to always wrap in `LoadingScreen`, or drop `LoadingScreen` entirely if it was only relevant for backend fetch latency (verify before removing — check whether `LoadingScreen` has other responsibilities beyond gating on network fetches).
+- All removed feature module folders (`src/app/module/aboutme`, `blogs`, `certifications`, `dashboard` sibling pages not reused, `experiences`, `guestChat`, `notFound`, `posts`, `progress`, `recommendations`, `services`, `skillset`, `sandbox`, `src/app/cms/**`) stay on disk as-is. No file deletion in this pass.
 
-**Routing / feature flag**
-- New build-time env var `VITE_HOME_LAYOUT`, values `"multi"` (default/current behavior) or `"single"`. Read via `import.meta.env.VITE_HOME_LAYOUT`.
-- In `App`'s router, the index (`/`) route renders `TerminalDashboardPage` when the flag is `"single"`, otherwise renders the existing `TerminalHomePage` (current behavior, unchanged).
-- All other routes (`/about`, `/work`, `/blogs`, `/work/view/:title`, `/blogs/view/:title`, etc.) are unaffected by the flag and continue to render exactly as they do today, with one exception: `TerminalAboutPage` reads the same flag and omits its own "journey" section (`03 — journey`, including its section-list numbering) when the flag is `"single"`, since Journey becomes canonical on the dashboard. When the flag is `"multi"`, `/about` renders its Journey section exactly as it does today.
-- `TerminalHomePage` and its child sections (`TerminalStackSection`, `TerminalProjectsSection`, `TerminalWritingSection`, `TerminalCertificationsSection`, `TerminalRecommendationsSection`) are not modified or removed — they simply become unreachable via routing when the flag is `"single"`.
+### Data layer — new `data/` folder
+- New directory (e.g. `src/data/`) holding hand-authored JSON:
+  - `projects.json` — array of project records: `id`, `name`, `category` (`dev` | `illustration` | `tech-art`), `role` (display label for the pill, e.g. "tech art"), `description`, `tags: string[]`, `year`, `pinned: boolean`, `images: string[]` (first entry is the card thumbnail; empty/missing → existing placeholder pattern, not the mockup's labeled demo placeholder), `url?`, `deployment?`, `markdown` (reader-page body content).
+  - `journey.json` — array of journey/experience entries: `yearRange` (display string, e.g. "2025 — Present"), `title`, `company`, `current: boolean` (drives the highlighted timeline dot), `description`, `skills: string[]`.
+  - `profile.json` — `role`, `bio`, `location`, `contactEmail`, `socialLinks: {label, href}[]`, `status` (`online` | other), `avatarSrc`. The stylized brand wordmark ("Khe*sir*") is NOT data — it stays hardcoded JSX/CSS in the sidebar component, since it's a fixed brand identity, not editable content.
+- New plain functions (not the old `fetch*` async/axios pattern) that import the JSON and return typed data synchronously, e.g. `getProjects()`, `getProjectById(id)`, `getFeaturedProjects()`, `getJourney()`, `getProfile()`. These replace `src/app/api/projects.ts`, the project-related parts of `src/app/api/cms.ts`/`experience.ts`, and `src/hooks/use-home-config.ts`'s home-config loading — keeping equivalent return shapes so consuming components need minimal changes beyond the import swap and dropping `await`/loading-state handling where it's no longer needed.
+- Delete the now-dead indirection this replaces: `src/app/api/projects.ts`, `src/app/api/experience.ts`, `src/lib/apiCache.ts`, `src/lib/mockData.ts`, `src/hooks/use-environment-store.ts` usage for this data path, and the engagement/analytics/CMS-CRUD exports in `src/app/api/cms.ts` that only existed to serve the backend/CMS (auth, upload, blogs/certifications/recommendations/posts/analytics CRUD) — since their consuming routes are also being removed, they become dead code; remove them rather than leave unused exports behind (this differs from the "leave module folders alone" rule, which is about page/feature folders, not this now-orphaned API/lib plumbing that nothing will import anymore).
+- `axios` dependency can be removed from `package.json` once nothing imports it (verify with a repo-wide search before removing).
 
-**Project category field**
-- New field `category` on the project data model: one of `'dev' | 'illustration' | 'tech-art'`, optional (existing/legacy projects may have it unset).
-- CMS: `CmsProjectEditor` gets a new `<select>` input (fixed 3 options, matching the enum) alongside the existing fields (`name`, `releasedDate`, `imageUrl`, `languages`, `url`, `deployment`, `markdown`, `draft`, `pinned`), included in the save payload as `category`.
-- Frontend dashboard: the Work grid's filter tabs (All / Dev / Illustration / Tech Art) filter client-side on `project.category`; the "All" tab is selected by default and shows every project regardless of category (including ones with no category set). Selecting a specific category tab hides projects whose `category` doesn't match, including uncategorized ones.
-- The same `category` value is displayed as the card's role-pill text (rendered as "Dev" / "Illustration" / "Tech Art"), replacing the mockup's more varied freeform labels ("web app", "backend", "tooling", etc.) — no separate freeform "role" field is introduced.
-- Backend/database change (adding the `category` column) is explicitly out of scope for this repo/PRD — it lives in the separate `personal-backend` repository. The expectation communicated to that work: a plain string column on the existing projects table, no new table or DB-level enum required, since validation of the 3 allowed values happens at the CMS/frontend layer.
+### Dashboard screen (`TerminalDashboardPage` + children)
+- Layout: two-column `grid-template-columns: 30% 70%` (matching the mockup exactly) inside a centered card — the current flex-based `.dashboard-shell` becomes a `display:grid` shell, and the outer page wrapper must horizontally *and* vertically center the card (`display:flex; align-items:center; justify-content:center` on the page container), which the current implementation is missing (only horizontal `margin:0 auto`).
+- Accent color: scope `--accent: var(--amber); --accent-rgb: var(--amber-rgb);` to the dashboard shell's own selector (not global `:root`) so the rest of the site (e.g. the reader page, which keeps the default blue accent from `terminal-theme.css`) is unaffected.
+- Sidebar (`DashboardSidebar`): avatar 46×46px, `border-radius: 12px` (rounded square, not circle); order becomes profile → status → bio → locale → divider → Journey → Contact (Contact moves after Journey, reversing current order).
+- Journey (`DashboardJourney`): rebuilt as a vertical dotted timeline — a connecting vertical line, a dot per entry, the `current: true` entry's dot rendered in amber with a glow, each entry showing year range, title, company (amber), description, and skill tags. Reads from `getJourney()`.
+- Work grid (`DashboardWorkGrid`): 2-column masonry (two flex/`.pcol` columns, items distributed across them — round-robin by filtered index is sufficient and matches the mockup's manual split closely enough), pinned project gets the `.feat` amber-tinted card treatment with a star "Pinned" badge (top-left, per mockup — current code puts it top-right with no icon), projects with `images.length > 1` get a stack-icon "×N" badge (top-right). Category filter tabs (`All`/`Dev`/`Illustration`/`Tech Art`) keep existing filter behavior, restyled to the mockup's amber "on" state. Card click still navigates to `/work/view/:title?id=...`.
 
-**Pinned badge & scope trims**
-- The mockup's "PINNED" badge is real and implemented as-is, sourced from the existing `pinned` boolean already used on `/work`.
-- The mockup's multi-image/gallery count badge is dropped — projects only support a single `imageUrl` today, and adding gallery support is out of scope for this PRD.
+### Project reader page (`ProjectReadPage`)
+- Replace the `TerminalLayout` wrapper with a bare wrapper (no header/nav/footer). Reuse `terminal-article.css` styling for the article body, drop only the chrome.
+- Remove the "back to /work" link (target route no longer exists) — replace with a link back to `/`, or drop it, since the design has no reader-page mockup to follow here (see Further Notes).
+- Remove `fetchEngagement`, `trackView`, `toggleHeart` calls and the heart button/view-count UI entirely.
+- Render all of `images: string[]` (gallery), not just a single `imageUrl`, including in the lightbox.
+- Prev/next project navigation stays, now sourced from `getProjects()`.
+
+### Removed
+- `VITE_HOME_LAYOUT` env flag and its branch in `app.tsx`.
+- Engagement (views/hearts) feature end-to-end: UI, API functions, types.
+- CMS module (`src/app/cms/**`) stays on disk but is unreachable (no route) and its API surface in `cms.ts` is trimmed to dead code removal per above.
 
 ---
 
 ## Testing Decisions
 
-Tests should assert on rendered output and user-facing behavior (what's on screen, what happens on interaction), not internal implementation details — consistent with the existing component test style in `terminalWorkPage.test.tsx` and `terminalHomePage.test.tsx` (React Testing Library + Vitest, mocking hooks/API modules, `MemoryRouter` wrapper).
-
-- **`TerminalDashboardPage`** (new test file in `src/app/module/dashboard/__tests__/`): mock `useHomeConfig`/`useAboutConfig`, `fetchExperiences`, `fetchFeaturedProjects`, `fetchProjects`. Cover:
-  - profile/bio/status/location render from config
-  - Journey entries render from `fetchExperiences`, with no expand-on-click behavior
-  - Work grid renders pinned projects with a pinned indicator, and non-pinned projects without one
-  - clicking a category filter tab shows only matching projects (plus verifying "All" shows everything, including uncategorized projects)
-  - clicking a project card navigates to its detail route (same pattern as `TerminalWorkPage`'s row click)
-  - no nav or footer elements are present (asserting absence of `TerminalLayout`'s brand link/nav landmarks)
-- **Routing (`App` / index route)**: test that `VITE_HOME_LAYOUT=single` (via `vi.stubEnv`) renders `TerminalDashboardPage` at `/`, and that `"multi"` or unset renders `TerminalHomePage` at `/` (current default behavior must not regress).
-- **`TerminalAboutPage`** (extend existing `terminalAboutJourney.test.tsx` / `terminalAboutPage.test.tsx`): test that the Journey section is present when `VITE_HOME_LAYOUT` is `"multi"`/unset, and absent when `"single"`.
-- **`CmsProjectEditor`**: test that selecting a category option includes `category` in the save payload, and that an existing project with a saved category pre-selects it on load.
+- Good tests here assert observable behavior (rendered text, roles, hrefs, class states) against a given data/config shape — not internal implementation details — matching the existing pattern in `src/app/module/home/__tests__/terminalHomePage.test.tsx` and `src/app/module/services/__tests__/servicePage.test.tsx` (React Testing Library + `MemoryRouter`, mocking the data-source hook/module rather than the network).
+- `src/app/module/dashboard/__tests__/` (already exists as an empty dir) — add/extend tests for:
+  - `DashboardSidebar`: renders rounded-square avatar (assert class/style, not just presence), renders Journey before Contact in DOM order, renders profile fields from a given `profile.json`-shaped fixture.
+  - `DashboardJourney`: renders one timeline row per entry, marks the `current: true` entry distinctly (e.g. a specific class), renders skills/company/description from fixture data.
+  - `DashboardWorkGrid`: category filter shows/hides the correct cards, pinned card gets the pin badge, a project with `images.length > 1` gets the multi badge and one with exactly 1 doesn't, card click navigates to the expected `/work/view/:title?id=` URL (assert via a mocked `useNavigate` or by checking the rendered link/onClick target, following whatever pattern nearby tests already use for navigation assertions).
+- New data-layer functions (`getProjects`, `getJourney`, `getProfile`, etc. in `src/data/` or wherever they land) are pure functions over an imported JSON fixture — test them directly with `vitest` (no rendering, no mocking needed) asserting shape and filtering/derivation logic (e.g. `getFeaturedProjects()` only returns `pinned: true` entries).
+- `ProjectReadPage`: test that no nav/footer chrome renders, that heart/view UI is entirely absent, that all `images` render, and that prev/next links point at the correct adjacent project.
+- `app.tsx`: a smoke test (or extend an existing one, if any covers routing) asserting that navigating to a removed path (e.g. `/about`) no longer renders the old page — this can be a `NotFoundPage`/wildcard fallback check, or simply asserting the route table only contains the two expected paths, whichever is cheaper to keep accurate over time.
 
 ---
 
 ## Out of Scope
 
-- Any change to the `personal-backend` repository (schema/migration for the `category` column, API validation, etc.) — noted as a follow-up handoff, not implemented here.
-- Multi-image/gallery support for projects (the mockup's image-count badge).
-- Any change to `TerminalHomePage`'s internal sections (stack, writing, certifications, recommendations, hero/neofetch) — they are preserved as-is, only unmounted from routing.
-- Click-to-expand detail view for Journey items on the dashboard (remains an `/about`-only interaction).
-- Show-more/pagination controls on the dashboard's Work grid (relies on internal scroll instead, per the mockup).
-- A UI-level (in-app) toggle for switching homepage layouts — this is a build-time env var only, not a runtime/user-facing setting.
-- Removing or redirecting `/about` or `/work` as standalone routes — they remain reachable in both layout modes.
-- Any top-nav/footer chrome on the dashboard page — intentionally omitted to match the mockup exactly.
+- Reintroducing any backend, serverless function, or third-party managed service (Firebase/Supabase/etc.) for engagement tracking — explicitly rejected.
+- Building out the about/skills/certifications/blog/recommendations/services/progress/guest-book/posts/sandbox/CMS features as sections of the single page — their route registrations are removed, their code stays but is not wired to anything, and no design exists yet for how (or whether) they'd fold into the one-page layout.
+- A CMS or any authoring UI for editing the new local JSON — content is edited by hand-editing the JSON files in the repo.
+- Deleting the now-unreachable module folders from disk — explicitly kept for later reference.
+- Any design work for the project reader page beyond removing the nav/footer chrome and the engagement UI — no mockup was provided for the reader page itself, so its existing visual structure (article layout, meta row, prev/next, sidebar tools) is otherwise preserved as-is.
+- Responsive/mobile design verification against the mockup — the mockup includes a `@max-width: 620px` stacked fallback; carry it over structurally but pixel-matching it wasn't part of the reviewed design discussion.
 
 ---
 
 ## Further Notes
 
-- The reference mockup (`Khesir Portfolio - Standalone.html` at the repo root) is a self-contained, bundled static export (not directly readable as source) — its actual markup/CSS was extracted by decoding its embedded `__bundler/template` payload during design review. It should be treated as the visual source of truth for spacing, color tokens (already aligned with the existing Terminal design system's OKLCH palette and `Instrument Serif`/`JetBrains Mono` fonts), and structure, but its inline demo copy, placeholder links, and fabricated `data-cat`/multi-image attributes are not meant to be copied literally — they're replaced by real config/API data per the decisions above.
-- Because `/about` and the new dashboard both source Journey data from `fetchExperiences`, any future change to that API's shape affects both surfaces.
+- The reference design was originally shared as a bundled/exported artifact HTML (`Khesir Portfolio - Standalone.html`) that couldn't be statically read; the actual buildable source was retrieved via the Claude Design MCP from the "Portfolio" design project (`Khesir - Home v2 (midfi).html`), which is what this PRD is built against. That project also contains other home variants (`Khesir - Home.html`, `Khesir - Home v2 (lofi).html`, a `Khesir - Design System.html`) and per-page mockups (`terminal-about.html`, `terminal-work.html`, etc.) that may be useful reference if the "fold other sections into the single page" question comes back up later.
+- The pinned-badge position differs between the mockup (top-left) and the current implementation (top-right) — implementation should follow the mockup (top-left).
+- No decision was made on whether the project reader page (`/work/view/:title`) should also switch to the amber accent for visual consistency with the home screen it's linked from, or keep the site-default blue from `terminal-theme.css`. Current decision defaults to leaving it blue (unchanged) since no reader-page mockup was reviewed; revisit if the visual seam between amber home → blue reader page reads as inconsistent once built.

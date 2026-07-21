@@ -1,6 +1,6 @@
-import {useHomeConfig, useAboutConfig} from '@/hooks/use-home-config';
-import {Icon} from '@iconify/react';
+import {getProfile} from '@/data/profile';
 import DashboardJourney from './DashboardJourney';
+import {ContactDialog} from './ContactDialog';
 import '@/css/terminal-dashboard.css';
 
 const STATUS_DOT: Record<string, React.CSSProperties> = {
@@ -11,34 +11,44 @@ const STATUS_DOT: Record<string, React.CSSProperties> = {
 };
 
 export default function DashboardSidebar() {
-	const {config: home} = useHomeConfig();
-	const {config: about} = useAboutConfig();
+	const profile = getProfile();
 
 	return (
 		<aside className="dash-sidebar">
 			<div className="dash-profile">
-				<img className="dash-avatar" src={home.profileImageUrl || '/img/Mee.png'} alt={home.name} />
-				<p className="dash-name">{home.name}</p>
-				<p className="dash-role">{home.role}</p>
-				{home.status.type === 'online' && (
+				<div className="dash-who">
+					<img className="dash-avatar" src={profile.avatarSrc || '/img/Mee.png'} alt="Khesir" />
+					<div className="dash-who-text">
+						<p className="dash-name">Khe<em>sir</em> <span className="dash-name-alias">(AJ)</span></p>
+						<p className="dash-role">{profile.role}</p>
+					</div>
+				</div>
+				{profile.status === 'online' && (
 					<span className="dash-availability">
 						<i className="dot" style={STATUS_DOT.online} />
 						available for work
 					</span>
 				)}
-				{about.bioTagline && <p className="dash-bio">{about.bioTagline}</p>}
-				{home.location && <p className="dash-location">{home.location}</p>}
+				{profile.bio && <p className="dash-bio">{profile.bio}</p>}
+				{profile.location && <p className="dash-location">{profile.location}</p>}
 			</div>
 
+			<div className="dash-divider" />
+
+			<DashboardJourney />
+
 			<div className="dash-contact">
-				{home.contactEmail && (
-					<a className="dash-email" href={`mailto:${home.contactEmail}`}>
-						{home.contactEmail}
-					</a>
+				<div className="dash-divider" />
+				<p className="dash-contact-label">Get in touch</p>
+				{profile.contactEmail && (
+					<ContactDialog
+						fallbackEmail={profile.contactEmail}
+						trigger={<span className="dash-email">{profile.contactEmail}</span>}
+					/>
 				)}
-				{(home.socialLinks ?? []).length > 0 && (
+				{(profile.socialLinks ?? []).length > 0 && (
 					<div className="dash-social">
-						{home.socialLinks.map((link, i) => (
+						{profile.socialLinks.map((link, i) => (
 							<a
 								key={i}
 								href={link.href}
@@ -47,14 +57,12 @@ export default function DashboardSidebar() {
 								target={link.href.startsWith('mailto:') ? undefined : '_blank'}
 								rel="noopener noreferrer"
 							>
-								{link.icon ? <Icon icon={link.icon} style={{width: 18, height: 18}} /> : link.label}
+								{link.label}
 							</a>
 						))}
 					</div>
 				)}
 			</div>
-
-			<DashboardJourney />
 		</aside>
 	);
 }

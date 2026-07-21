@@ -1,0 +1,6 @@
+[
+	{"value": "all", "label": "All"},
+	{"value": "dev", "label": "Dev"},
+	{"value": "illustration", "label": "Artwork"},
+	{"value": "tech-art", "label": "Tech Art"}
+]

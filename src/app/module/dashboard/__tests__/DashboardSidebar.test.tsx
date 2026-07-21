@@ -1,59 +1,53 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, fireEvent} from '@testing-library/react';
 import {describe, it, expect, vi} from 'vitest';
 
-vi.mock('@/hooks/use-home-config', () => ({
-	useHomeConfig: vi.fn(),
-	useAboutConfig: vi.fn(),
+vi.mock('@/data/profile', () => ({
+	getProfile: vi.fn(),
 }));
 
-vi.mock('@/app/api/experience', () => ({
-	fetchExperiences: vi.fn().mockResolvedValue([]),
+vi.mock('@/data/journey', () => ({
+	getJourney: vi.fn(() => []),
 }));
 
-import {useHomeConfig, useAboutConfig} from '@/hooks/use-home-config';
+import {getProfile} from '@/data/profile';
 import DashboardSidebar from '../DashboardSidebar';
 
-const mockUseHomeConfig = useHomeConfig as ReturnType<typeof vi.fn>;
-const mockUseAboutConfig = useAboutConfig as ReturnType<typeof vi.fn>;
+const mockGetProfile = getProfile as ReturnType<typeof vi.fn>;
 
-const DEFAULT_HOME = {
-	name: 'AJ Rizaldo',
+const DEFAULT_PROFILE = {
 	role: 'Full-Stack Developer',
-	description: 'Building things with code.',
-	contactEmail: 'test@example.com',
-	status: {type: 'online' as const},
-	profileImageUrl: 'https://example.com/photo.jpg',
+	bio: 'Building things with code.',
 	location: 'Philippines · UTC+8',
+	contactEmail: 'test@example.com',
+	status: 'online',
+	avatarSrc: 'https://example.com/photo.jpg',
 	socialLinks: [
-		{label: 'GitHub', href: 'https://github.com/khesir', icon: 'mdi:github'},
-		{label: 'LinkedIn', href: 'https://linkedin.com/in/khesir', icon: ''},
+		{label: 'GitHub', href: 'https://github.com/khesir'},
+		{label: 'LinkedIn', href: 'https://linkedin.com/in/khesir'},
 	],
 };
 
-const DEFAULT_ABOUT = {
-	bioTagline: 'Short bio tagline here.',
-	bioBody: 'Long form bio body text.',
-	profileImageUrl: '',
-	location: '',
-};
-
-function renderSidebar(homeOverrides = {}, aboutOverrides = {}) {
-	mockUseHomeConfig.mockReturnValue({config: {...DEFAULT_HOME, ...homeOverrides}, loading: false});
-	mockUseAboutConfig.mockReturnValue({config: {...DEFAULT_ABOUT, ...aboutOverrides}, loading: false});
+function renderSidebar(overrides = {}) {
+	mockGetProfile.mockReturnValue({...DEFAULT_PROFILE, ...overrides});
 	return render(<DashboardSidebar />);
 }
 
 describe('DashboardSidebar', () => {
-	it('renders name and role from config', () => {
+	it('renders role from profile data', () => {
 		renderSidebar();
-		expect(screen.getByText('AJ Rizaldo')).toBeInTheDocument();
 		expect(screen.getByText('Full-Stack Developer')).toBeInTheDocument();
 	});
 
-	it('renders avatar image using profileImageUrl from config', () => {
+	it('renders avatar image using avatarSrc from profile data', () => {
 		renderSidebar();
-		const img = screen.getByAltText('AJ Rizaldo');
+		const img = screen.getByAltText('Khesir');
 		expect(img).toHaveAttribute('src', 'https://example.com/photo.jpg');
+	});
+
+	it('falls back to /img/Mee.png when avatarSrc is empty', () => {
+		renderSidebar({avatarSrc: ''});
+		const img = screen.getByAltText('Khesir');
+		expect(img).toHaveAttribute('src', '/img/Mee.png');
 	});
 
 	it('shows an availability indicator when status is online', () => {
@@ -61,32 +55,33 @@ describe('DashboardSidebar', () => {
 		expect(screen.getByText(/available for work/i)).toBeInTheDocument();
 	});
 
-	it('does not show the online availability indicator when status is dnd', () => {
-		renderSidebar({status: {type: 'dnd'}});
+	it('does not show the online availability indicator when status is not online', () => {
+		renderSidebar({status: 'dnd'});
 		expect(screen.queryByText(/available for work/i)).not.toBeInTheDocument();
 	});
 
-	it('renders the short bio (bioTagline) from about config', () => {
+	it('renders the bio from profile data', () => {
 		renderSidebar();
-		expect(screen.getByText('Short bio tagline here.')).toBeInTheDocument();
+		expect(screen.getByText('Building things with code.')).toBeInTheDocument();
 	});
 
-	it('renders location from home config', () => {
+	it('renders location from profile data', () => {
 		renderSidebar();
 		expect(screen.getByText('Philippines · UTC+8')).toBeInTheDocument();
 	});
 
-	it('renders a mailto link using the real contact email from config', () => {
+	it('renders the contact email as a trigger that opens the contact dialog', () => {
 		renderSidebar();
-		const emailLink = screen.getByRole('link', {name: 'test@example.com'});
-		expect(emailLink).toHaveAttribute('href', 'mailto:test@example.com');
+		expect(screen.getByText('test@example.com')).toBeInTheDocument();
+
+		fireEvent.click(screen.getByText('test@example.com'));
+		expect(screen.getByRole('dialog', {name: 'Get in touch'})).toBeInTheDocument();
 	});
 
-	it('renders social links from config.socialLinks with real hrefs, not placeholders', () => {
+	it('renders social links from profile.socialLinks with real hrefs', () => {
 		renderSidebar();
 		const githubLink = screen.getByRole('link', {name: 'GitHub'});
 		expect(githubLink).toHaveAttribute('href', 'https://github.com/khesir');
-		expect(githubLink).not.toHaveAttribute('href', '#');
 
 		const linkedinLink = screen.getByRole('link', {name: 'LinkedIn'});
 		expect(linkedinLink).toHaveAttribute('href', 'https://linkedin.com/in/khesir');
@@ -97,5 +92,27 @@ describe('DashboardSidebar', () => {
 		const githubLink = screen.getByRole('link', {name: 'GitHub'});
 		expect(githubLink).toHaveAttribute('target', '_blank');
 		expect(githubLink).toHaveAttribute('rel', 'noopener noreferrer');
+	});
+
+	it('renders the journey slot (DashboardJourney) within the sidebar', () => {
+		renderSidebar();
+		expect(document.querySelector('.dash-journey-slot')).toBeInTheDocument();
+	});
+
+	it('renders the avatar with rounded-square styling, not a circle', () => {
+		renderSidebar();
+		const img = screen.getByAltText('Khesir');
+		expect(img).toHaveClass('dash-avatar');
+	});
+
+	it('renders the Journey section before the Contact section in DOM order', () => {
+		renderSidebar();
+		const journey = document.querySelector('.dash-journey-slot');
+		const contact = document.querySelector('.dash-contact');
+		expect(journey).toBeInTheDocument();
+		expect(contact).toBeInTheDocument();
+		expect(
+			journey!.compareDocumentPosition(contact!) & Node.DOCUMENT_POSITION_FOLLOWING
+		).toBeTruthy();
 	});
 });
