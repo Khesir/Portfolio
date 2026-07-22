@@ -27,5 +27,45 @@
     }
   },
   "include": ["src"],
+  // Everything below (besides node_modules) is orphaned code from a previous
+  // iteration of the site — unreachable from src/app/app.tsx's router — kept
+  // around but intentionally left out of the typecheck.
+  "exclude": [
+    "node_modules",
+    "src/app/cms",
+    "src/app/module/aboutme",
+    "src/app/module/blogs",
+    "src/app/module/certifications",
+    "src/app/module/experiences",
+    "src/app/module/guestChat",
+    "src/app/module/home",
+    "src/app/module/posts",
+    "src/app/module/progress",
+    "src/app/module/projects",
+    "src/app/module/recommendations",
+    "src/app/module/skillset",
+    "src/app/module/terminal/BlogReadPage.tsx",
+    "src/app/module/terminal/TerminalAboutPage.tsx",
+    "src/app/module/terminal/TerminalBlogPage.tsx",
+    "src/app/module/terminal/TerminalLayout.tsx",
+    "src/app/module/terminal/TerminalWorkPage.tsx",
+    "src/app/module/terminal/__tests__/terminalAboutJourney.test.tsx",
+    "src/app/module/terminal/__tests__/terminalAboutPage.test.tsx",
+    "src/app/module/terminal/__tests__/terminalBlogPage.test.tsx",
+    "src/app/module/terminal/__tests__/terminalWorkPage.test.tsx",
+    "src/app/api/blogs.ts",
+    "src/app/api/certifications.ts",
+    "src/app/api/recommendations.ts",
+    "src/app/_components/blogList.tsx",
+    "src/app/_components/experitise.tsx",
+    "src/app/_components/progressList.tsx",
+    "src/app/_components/projectsList.tsx",
+    "src/app/_components/workExperience.tsx",
+    "src/components/EngagementBar.tsx",
+    "src/components/LoadingScreen.tsx",
+    "src/components/StickyHeart.tsx",
+    "src/hooks/use-cms-auth-store.ts",
+    "src/hooks/use-engagement.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
