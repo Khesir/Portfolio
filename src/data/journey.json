@@ -1,20 +1,22 @@
 [
 	{
 		"company": "CreativeBlox",
-	"positions": [
-		{
-			"title": "Junior 2D & 3D Artist",
-			"yearRange": "2026",
-			"current": true,
-			"description": "",
-			"skills": [
-				"Adobe Creative Suite",
-				"Blender",
-				"Slack"
-			],
-			"detail": ""
+		"positions": [
+			{
+				"title": "Junior 2D & 3D Artist",
+				"yearRange": "2026",
+				"current": true,
+				"description": "",
+				"skills": [
+					"Adobe Creative Suite",
+					"Blender",
+					"Slack"
+				],
+				"detail": ""
 			}
-	]
+		],
+		"id": "creativeblox",
+		"draft": false
 	},
 	{
 		"company": "Jairosoft",
@@ -33,7 +35,9 @@
 				],
 				"detail": "- Practiced **Agile** methodologies through daily stand-ups, sprint reviews, and iterative development.\n- Learned how to work effectively in a collaborative team environment with designers and developers.\n- Improved skills in **responsive design**, dynamic data handling, and deployment debugging.\n- Participated in the final project demo and helped complete documentation requirements."
 			}
-		]
+		],
+		"id": "jairosoft",
+		"draft": false
 	},
 	{
 		"company": "Befied (fka Edufied)",
@@ -51,7 +55,9 @@
 				],
 				"detail": "- Developed a website for subscribing and unsubscribing from newsletters, integrating it with **Listmonk**, a self-hosted newsletter and mailing list manager.\n- Built both the frontend and backend and deployed it using **Docker** and **Traefik** for a streamlined workflow.\n- Refactored project code structure by applying **clean code principles**, improving maintainability, and centralizing script execution using OOP practices.\n- Configured deployment using **NGINX** for hosting and SSL certificates, along with Docker and Traefik for containerized management. Implemented security best practices, including **SSH hardening** and other protective measures."
 			}
-		]
+		],
+		"id": "befied-fka-edufied",
+		"draft": false
 	},
 	{
 		"company": "SAMAHAN Systems Development",
@@ -72,7 +78,9 @@
 				],
 				"detail": "- Led 1 project and provided an easy development environment via **Docker** container orchestration for various services, e.g. **PostgreSQL**, **MinIO**, **Portainer**."
 			}
-		]
+		],
+		"id": "samahan-systems-development",
+		"draft": false
 	},
 	{
 		"company": "ThinkTech Project",
@@ -89,6 +97,8 @@
 				],
 				"detail": "- Designed interactive coding sessions focused on logical thinking and problem-solving.\n- Introduced students to data analysis using **Pandas** and **Matplotlib**."
 			}
-		]
+		],
+		"id": "thinktech-project",
+		"draft": false
 	}
 ]

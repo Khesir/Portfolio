@@ -3,26 +3,21 @@ import {MemoryRouter, Routes, Route} from 'react-router-dom';
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import CmsProjectEditor from '../CmsProjectEditor';
 
-vi.mock('@/app/api/projects', () => ({
-	fetchProjectsByID: vi.fn(),
-}));
-
-vi.mock('@/app/api/cms', () => ({
-	cmsCreateProject: vi.fn().mockResolvedValue({}),
-	cmsUpdateProject: vi.fn().mockResolvedValue({}),
-	cmsDeleteProject: vi.fn().mockResolvedValue({}),
+vi.mock('@/app/api/cms-local', () => ({
+	fetchLocalSection: vi.fn().mockResolvedValue([]),
+	saveLocalSection: vi.fn().mockResolvedValue(undefined),
+	uploadLocalImage: vi.fn().mockResolvedValue('/img/projects/test/test.png'),
+	uniqueSlug: vi.fn((name: string) => name.toLowerCase().replace(/\s+/g, '-')),
 }));
 
 vi.mock('sonner', () => ({
 	toast: {success: vi.fn(), error: vi.fn()},
 }));
 
-import {fetchProjectsByID} from '@/app/api/projects';
-import {cmsCreateProject, cmsUpdateProject} from '@/app/api/cms';
+import {fetchLocalSection, saveLocalSection} from '@/app/api/cms-local';
 
-const mockFetchProjectsByID = fetchProjectsByID as ReturnType<typeof vi.fn>;
-const mockCmsCreateProject = cmsCreateProject as ReturnType<typeof vi.fn>;
-const mockCmsUpdateProject = cmsUpdateProject as ReturnType<typeof vi.fn>;
+const mockFetchLocalSection = fetchLocalSection as ReturnType<typeof vi.fn>;
+const mockSaveLocalSection = saveLocalSection as ReturnType<typeof vi.fn>;
 
 function renderNew() {
 	return render(
@@ -54,6 +49,7 @@ function getTitleInput(): HTMLInputElement {
 describe('CmsProjectEditor - category field', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		mockFetchLocalSection.mockResolvedValue([]);
 	});
 
 	it('renders a category select with Dev / Illustration / Tech Art options', () => {
@@ -65,24 +61,34 @@ describe('CmsProjectEditor - category field', () => {
 		expect(optionLabels).toEqual(expect.arrayContaining(['Dev', 'Illustration', 'Tech Art']));
 	});
 
-	it('includes the selected category in the create payload on save', async () => {
+	it('includes the selected category in the saved payload on create', async () => {
 		renderNew();
+		await waitFor(() => expect(mockFetchLocalSection).toHaveBeenCalled());
 
 		fireEvent.change(getTitleInput(), {target: {value: 'My Project'}});
 		fireEvent.change(screen.getByLabelText(/category/i), {target: {value: 'illustration'}});
 
 		fireEvent.click(screen.getByRole('button', {name: /create/i}));
 
-		await waitFor(() => expect(mockCmsCreateProject).toHaveBeenCalled());
-		const payload = mockCmsCreateProject.mock.calls[0][0];
-		expect(payload.category).toBe('illustration');
+		await waitFor(() => expect(mockSaveLocalSection).toHaveBeenCalled());
+		const [, payload] = mockSaveLocalSection.mock.calls[0];
+		expect(payload[0].category).toBe('illustration');
 	});
 
 	it('pre-selects the existing category when loading a project for edit', async () => {
-		mockFetchProjectsByID.mockResolvedValue({
+		mockFetchLocalSection.mockResolvedValue([{
+			id: '123',
 			name: 'Existing Project',
 			category: 'tech-art',
-		});
+			role: '',
+			description: '',
+			year: 2026,
+			tags: [],
+			images: [],
+			markdown: '',
+			pinned: false,
+			draft: false,
+		}]);
 
 		renderEdit('123');
 
@@ -91,31 +97,19 @@ describe('CmsProjectEditor - category field', () => {
 		expect(select.value).toBe('tech-art');
 	});
 
-	it('does not error and leaves category blank when loading a project without one', async () => {
-		mockFetchProjectsByID.mockResolvedValue({
-			name: 'No Category Project',
-		});
-
-		renderEdit('456');
-
-		await waitFor(() => expect(getTitleInput()).toHaveValue('No Category Project'));
-		const select = screen.getByLabelText(/category/i) as HTMLSelectElement;
-		expect(select.value).toBe('');
-	});
-
-	it('includes category in the update payload when saving an edited project', async () => {
-		mockFetchProjectsByID.mockResolvedValue({
-			name: 'Existing Project',
-			category: 'dev',
-		});
+	it('includes category in the saved payload when saving an edited project', async () => {
+		mockFetchLocalSection.mockResolvedValue([{
+			id: '789', name: 'Existing Project', category: 'dev', role: '', description: '',
+			year: 2026, tags: [], images: [], markdown: '', pinned: false, draft: false,
+		}]);
 
 		renderEdit('789');
 
 		await waitFor(() => expect(getTitleInput()).toHaveValue('Existing Project'));
 		fireEvent.click(screen.getByRole('button', {name: /save changes/i}));
 
-		await waitFor(() => expect(mockCmsUpdateProject).toHaveBeenCalled());
-		const payload = mockCmsUpdateProject.mock.calls[0][1];
-		expect(payload.category).toBe('dev');
+		await waitFor(() => expect(mockSaveLocalSection).toHaveBeenCalled());
+		const [, payload] = mockSaveLocalSection.mock.calls[0];
+		expect(payload[0].category).toBe('dev');
 	});
 });

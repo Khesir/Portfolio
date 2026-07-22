@@ -5,7 +5,7 @@
 .dashboard-page {
 	min-height: 100vh;
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: center;
 	padding: 24px;
 	box-sizing: border-box;
@@ -1001,10 +1001,13 @@
 	flex-shrink: 0;
 }
 
+.dash-work-thumb:has(img) {
+	aspect-ratio: auto;
+}
+
 .dash-work-thumb img {
 	width: 100%;
-	height: 100%;
-	object-fit: cover;
+	height: auto;
 	display: block;
 }
 
@@ -1152,6 +1155,16 @@
 	display: flex;
 	flex-direction: column;
 	gap: 22px;
+}
+
+.dash-back-controls {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	align-self: flex-end;
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 .dash-back-hero {

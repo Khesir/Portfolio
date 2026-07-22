@@ -30,9 +30,9 @@
 
 /* hero / gallery */
 .agallery { display: flex; flex-direction: column; gap: 16px; margin-top: 30px; }
-.ahero { margin-top: 30px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line-2); aspect-ratio: 21/9; box-shadow: var(--shadow-lg); }
-.ahero img { width: 100%; height: 100%; object-fit: cover; }
-.ahero.ph { display: flex; }
+.ahero { margin-top: 30px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line-2); box-shadow: var(--shadow-lg); }
+.ahero img { width: 100%; height: auto; display: block; }
+.ahero.ph { display: flex; aspect-ratio: 21/9; }
 
 /* carousel (multi-image projects) */
 .acarousel { position: relative; margin-top: 30px; }
@@ -160,35 +160,6 @@
 .img-zoomable { cursor: zoom-in; transition: opacity .15s; }
 .img-zoomable:hover { opacity: .88; }
 .ahero { cursor: zoom-in; }
-
-.scroll-to-top {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 7px;
-	width: 100%;
-	padding: 10px 13px;
-	border: 1px solid var(--line-2);
-	border-radius: 10px;
-	background: linear-gradient(180deg, var(--panel), var(--panel-2));
-	color: var(--ink-2);
-	font-family: var(--mono);
-	font-size: 12.5px;
-	cursor: pointer;
-	animation: scroll-to-top-in 0.15s ease;
-	transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
-}
-
-.scroll-to-top:hover {
-	color: var(--ink);
-	border-color: rgba(var(--accent-rgb), 0.45);
-	transform: translateY(-2px);
-}
-
-@keyframes scroll-to-top-in {
-	from { opacity: 0; transform: translateY(4px); }
-	to { opacity: 1; transform: translateY(0); }
-}
 
 @media (max-width: 960px) {
   .alayout { grid-template-columns: 1fr; }

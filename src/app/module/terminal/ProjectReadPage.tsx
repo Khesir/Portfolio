@@ -175,9 +175,10 @@ export default function ProjectReadPage() {
 							<span style={{fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--ink-2)'}}>{data.year}</span>
 						</div>
 					)}
-					<ScrollToTopButton />
 				</aside>
 			</div>
+
+			<ScrollToTopButton />
 
 			{lightbox && <ImageLightbox src={lightbox} onClose={() => setLightbox(null)} />}
 		</BareChrome>

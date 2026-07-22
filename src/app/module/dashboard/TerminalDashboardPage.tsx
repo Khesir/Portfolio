@@ -6,6 +6,7 @@ import DashboardWorkGrid from './DashboardWorkGrid';
 import {FullscreenToggle} from './FullscreenToggle';
 import {FlipCardToggle} from './FlipCardToggle';
 import {DashboardCardBack} from './DashboardCardBack';
+import {ScrollToTopButton} from '@/app/_components/readPage/ScrollToTopButton';
 
 export default function TerminalDashboardPage() {
 	const [isFullscreen, setIsFullscreen] = useState(false);
@@ -30,15 +31,16 @@ export default function TerminalDashboardPage() {
 							<DashboardSidebar />
 							<DashboardWorkGrid
 								isFullscreen={isFullscreen}
-								headerControls={isFullscreen ? controls : undefined}
+								headerControls={isFullscreen && !isFlipped ? controls : undefined}
 							/>
 						</div>
 						<div className={`dashboard-shell dashboard-shell--back${isFullscreen ? ' fullscreen' : ''}`}>
-							<DashboardCardBack />
+							<DashboardCardBack headerControls={isFullscreen && isFlipped ? controls : undefined} />
 						</div>
 					</div>
 				</div>
 			</div>
+			<ScrollToTopButton />
 		</div>
 	);
 }

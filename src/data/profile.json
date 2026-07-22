@@ -4,8 +4,14 @@
 	"location": "Philippines · UTC+8",
 	"contactEmail": "khesir.dev@gmail.com",
 	"socialLinks": [
-		{"label": "GitHub", "href": "https://github.com/Khesir"},
-		{"label": "X", "href": "https://x.com/khesirr"}
+		{
+			"label": "GitHub",
+			"href": "https://github.com/Khesir"
+		},
+		{
+			"label": "X",
+			"href": "https://x.com/khesirr"
+		}
 	],
 	"status": "online",
 	"avatarSrc": "/img/Mee.png"

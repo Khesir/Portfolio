@@ -1,3 +1,4 @@
+import {type ReactNode} from 'react';
 import {getAbout} from '@/data/about';
 import {getProfile} from '@/data/profile';
 import {getServices} from '@/data/services';
@@ -22,7 +23,11 @@ function findSkillCategory(about: ReturnType<typeof getAbout>, category: string)
 	return about.technicalSkills.find((c) => c.category === category)?.items ?? [];
 }
 
-export function DashboardCardBack() {
+interface DashboardCardBackProps {
+	headerControls?: ReactNode;
+}
+
+export function DashboardCardBack({headerControls}: DashboardCardBackProps) {
 	const about = getAbout();
 	const profile = getProfile();
 	const services = getServices();
@@ -32,6 +37,8 @@ export function DashboardCardBack() {
 
 	return (
 		<div className="dash-back-page">
+			{headerControls && <div className="dash-back-controls">{headerControls}</div>}
+
 			<div className="dash-back-hero">
 				<div className="dash-back-polaroid">
 					<img src={profile.avatarSrc || '/img/Mee.png'} alt="AJ" />
