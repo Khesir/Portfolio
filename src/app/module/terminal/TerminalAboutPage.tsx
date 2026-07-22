@@ -43,15 +43,21 @@ const stackRowItem = {
 	show: {opacity: 1, x: 0, transition: {type: 'spring' as const, stiffness: 80, damping: 18}},
 };
 
+function isSingleHomeLayout(): boolean {
+	return import.meta.env.VITE_HOME_LAYOUT === 'single';
+}
+
 export default function TerminalAboutPage() {
 	const {config: about} = useAboutConfig();
 	const [experiences, setExperiences] = useState<any[]>([]);
 	const [showingAll, setShowingAll] = useState(false);
 	const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+	const showJourney = !isSingleHomeLayout();
 
 	useEffect(() => {
+		if (!showJourney) return;
 		fetchExperiences(5).then(setExperiences);
-	}, []);
+	}, [showJourney]);
 
 	return (
 		<TerminalLayout>
@@ -132,79 +138,83 @@ export default function TerminalAboutPage() {
 				))}
 			</motion.section>
 
-			<div className="sl"><span className="n">03</span><h2>journey</h2><span className="rule" /></div>
-			<motion.section
-				className="exp"
-				key={experiences.length}
-				variants={rowContainer}
-				initial="hidden"
-				whileInView="show"
-				viewport={{once: true, amount: 0.1}}
-			>
-				{experiences.map((e: any, i: number) => {
-					const startYr = e.durationStart ? new Date(e.durationStart).getFullYear() : '';
-					const endYr = e.durationEnd ? String(new Date(e.durationEnd).getFullYear()).slice(-2) : null;
-					const yr = endYr ? `${startYr} — ${endYr}` : `${startYr} —`;
-					const isExpanded = expandedIdx === i;
-					return (
-						<motion.div key={i} variants={rowItem}>
-							<div
-								className="exp-row"
-								style={{cursor: 'pointer'}}
-								onClick={() => setExpandedIdx(isExpanded ? null : i)}
-							>
-								<span className={`box${i === 0 ? ' now' : ''}`} />
-								<div>
-									<h4>{e.position}</h4>
-									<div className="place">{e.companyName} · {e.jobType}</div>
-								</div>
-								<span className="eyr">{yr}</span>
-							</div>
-							<AnimatePresence initial={false}>
-								{isExpanded && (
-									<motion.div
-										className="exp-detail"
-										initial={{height: 0, opacity: 0}}
-										animate={{height: 'auto', opacity: 1}}
-										exit={{height: 0, opacity: 0}}
-										transition={{duration: 0.28, ease: 'easeInOut'}}
-										style={{overflow: 'hidden'}}
-									>
-										{e.pageMd
-											? <MarkDownComponent markdown={e.pageMd} />
-											: <p style={{fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--ink-3)'}}>No details available.</p>
-										}
-									</motion.div>
-								)}
-							</AnimatePresence>
-						</motion.div>
-					);
-				})}
-				{experiences.length === 0 && (
-					<div className="exp-row">
-						<span className="box now" />
-						<div>
-							<h4>Full-Stack Engineer &amp; Toolmaker</h4>
-							<div className="place">Self-directed &amp; freelance</div>
-						</div>
-						<span className="eyr">2025 —</span>
-					</div>
-				)}
-				{!showingAll && experiences.length === 5 && (
-					<button
-						className="show-more"
-						style={{fontFamily: 'var(--mono)', fontSize: '13px', cursor: 'pointer', marginTop: '12px'}}
-						onClick={() => {
-							fetchExperiences(20).then((list: any) => {
-								setExperiences(Array.isArray(list) ? list : []);
-								setShowingAll(true);
-							});
-						}}
+			{showJourney && (
+				<>
+					<div className="sl"><span className="n">03</span><h2>journey</h2><span className="rule" /></div>
+					<motion.section
+						className="exp"
+						key={experiences.length}
+						variants={rowContainer}
+						initial="hidden"
+						whileInView="show"
+						viewport={{once: true, amount: 0.1}}
 					>
-						show more
-					</button>
-				)}
-			</motion.section>
+						{experiences.map((e: any, i: number) => {
+							const startYr = e.durationStart ? new Date(e.durationStart).getFullYear() : '';
+							const endYr = e.durationEnd ? String(new Date(e.durationEnd).getFullYear()).slice(-2) : null;
+							const yr = endYr ? `${startYr} — ${endYr}` : `${startYr} —`;
+							const isExpanded = expandedIdx === i;
+							return (
+								<motion.div key={i} variants={rowItem}>
+									<div
+										className="exp-row"
+										style={{cursor: 'pointer'}}
+										onClick={() => setExpandedIdx(isExpanded ? null : i)}
+									>
+										<span className={`box${i === 0 ? ' now' : ''}`} />
+										<div>
+											<h4>{e.position}</h4>
+											<div className="place">{e.companyName} · {e.jobType}</div>
+										</div>
+										<span className="eyr">{yr}</span>
+									</div>
+									<AnimatePresence initial={false}>
+										{isExpanded && (
+											<motion.div
+												className="exp-detail"
+												initial={{height: 0, opacity: 0}}
+												animate={{height: 'auto', opacity: 1}}
+												exit={{height: 0, opacity: 0}}
+												transition={{duration: 0.28, ease: 'easeInOut'}}
+												style={{overflow: 'hidden'}}
+											>
+												{e.pageMd
+													? <MarkDownComponent markdown={e.pageMd} />
+													: <p style={{fontFamily: 'var(--mono)', fontSize: '13px', color: 'var(--ink-3)'}}>No details available.</p>
+												}
+											</motion.div>
+										)}
+									</AnimatePresence>
+								</motion.div>
+							);
+						})}
+						{experiences.length === 0 && (
+							<div className="exp-row">
+								<span className="box now" />
+								<div>
+									<h4>Full-Stack Engineer &amp; Toolmaker</h4>
+									<div className="place">Self-directed &amp; freelance</div>
+								</div>
+								<span className="eyr">2025 —</span>
+							</div>
+						)}
+						{!showingAll && experiences.length === 5 && (
+							<button
+								className="show-more"
+								style={{fontFamily: 'var(--mono)', fontSize: '13px', cursor: 'pointer', marginTop: '12px'}}
+								onClick={() => {
+									fetchExperiences(20).then((list: any) => {
+										setExperiences(Array.isArray(list) ? list : []);
+										setShowingAll(true);
+									});
+								}}
+							>
+								show more
+							</button>
+						)}
+					</motion.section>
+				</>
+			)}
 
 			<TerminalContactSection />
 		</TerminalLayout>

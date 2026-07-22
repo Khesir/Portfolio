@@ -28,6 +28,7 @@ export default function CmsProjectEditor() {
 	const [languages, setLanguages] = useState<string[]>([]);
 	const [url, setUrl] = useState('');
 	const [deployment, setDeployment] = useState('');
+	const [category, setCategory] = useState('');
 	const [markdown, setMarkdown] = useState('');
 	const [draft, setDraft] = useState(true);
 	const [hideViews, setHideViews] = useState(false);
@@ -49,6 +50,7 @@ export default function CmsProjectEditor() {
 				setLanguages(res?.languages ?? []);
 				setUrl(res?.url ?? '');
 				setDeployment(res?.deployment ?? '');
+				setCategory(res?.category ?? '');
 				setMarkdown(res?.markdown ?? '');
 				setDraft(res?.draft ?? false);
 				setHideViews(res?.hideViews ?? false);
@@ -62,7 +64,7 @@ export default function CmsProjectEditor() {
 		e.preventDefault();
 		setSaving(true);
 		try {
-			const payload = {name, releasedDate, imageUrl, languages, url, deployment, markdown, draft, hideViews, hideHearts, pinned};
+			const payload = {name, releasedDate, imageUrl, languages, url, deployment, category, markdown, draft, hideViews, hideHearts, pinned};
 			if (isEdit && id) {
 				await cmsUpdateProject(id, payload);
 				toast.success(draft ? 'Project saved as draft' : 'Project published');
@@ -117,6 +119,15 @@ export default function CmsProjectEditor() {
 					<div className="field">
 						<label>Release Date</label>
 						<input type="date" value={releasedDate} onChange={(e) => setReleasedDate(e.target.value)} />
+					</div>
+					<div className="field">
+						<label htmlFor="project-category">Category <span className="opt">optional</span></label>
+						<select id="project-category" value={category} onChange={(e) => setCategory(e.target.value)}>
+							<option value="">Select category</option>
+							<option value="dev">Dev</option>
+							<option value="illustration">Illustration</option>
+							<option value="tech-art">Tech Art</option>
+						</select>
 					</div>
 					<div className="field">
 						<label>Cover image <span className="opt">optional</span></label>

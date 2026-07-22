@@ -1,0 +1,94 @@
+[
+	{
+		"company": "CreativeBlox",
+	"positions": [
+		{
+			"title": "Junior 2D & 3D Artist",
+			"yearRange": "2026",
+			"current": true,
+			"description": "",
+			"skills": [
+				"Adobe Creative Suite",
+				"Blender",
+				"Slack"
+			],
+			"detail": ""
+			}
+	]
+	},
+	{
+		"company": "Jairosoft",
+		"positions": [
+			{
+				"title": "Software Developer Intern",
+				"yearRange": "2025",
+				"current": false,
+				"description": "Contributed to real-world frontend development tasks, including UI implementation and bug fixing.",
+				"skills": [
+					"Bubble.io",
+					"Html",
+					"CSS",
+					"Javascript",
+					"Scrum"
+				],
+				"detail": "- Practiced **Agile** methodologies through daily stand-ups, sprint reviews, and iterative development.\n- Learned how to work effectively in a collaborative team environment with designers and developers.\n- Improved skills in **responsive design**, dynamic data handling, and deployment debugging.\n- Participated in the final project demo and helped complete documentation requirements."
+			}
+		]
+	},
+	{
+		"company": "Befied (fka Edufied)",
+		"positions": [
+			{
+				"title": "Software Developer Intern",
+				"yearRange": "2024 — 25",
+				"current": false,
+				"description": "Improved existing company code by implementing a rotating proxy for web scraping, increasing search efficiency and request count.",
+				"skills": [
+					"Python",
+					"Webscraping",
+					"Docker",
+					"Nginx"
+				],
+				"detail": "- Developed a website for subscribing and unsubscribing from newsletters, integrating it with **Listmonk**, a self-hosted newsletter and mailing list manager.\n- Built both the frontend and backend and deployed it using **Docker** and **Traefik** for a streamlined workflow.\n- Refactored project code structure by applying **clean code principles**, improving maintainability, and centralizing script execution using OOP practices.\n- Configured deployment using **NGINX** for hosting and SSL certificates, along with Docker and Traefik for containerized management. Implemented security best practices, including **SSH hardening** and other protective measures."
+			}
+		]
+	},
+	{
+		"company": "SAMAHAN Systems Development",
+		"positions": [
+			{
+				"title": "Software Developer",
+				"yearRange": "2024 — 26",
+				"current": false,
+				"description": "Contributed to 3 projects as a backend developer.",
+				"skills": [
+					"Agile",
+					"Nest.js",
+					"Docker",
+					"React.js",
+					"Typescript",
+					"Fullstack-Development",
+					"Clean Code principles"
+				],
+				"detail": "- Led 1 project and provided an easy development environment via **Docker** container orchestration for various services, e.g. **PostgreSQL**, **MinIO**, **Portainer**."
+			}
+		]
+	},
+	{
+		"company": "ThinkTech Project",
+		"positions": [
+			{
+				"title": "Python Instructor",
+				"yearRange": "2024 — 25",
+				"current": false,
+				"description": "Taught Python fundamentals to high school students: variables, OOP, control flow, and functions.",
+				"skills": [
+					"Python",
+					"Mathplotlib",
+					"Pandas"
+				],
+				"detail": "- Designed interactive coding sessions focused on logical thinking and problem-solving.\n- Introduced students to data analysis using **Pandas** and **Matplotlib**."
+			}
+		]
+	}
+]

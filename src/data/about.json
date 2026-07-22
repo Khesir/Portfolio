@@ -1,0 +1,24 @@
+{
+	"greeting": "Hey, I'm AJ.",
+	"kicker": "Software Developer · 2D & 3D Artist · Technical Artist in training — most people online know me as Khesir.",
+	"polaroidCaption": "it's me, AJ",
+	"bio": [
+		"I build software, and I stand behind every part of it — **full ownership**, start to finish. I can always walk you through the *reasoning* behind a decision, not just point at the result. I've also worked at an **agentic level** with AI, though that's not where my attention is headed next.",
+		"I've spent the last 5 years or so building software — for businesses, organizations, and personal projects, from full-stack platforms to a solo game built in Unity. Along the way I've worked with **international teams**, both small and big. Alongside that, I've taught, mentored, and helped others grow — whether guiding students through their first lines of code or collaborating with teammates on shared projects.",
+		"Currently, I'm a **technical artist in training**, working to grow my art and programming skills together — diving into *proceduralism* and tech art. Open for freelancing and always excited to chat about new opportunities. Feel free to reach out!"
+	],
+	"education": [
+		{
+			"school": "Ateneo de Davao University",
+			"degree": "BS Computer Science",
+			"yearRange": "2022 - 2026",
+			"current": false,
+			"description": "Focused on software engineering fundamentals — web development, systems, and data structures."
+		}
+	],
+	"technicalSkills": [
+		{"category": "Skills", "items": ["Illustration", "Branding", "React", "Unity", "Shaders / GLSL (learning)"]},
+		{"category": "Languages & frameworks", "items": ["JavaScript", "Python", "C#", "HLSL (learning)"]},
+		{"category": "Software", "items": ["Unity", "Blender", "Photoshop", "Figma"]}
+	]
+}

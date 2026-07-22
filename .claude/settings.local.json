@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(mkdir -p \"/c/Users/Khesir/AppData/Local/Temp/claude/c--Users-Khesir-Documents-GitHub-Portfolio/e715df4e-f52b-4230-9811-f2ab10aced2d/scratchpad\")",
+      "Read(//c/Users/Khesir/AppData/Local/Temp/claude/c--Users-Khesir-Documents-GitHub-Portfolio/e715df4e-f52b-4230-9811-f2ab10aced2d/scratchpad/**)",
+      "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --no-sandbox --screenshot=\"standalone_screenshot.png\" --window-size=1440,2400 --virtual-time-budget=8000 --default-background-color=00000000 \"file:///c/Users/Khesir/Documents/GitHub/Portfolio/Khesir Portfolio - Standalone.html\")",
+      "Bash(sed -n '1,40p' src/app/module/home/terminalProjectsSection.tsx)",
+      "Bash(sed -n '1,40p' src/components/LoadingScreen.tsx)"
     ]
   }
 }

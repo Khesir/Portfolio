@@ -3,6 +3,12 @@
    (blog post + project detail) — loaded after terminal.css
    ============================================================ */
 
+/* ---- reader page: amber accent, matching the home dashboard ---- */
+.reader-page {
+	--accent: var(--amber);
+	--accent-rgb: var(--amber-rgb);
+}
+
 /* ---- back link ---- */
 .backlink { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12.5px; color: var(--ink-3); margin-top: 40px; text-decoration: none; transition: color .15s, gap .15s; }
 .backlink:hover { color: var(--accent); gap: 11px; }
@@ -22,10 +28,55 @@
 .ameta .mdiv { width: 1px; height: 13px; background: var(--line-2); }
 .atags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 
-/* hero */
+/* hero / gallery */
+.agallery { display: flex; flex-direction: column; gap: 16px; margin-top: 30px; }
 .ahero { margin-top: 30px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line-2); aspect-ratio: 21/9; box-shadow: var(--shadow-lg); }
 .ahero img { width: 100%; height: 100%; object-fit: cover; }
 .ahero.ph { display: flex; }
+
+/* carousel (multi-image projects) */
+.acarousel { position: relative; margin-top: 30px; }
+.acarousel .ahero { position: relative; margin-top: 0; }
+.acarousel-img { animation: acarousel-fade 0.3s ease; }
+@keyframes acarousel-fade {
+	from { opacity: 0; transform: scale(1.01); }
+	to { opacity: 1; transform: scale(1); }
+}
+.acarousel-scrim {
+	position: absolute; inset: 0; pointer-events: none;
+	background: linear-gradient(180deg, transparent 65%, rgba(8, 7, 11, 0.65) 100%);
+}
+.acarousel-arrow {
+	position: absolute; top: 50%; transform: translateY(-50%);
+	display: flex; align-items: center; justify-content: center;
+	width: 38px; height: 38px; border-radius: 999px;
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	background: rgba(8, 7, 11, 0.45);
+	backdrop-filter: blur(6px);
+	color: var(--ink); cursor: pointer; z-index: 2;
+	opacity: 0.75;
+	transition: border-color 0.15s ease, background 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+}
+.acarousel:hover .acarousel-arrow,
+.acarousel-arrow:focus-visible {
+	opacity: 1;
+}
+.acarousel-arrow:hover {
+	border-color: var(--accent);
+	background: rgba(8, 7, 11, 0.7);
+	transform: translateY(-50%) scale(1.08);
+}
+.acarousel-prev { left: 14px; }
+.acarousel-next { right: 14px; }
+.acarousel-footer {
+	position: absolute; left: 16px; right: 16px; bottom: 14px; z-index: 2;
+	display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.acarousel-dots { display: flex; align-items: center; gap: 6px; }
+.acarousel-dot { width: 7px; height: 7px; border-radius: 999px; border: none; padding: 0; background: rgba(255, 255, 255, 0.4); cursor: pointer; transition: background 0.15s ease, transform 0.15s ease, width 0.15s ease; }
+.acarousel-dot:hover { background: rgba(255, 255, 255, 0.65); }
+.acarousel-dot.active { width: 16px; border-radius: 999px; background: var(--accent); }
+.acarousel-count { font-family: var(--mono); font-size: 11px; letter-spacing: 0.02em; color: var(--ink-2); }
 
 /* ---- article body layout ---- */
 .alayout { display: grid; grid-template-columns: 1fr minmax(0, 720px) 1fr; gap: 0; margin-top: 44px; }
@@ -43,7 +94,6 @@
 .article p { color: var(--ink-2); margin: 0 0 18px; line-height: 1.72; }
 .article .lead { font-family: var(--serif); font-size: 23px; line-height: 1.4; color: var(--ink); margin-bottom: 26px; }
 .article h2 { font-family: var(--serif); font-size: 32px; line-height: 1.05; margin: 42px 0 16px; letter-spacing: -.01em; scroll-margin-top: 40px; }
-.article h2 .hh { font-family: var(--mono); font-size: 13px; color: var(--accent); margin-right: 10px; vertical-align: middle; }
 .article h3 { font-family: var(--mono); font-weight: 500; font-size: 16px; color: var(--ink); margin: 30px 0 12px; letter-spacing: .01em; }
 .article strong { color: var(--ink); font-weight: 600; }
 .article a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(var(--accent-rgb),.35); }
@@ -110,6 +160,35 @@
 .img-zoomable { cursor: zoom-in; transition: opacity .15s; }
 .img-zoomable:hover { opacity: .88; }
 .ahero { cursor: zoom-in; }
+
+.scroll-to-top {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 7px;
+	width: 100%;
+	padding: 10px 13px;
+	border: 1px solid var(--line-2);
+	border-radius: 10px;
+	background: linear-gradient(180deg, var(--panel), var(--panel-2));
+	color: var(--ink-2);
+	font-family: var(--mono);
+	font-size: 12.5px;
+	cursor: pointer;
+	animation: scroll-to-top-in 0.15s ease;
+	transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.scroll-to-top:hover {
+	color: var(--ink);
+	border-color: rgba(var(--accent-rgb), 0.45);
+	transform: translateY(-2px);
+}
+
+@keyframes scroll-to-top-in {
+	from { opacity: 0; transform: translateY(4px); }
+	to { opacity: 1; transform: translateY(0); }
+}
 
 @media (max-width: 960px) {
   .alayout { grid-template-columns: 1fr; }
