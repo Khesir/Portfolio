@@ -12,7 +12,7 @@
         "type":"image/png"
         },{
         "type": "image/png",
-        "sizes": "1024x875",
+        "sizes": "1024x1024",
         "src": "/maskable-1024.png",
         "purpose": "maskable"
         }

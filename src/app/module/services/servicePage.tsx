@@ -161,10 +161,10 @@ export function ServicePage() {
 									>
 										<div style={{position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(480px 280px at 16% -10%, rgba(var(--accent-rgb),.18), transparent 60%)'}} />
 										<div style={{position: 'relative', height: '100%', padding: '26px 26px 22px', display: 'flex', flexDirection: 'column'}}>
-											<div style={{fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--ink-3)'}}>
+											<div style={{fontFamily: 'var(--mono)', fontSize: 12.5, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--ink-3)'}}>
 												// services
 											</div>
-											<span style={{position: 'absolute', top: 24, right: 26, fontFamily: 'var(--mono)', fontSize: 10.5, color: 'var(--ink-3)'}}>
+											<span style={{position: 'absolute', top: 24, right: 26, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)'}}>
 												↩ tap to flip
 											</span>
 
@@ -185,17 +185,17 @@ export function ServicePage() {
 														</div>
 														<div>
 															<div style={{display: 'flex', alignItems: 'center', gap: 8}}>
-																<h4 style={{fontFamily: 'var(--sans)', fontWeight: 600, fontSize: 14.5, margin: 0, color: 'var(--ink)'}}>
+																<h4 style={{fontFamily: 'var(--sans)', fontWeight: 600, fontSize: 16.5, margin: 0, color: 'var(--ink)'}}>
 																	{service.title}
 																</h4>
 																{service.mainTag && (
-																	<span style={{fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.04em', color: 'var(--accent)', border: '1px solid rgba(var(--accent-rgb),.32)', background: 'rgba(var(--accent-rgb),.08)', padding: '2px 8px', borderRadius: 999, whiteSpace: 'nowrap'}}>
+																	<span style={{fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: '.04em', color: 'var(--accent)', border: '1px solid rgba(var(--accent-rgb),.32)', background: 'rgba(var(--accent-rgb),.08)', padding: '2px 8px', borderRadius: 999, whiteSpace: 'nowrap'}}>
 																		{service.mainTag}
 																	</span>
 																)}
 															</div>
 															{service.description && (
-																<div style={{color: 'var(--ink-3)', fontSize: 11.5, lineHeight: 1.42, marginTop: 4}}>
+																<div style={{color: 'var(--ink-3)', fontSize: 13, lineHeight: 1.45, marginTop: 5}}>
 																	{service.description}
 																</div>
 															)}
@@ -226,10 +226,10 @@ export function ServicePage() {
 														onClick={(e) => e.stopPropagation()}
 														style={{textAlign: 'right', textDecoration: 'none'}}
 													>
-														<span style={{fontFamily: 'var(--mono)', fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--accent)', display: 'block'}}>
+														<span style={{fontFamily: 'var(--mono)', fontSize: 10.5, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--accent)', display: 'block'}}>
 															★ preferred
 														</span>
-														<span style={{fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink)'}}>
+														<span style={{fontFamily: 'var(--mono)', fontSize: 14, color: 'var(--ink)'}}>
 															{config.contactEmail}
 														</span>
 													</a>

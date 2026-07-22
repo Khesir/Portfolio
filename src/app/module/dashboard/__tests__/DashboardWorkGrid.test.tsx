@@ -141,7 +141,8 @@ describe('DashboardWorkGrid', () => {
 		expect(noneCard.querySelector('.dash-work-multi-badge')).not.toBeInTheDocument();
 	});
 
-	it('distributes cards across a 2-column masonry at a narrow default width', () => {
+	it('distributes cards across a 2-column masonry once the measured width fits 2', () => {
+		mockResizeObserverWidth = 600;
 		mockGetFeaturedProjects.mockReturnValue([]);
 		mockGetProjects.mockReturnValue([
 			makeProject('a', 'Project A'),
@@ -192,14 +193,14 @@ describe('DashboardWorkGrid', () => {
 		expect(document.querySelectorAll('.dash-work-col')).toHaveLength(5);
 	});
 
-	it('falls back to 2 columns (the minimum) when the measured width only fits 1', () => {
+	it('falls back to a single column when the measured width only fits 1', () => {
 		mockResizeObserverWidth = 100;
 		mockGetFeaturedProjects.mockReturnValue([]);
 		mockGetProjects.mockReturnValue([makeProject('a', 'Project A')]);
 
 		renderGrid();
 
-		expect(document.querySelectorAll('.dash-work-col')).toHaveLength(2);
+		expect(document.querySelectorAll('.dash-work-col')).toHaveLength(1);
 	});
 
 	it('navigates to the project detail route when a card is clicked', () => {

@@ -1,42 +1,24 @@
 {
 	"greeting": "Hey, I'm AJ.",
-	"kicker": "Software engineer · part-time creative artist & educator — most people online know me as Khesir.",
+	"kicker": "Software Developer · 2D & 3D Artist · Technical Artist in training — most people online know me as Khesir.",
 	"polaroidCaption": "it's me, AJ",
 	"bio": [
-		"I build software, and I make sure I can stand behind every part of it. Working at an agentic level with AI, backed by real judgment, is the part of engineering I care about most.",
-		"I'm comfortable working at an **agentic level**, using AI to move faster on repetitive work. I take full ownership of everything I ship: I can explain the *reasoning* behind every decision, not just that it works.",
-		"I was always the creative type as a kid, but drawn more to *systems* than pure improvisation, figuring out how to make things efficient. That instinct sharpened when I found web development. The deeper I got into software, the more I loved the power to build things **entirely on my own terms**, especially after watching software get worse around me, from ad-free games to forced ads and subscriptions. Every project since has come from that same drive.",
-		"I want to lean further into **agentic AI** for the specialized, explicit parts of engineering, like frontend work, to free up time for something else I care about. After five years of coding taking up **90%** of my time, I'm shifting that balance toward *technical art*: bringing my software background into 2D animation and illustration."
+		"I build software, and I stand behind every part of it — **full ownership**, start to finish. I can always walk you through the *reasoning* behind a decision, not just point at the result. I've also worked at an **agentic level** with AI, though that's not where my attention is headed next.",
+		"I've spent the last 5 years or so building software — for businesses, organizations, and personal projects, from full-stack platforms to a solo game built in Unity. Along the way I've worked with **international teams**, both small and big. Alongside that, I've taught, mentored, and helped others grow — whether guiding students through their first lines of code or collaborating with teammates on shared projects.",
+		"Currently, I'm a **technical artist in training**, working to grow my art and programming skills together — diving into *proceduralism* and tech art. Open for freelancing and always excited to chat about new opportunities. Feel free to reach out!"
 	],
 	"education": [
 		{
-			"school": "Your University",
-			"degree": "BS Information Technology",
-			"yearRange": "2019 — 2023",
+			"school": "Ateneo de Davao University",
+			"degree": "BS Computer Science",
+			"yearRange": "2022 - 2026",
 			"current": false,
 			"description": "Focused on software engineering fundamentals — web development, systems, and data structures."
 		}
 	],
-	"services": [
-		{
-			"title": "Character Art",
-			"badge": "Illustration & Design",
-			"description": "Character concepts, portraits, and stylized illustration — from rough sketch to finished, polished art."
-		},
-		{
-			"title": "Technical Art",
-			"badge": "Shaders & Pipelines",
-			"description": "Building shaders, procedural tools, and pipelines that bring illustration and engineering together in real time."
-		},
-		{
-			"title": "Full-stack Dev",
-			"badge": "Web & Tools",
-			"description": "Designing and building scalable frontend and backend systems — focused on performance and clean architecture."
-		}
-	],
-	"skills": ["Illustration", "Shaders / GLSL", "React", "Unity", "Branding"],
-	"tools": {
-		"languages": ["JavaScript", "Python", "C#", "HLSL"],
-		"software": ["Unity", "Blender", "Photoshop", "Figma"]
-	}
+	"technicalSkills": [
+		{"category": "Skills", "items": ["Illustration", "Branding", "React", "Unity", "Shaders / GLSL (learning)"]},
+		{"category": "Languages & frameworks", "items": ["JavaScript", "Python", "C#", "HLSL (learning)"]},
+		{"category": "Software", "items": ["Unity", "Blender", "Photoshop", "Figma"]}
+	]
 }

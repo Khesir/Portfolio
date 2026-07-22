@@ -28,13 +28,19 @@ vi.mock('@/data/about', () => ({
 				description: 'Studied things.',
 			},
 		],
-		services: [
-			{title: 'Character Art', badge: 'Illustration', description: 'Draws characters.'},
-			{title: 'Technical Art', badge: 'Shaders', description: 'Builds shaders.'},
+		technicalSkills: [
+			{category: 'Skills', items: ['Painting', 'React']},
+			{category: 'Languages & frameworks', items: ['TypeScript']},
+			{category: 'Software', items: ['Figma']},
 		],
-		skills: ['Painting', 'React'],
-		tools: {languages: ['TypeScript'], software: ['Figma']},
 	})),
+}));
+
+vi.mock('@/data/services', () => ({
+	getServices: vi.fn(() => [
+		{title: 'Character Art', badge: 'Illustration', description: 'Draws characters.', available: true},
+		{title: 'Technical Art', badge: 'Shaders', description: 'Builds shaders.', available: true},
+	]),
 }));
 
 import {DashboardCardBack} from '../DashboardCardBack';

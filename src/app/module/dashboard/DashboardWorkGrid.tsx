@@ -4,7 +4,7 @@ import {useState, useRef, useEffect, type ReactNode} from 'react';
 import {useNavigate} from 'react-router-dom';
 import '@/css/terminal-dashboard.css';
 
-const MIN_COLUMN_COUNT = 2;
+const MIN_COLUMN_COUNT = 1;
 const MAX_COLUMN_COUNT_NORMAL = 3;
 const MAX_COLUMN_COUNT_FULLSCREEN = 5;
 const MIN_COLUMN_WIDTH = 260;

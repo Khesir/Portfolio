@@ -8,10 +8,9 @@ export interface EducationEntry {
 	description: string;
 }
 
-export interface ServiceEntry {
-	title: string;
-	badge: string;
-	description: string;
+export interface SkillCategory {
+	category: string;
+	items: string[];
 }
 
 export interface AboutContent {
@@ -20,12 +19,7 @@ export interface AboutContent {
 	polaroidCaption: string;
 	bio: string[];
 	education: EducationEntry[];
-	services: ServiceEntry[];
-	skills: string[];
-	tools: {
-		languages: string[];
-		software: string[];
-	};
+	technicalSkills: SkillCategory[];
 }
 
 const about = aboutJson as AboutContent;
