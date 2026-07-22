@@ -6,12 +6,14 @@ interface ImageUploadProps {
 	value: string;
 	onChange: (url: string) => void;
 	placeholder?: string;
+	uploadImage?: (file: File) => Promise<string>;
 }
 
 export default function ImageUpload({
 	value,
 	onChange,
 	placeholder = 'https://...',
+	uploadImage = cmsUploadImage,
 }: ImageUploadProps) {
 	const [uploading, setUploading] = useState(false);
 	const fileRef = useRef<HTMLInputElement>(null);
@@ -21,7 +23,7 @@ export default function ImageUpload({
 		if (!file) return;
 		setUploading(true);
 		try {
-			const url = await cmsUploadImage(file);
+			const url = await uploadImage(file);
 			onChange(url);
 		} catch {
 			toast.error('Image upload failed');

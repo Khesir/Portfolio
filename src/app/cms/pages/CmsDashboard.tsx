@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import {fetchBlogs} from '@/app/api/blogs';
-import {fetchProjects} from '@/app/api/projects';
+import {getAllProjects} from '@/data/projects';
 import {fetchExperiences} from '@/app/api/experience';
 import axios from 'axios';
 import {
@@ -97,10 +97,9 @@ export default function CmsDashboard() {
 	useEffect(() => {
 		Promise.allSettled([
 			fetchBlogs(),
-			fetchProjects(),
 			fetchExperiences(20),
 			axios.get(`${API}/progress`),
-		]).then(([blogs, projects, experiences, progress]) => {
+		]).then(([blogs, experiences, progress]) => {
 			setContentStats([
 				{
 					label: 'Blogs',
@@ -110,7 +109,7 @@ export default function CmsDashboard() {
 				},
 				{
 					label: 'Projects',
-					count: projects.status === 'fulfilled' ? (projects.value as unknown[]).length : 0,
+					count: getAllProjects().length,
 					href: '/cms/projects',
 					icon: <CodeSvg />,
 				},

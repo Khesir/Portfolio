@@ -12,6 +12,7 @@ import MarkdownCheatSheet from './MarkdownCheatSheet';
 interface MarkdownEditorProps {
 	value: string;
 	onChange: (v: string) => void;
+	uploadImage?: (file: File) => Promise<string>;
 }
 
 type ViewMode = 'write' | 'preview' | 'split';
@@ -119,7 +120,7 @@ const S = {
 	} as React.CSSProperties,
 };
 
-export default function MarkdownEditor({value, onChange}: MarkdownEditorProps) {
+export default function MarkdownEditor({value, onChange, uploadImage = cmsUploadImage}: MarkdownEditorProps) {
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const [view, setView] = useState<ViewMode>('write');
 	const [uploading, setUploading] = useState(false);
@@ -137,7 +138,7 @@ export default function MarkdownEditor({value, onChange}: MarkdownEditorProps) {
 		const withPlaceholder = value.slice(0, insertPos) + placeholder + value.slice(insertPos);
 		onChange(withPlaceholder);
 		try {
-			const url = await cmsUploadImage(file);
+			const url = await uploadImage(file);
 			onChange(withPlaceholder.replace(placeholder, `![${file.name}](${url})`));
 			toast.success('Image uploaded');
 		} catch {
@@ -146,7 +147,7 @@ export default function MarkdownEditor({value, onChange}: MarkdownEditorProps) {
 		} finally {
 			setUploading(false);
 		}
-	}, [value, onChange]);
+	}, [value, onChange, uploadImage]);
 
 	const applyAction = useCallback((action: ToolbarAction['action']) => {
 		const ta = textareaRef.current;

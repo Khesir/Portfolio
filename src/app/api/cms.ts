@@ -4,6 +4,30 @@ import {useEnvironment} from '@/hooks/use-environment-store';
 const API = import.meta.env.VITE_API_URL;
 
 // =============================================================================
+// UPLOAD
+// =============================================================================
+//
+// BACKEND GUIDE
+//
+//   POST /api/upload — multipart/form-data, field "file", CmsAuthGuard
+//   (Authorization: Bearer <CMS_PASSWORD>). Response 200: { url: string }
+//   Used as the default image uploader for CMS pages still backed by the
+//   Nest API (Blogs, Experiences, Certifications, Recommendations, Posts).
+//   Projects/About/Journey/Services pass their own local-file uploader instead.
+
+export const cmsUploadImage = async (file: File): Promise<string> => {
+	const form = new FormData();
+	form.append('file', file);
+	const res = await axios.post(`${API}/upload`, form, {
+		headers: {
+			'Content-Type': 'multipart/form-data',
+			Authorization: `Bearer ${import.meta.env.VITE_CMS_PASSWORD}`,
+		},
+	});
+	return res.data.url;
+};
+
+// =============================================================================
 // DTOs
 // =============================================================================
 

@@ -5,6 +5,8 @@
 		"category": "dev",
 		"role": "full-stack",
 		"description": "Keep Track is a personal project I built to solve a real problem I had: I wanted one dedicated app to manage all aspects of my finances — accounts, spending, budgets, debts, and savings goals — without juggling multiple…",
+		"year": 2026,
+		"releasedDate": "2026-04-05",
 		"tags": [
 			"React.js",
 			"Nest.js",
@@ -14,12 +16,14 @@
 			"Docker",
 			"Vite-press"
 		],
-		"year": 2026,
-		"pinned": true,
-		"images": [],
+		"images": [
+			"/img/projects/69d20d2589ff6f86c089066b/1784750060953-1775373522574-Screenshot2026-04-05151837.png"
+		],
 		"url": "https://github.com/Khesir/KeepTrack",
 		"deployment": "https://keep-track.khesir.com/",
-		"markdown": "# Keep Track — Personal Finance App\n\n> A full-stack cross-platform application for managing personal finances — built solo from the ground up.\n>\n> **Status: Early stage — core systems are functional but the UI is still a work in progress.**\n\n---\n\n## Overview\n\n**Keep Track** is a personal project I built to solve a real problem I had: I wanted one dedicated app to manage all aspects of my finances — accounts, spending, budgets, debts, and savings goals — without juggling multiple tools.\n\nThe app is centered on one core domain:\n\n- **Finance** — accounts, transactions, budgets, debts, savings goals, and recurring payments\n\nThe result is a fully functional product with a REST API backend and a Flutter app that runs on Windows, Android, iOS, macOS, and Linux.\n\nThis project covers the full engineering stack — from database schema design and API architecture, to state management, local storage migrations, and cross-platform deployment.\n\n---\n\n## Screenshots\n\n> _Add your screenshots here — dashboard, accounts, transactions, budgets, debts, goals, etc._\n\n| Dashboard | Accounts | Transactions |\n|---|---|---|\n| ![image.png](https://2xfbxjj2xjckfadt.public.blob.vercel-storage.com/cms/1775588151725-image.png)| ![image.png](https://2xfbxjj2xjckfadt.public.blob.vercel-storage.com/cms/1775588180789-image.png)| ![image.png](https://2xfbxjj2xjckfadt.public.blob.vercel-storage.com/cms/1775588222262-image.png) |\n\n---\n\n## Tech Stack\n\n### Backend\n| Layer | Technology |\n|---|---|\n| Runtime | Node.js (TypeScript) |\n| Framework | NestJS 10 |\n| Database | MongoDB 7 with Mongoose ODM |\n| Auth | JWT (access + refresh tokens), Google OAuth via Passport.js |\n| File Storage | Vercel Blob |\n| Validation | class-validator, class-transformer |\n| API Docs | Swagger / OpenAPI |\n| Deployment | Vercel (serverless) |\n| Local Dev | Docker Compose (MongoDB + API) |\n\n### Frontend\n| Layer | Technology |\n|---|---|\n| Framework | Flutter 3.9.2+ (Dart) |\n| Platforms | Windows, Android, iOS, macOS, Linux |\n| HTTP | Dio |\n| Local DB | Hive (key-value), SharedPreferences |\n| Secure Storage | flutter_secure_storage |\n| Auth | Google Sign-In |\n| Notifications | flutter_local_notifications |\n\n---\n\n## Architecture\n\n```\n┌─────────────────────────────────────────────┐\n│              Flutter App                    │\n│  (Windows / Android / iOS / macOS / Linux)  │\n│                                             │\n│              ┌──────────┐                  │\n│              │ Finance  │                  │\n│              └────┬─────┘                  │\n│                   │                        │\n│        ┌──────────▼──────────┐             │\n│        │   Dio HTTP Client   │             │\n│        └──────────┬──────────┘             │\n└───────────────────┼─────────────────────---┘\n                    │ REST API\n          ┌─────────▼─────────┐\n          │   NestJS Backend  │\n          │   (Vercel Edge)   │\n          └─────────┬─────────┘\n                    │\n             ┌──────────┴──────────┐\n             │                     │\n       ┌─────▼──────┐       ┌──────▼──────┐\n       │  MongoDB   │       │ Vercel Blob │\n       │  (Atlas)   │       │  (Storage)  │\n       └────────────┘       └─────────────┘\n```\n\nThe backend is a modular NestJS monolith deployed as a serverless function on Vercel, connected to MongoDB Atlas. The Flutter app communicates with the API over REST and caches data locally with Hive.\n\n---\n\n## Features\n\n### Finance Management\n- **Multiple Accounts** — cash, bank, credit card, investment, savings accounts with balance tracking\n- **Transactions** — income, expense, and transfer entries with optional fees\n- **Categories** — custom icons and colors for expense/income categorization\n- **Budgets** — monthly or one-time budgets scoped to specific categories with progress tracking\n- **Debts** — track money lent or borrowed with payment schedules and remaining balances\n- **Savings Goals** — target-based goals with monthly contribution tracking and fee deduction\n- **Planned Payments** — recurring payments with due date scheduling\n\n### Platform & UX\n- Dark mode support\n- Cross-platform: Windows, Android, iOS, macOS, Linux\n- Offline-first with local Hive database and background sync\n- Custom migration system — the app auto-runs pending DB migrations on startup\n- Secure token storage per platform\n\n---\n\n## Backend — API Design\n\nThe REST API follows a consistent resource-based structure under `/api/v1`. All endpoints are protected by a global JWT guard — routes that need to be public are explicitly opted out.\n\n**Authentication**\n\n| Method | Endpoint | Description |\n|---|---|---|\n| POST | `/auth/register` | Register with email + password |\n| POST | `/auth/login` | Email/password login |\n| POST | `/auth/google` | Google OAuth sign-in |\n| POST | `/auth/refresh` | Refresh access token |\n| POST | `/auth/logout` | Invalidate refresh token |\n\n**Finance**\n\n| Method | Endpoint | Description |\n|---|---|---|\n| GET, POST | `/accounts` | List / create accounts |\n| GET, PATCH, DELETE | `/accounts/:id` | Get, update, delete account |\n| GET, POST | `/transactions` | List / create transactions |\n| GET, PATCH, DELETE | `/transactions/:id` | Get, update, delete transaction |\n| GET, POST | `/budgets` | List / create budgets |\n| GET, PATCH, DELETE | `/budgets/:id` | Get, update, delete budget |\n| GET, POST | `/debts` | List / create debts |\n| GET, PATCH, DELETE | `/debts/:id` | Get, update, delete debt |\n| GET, POST | `/goals` | List / create savings goals |\n| GET, PATCH, DELETE | `/goals/:id` | Get, update, delete goal |\n| GET, POST | `/planned-payments` | List / create planned payments |\n| GET, PATCH, DELETE | `/planned-payments/:id` | Get, update, delete planned payment |\n| GET, POST | `/finance-categories` | List / create categories |\n| GET, PATCH, DELETE | `/finance-categories/:id` | Get, update, delete category |\n\n---\n\n## Database Schema\n\nMongoDB with 8 collections, all user-scoped:\n\n| Collection | Purpose |\n|---|---|\n| `users` | Profile, notification settings |\n| `accounts` | Bank/cash/credit/investment accounts |\n| `transactions` | Income, expense, and transfer entries |\n| `finance_categories` | Custom income/expense categories |\n| `budgets` | Monthly or one-time budget tracking |\n| `debts` | Lending and borrowing records |\n| `goals` | Savings goal progress |\n| `planned_payments` | Recurring payment schedules |\n| `refresh_tokens` | Auth token lifecycle management |\n\nEvery document carries a `userId` index. Cross-resource references (e.g. transactions → accounts → categories) are stored as IDs and resolved at the service layer.\n\n---\n\n## Security\n\n- JWT access + refresh token pattern — short-lived access tokens, rotated refresh tokens\n- bcrypt password hashing\n- Global `JwtAuthGuard` on all routes by default — public routes explicitly decorated\n- All queries scoped to the authenticated user's ID — no cross-user data leakage\n- CORS origin whitelisting\n- Global `ValidationPipe` with DTO whitelisting (strips unknown properties)\n- Custom `HttpExceptionFilter` for consistent error responses\n\n---\n\n## What I Learned / Built\n\n- Designing a relational-like data model inside MongoDB with proper indexing and user scoping\n- Building a secure auth system with JWT refresh token rotation and Google OAuth\n- Writing a modular NestJS backend with feature modules, each with its own controllers, services, DTOs, and schemas\n- Deploying a NestJS app as a serverless Vercel function with MongoDB Atlas connection pooling\n- Building a Flutter app that targets 5 platforms from a single codebase\n- Implementing an offline-first local database with a custom migration runner\n- Managing secure token storage across different platform targets\n\n---\n\n## Local Development\n\n**Backend**\n```bash\ncd backend\ncp .env.example .env      # fill in your secrets\ndocker-compose up -d      # starts MongoDB locally\nnpm install\nnpm run start:dev\n# API → http://localhost:3000\n# Docs → http://localhost:3000/docs\n```\n\n**Frontend**\n```bash\ncd frontend\ncp .env.example .env      # fill in API URL and Supabase keys\nflutter pub get\nflutter run -d windows    # or android, ios, macos, linux\n```\n\n---\n\n## Links\n\n- **Live API**: _[https://app.keep-track.khesir.com/]_\n- **App Download**: _[https://keep-track.khesir.com/]_\n- **GitHub**: _[https://github.com/Khesir/KeepTrack]_\n\n---\n\n_Built solo · Apache 2.0 · v0.7.4_\n"
+		"markdown": "# Keep Track — Personal Finance App\n\n> A full-stack cross-platform application for managing personal finances — built solo from the ground up.\n>\n> **Status: Early stage — core systems are functional but the UI is still a work in progress.**\n\n---\n\n## Overview\n\n**Keep Track** is a personal project I built to solve a real problem I had: I wanted one dedicated app to manage all aspects of my finances — accounts, spending, budgets, debts, and savings goals — without juggling multiple tools.\n\nThe app is centered on one core domain:\n\n- **Finance** — accounts, transactions, budgets, debts, savings goals, and recurring payments\n\nThe result is a fully functional product with a REST API backend and a Flutter app that runs on Windows, Android, iOS, macOS, and Linux.\n\nThis project covers the full engineering stack — from database schema design and API architecture, to state management, local storage migrations, and cross-platform deployment.\n![HNfDdlaWoAABQhh.jfif](/img/projects/69d20d2589ff6f86c089066b/1784748893157-HNfDdlaWoAABQhh.jfif)\n---\n\n## Screenshots\n\n> _Add your screenshots here — dashboard, accounts, transactions, budgets, debts, goals, etc._\n\n| Dashboard | Accounts | Transactions |\n|---|---|---|\n| ![image.png](https://2xfbxjj2xjckfadt.public.blob.vercel-storage.com/cms/1775588151725-image.png)| ![image.png](https://2xfbxjj2xjckfadt.public.blob.vercel-storage.com/cms/1775588180789-image.png)| ![image.png](https://2xfbxjj2xjckfadt.public.blob.vercel-storage.com/cms/1775588222262-image.png) |\n\n---\n\n## Tech Stack\n\n### Backend\n| Layer | Technology |\n|---|---|\n| Runtime | Node.js (TypeScript) |\n| Framework | NestJS 10 |\n| Database | MongoDB 7 with Mongoose ODM |\n| Auth | JWT (access + refresh tokens), Google OAuth via Passport.js |\n| File Storage | Vercel Blob |\n| Validation | class-validator, class-transformer |\n| API Docs | Swagger / OpenAPI |\n| Deployment | Vercel (serverless) |\n| Local Dev | Docker Compose (MongoDB + API) |\n\n### Frontend\n| Layer | Technology |\n|---|---|\n| Framework | Flutter 3.9.2+ (Dart) |\n| Platforms | Windows, Android, iOS, macOS, Linux |\n| HTTP | Dio |\n| Local DB | Hive (key-value), SharedPreferences |\n| Secure Storage | flutter_secure_storage |\n| Auth | Google Sign-In |\n| Notifications | flutter_local_notifications |\n\n---\n\n## Architecture\n\n```\n┌─────────────────────────────────────────────┐\n│              Flutter App                    │\n│  (Windows / Android / iOS / macOS / Linux)  │\n│                                             │\n│              ┌──────────┐                  │\n│              │ Finance  │                  │\n│              └────┬─────┘                  │\n│                   │                        │\n│        ┌──────────▼──────────┐             │\n│        │   Dio HTTP Client   │             │\n│        └──────────┬──────────┘             │\n└───────────────────┼─────────────────────---┘\n                    │ REST API\n          ┌─────────▼─────────┐\n          │   NestJS Backend  │\n          │   (Vercel Edge)   │\n          └─────────┬─────────┘\n                    │\n             ┌──────────┴──────────┐\n             │                     │\n       ┌─────▼──────┐       ┌──────▼──────┐\n       │  MongoDB   │       │ Vercel Blob │\n       │  (Atlas)   │       │  (Storage)  │\n       └────────────┘       └─────────────┘\n```\n\nThe backend is a modular NestJS monolith deployed as a serverless function on Vercel, connected to MongoDB Atlas. The Flutter app communicates with the API over REST and caches data locally with Hive.\n\n---\n\n## Features\n\n### Finance Management\n- **Multiple Accounts** — cash, bank, credit card, investment, savings accounts with balance tracking\n- **Transactions** — income, expense, and transfer entries with optional fees\n- **Categories** — custom icons and colors for expense/income categorization\n- **Budgets** — monthly or one-time budgets scoped to specific categories with progress tracking\n- **Debts** — track money lent or borrowed with payment schedules and remaining balances\n- **Savings Goals** — target-based goals with monthly contribution tracking and fee deduction\n- **Planned Payments** — recurring payments with due date scheduling\n\n### Platform & UX\n- Dark mode support\n- Cross-platform: Windows, Android, iOS, macOS, Linux\n- Offline-first with local Hive database and background sync\n- Custom migration system — the app auto-runs pending DB migrations on startup\n- Secure token storage per platform\n\n---\n\n## Backend — API Design\n\nThe REST API follows a consistent resource-based structure under `/api/v1`. All endpoints are protected by a global JWT guard — routes that need to be public are explicitly opted out.\n\n**Authentication**\n\n| Method | Endpoint | Description |\n|---|---|---|\n| POST | `/auth/register` | Register with email + password |\n| POST | `/auth/login` | Email/password login |\n| POST | `/auth/google` | Google OAuth sign-in |\n| POST | `/auth/refresh` | Refresh access token |\n| POST | `/auth/logout` | Invalidate refresh token |\n\n**Finance**\n\n| Method | Endpoint | Description |\n|---|---|---|\n| GET, POST | `/accounts` | List / create accounts |\n| GET, PATCH, DELETE | `/accounts/:id` | Get, update, delete account |\n| GET, POST | `/transactions` | List / create transactions |\n| GET, PATCH, DELETE | `/transactions/:id` | Get, update, delete transaction |\n| GET, POST | `/budgets` | List / create budgets |\n| GET, PATCH, DELETE | `/budgets/:id` | Get, update, delete budget |\n| GET, POST | `/debts` | List / create debts |\n| GET, PATCH, DELETE | `/debts/:id` | Get, update, delete debt |\n| GET, POST | `/goals` | List / create savings goals |\n| GET, PATCH, DELETE | `/goals/:id` | Get, update, delete goal |\n| GET, POST | `/planned-payments` | List / create planned payments |\n| GET, PATCH, DELETE | `/planned-payments/:id` | Get, update, delete planned payment |\n| GET, POST | `/finance-categories` | List / create categories |\n| GET, PATCH, DELETE | `/finance-categories/:id` | Get, update, delete category |\n\n---\n\n## Database Schema\n\nMongoDB with 8 collections, all user-scoped:\n\n| Collection | Purpose |\n|---|---|\n| `users` | Profile, notification settings |\n| `accounts` | Bank/cash/credit/investment accounts |\n| `transactions` | Income, expense, and transfer entries |\n| `finance_categories` | Custom income/expense categories |\n| `budgets` | Monthly or one-time budget tracking |\n| `debts` | Lending and borrowing records |\n| `goals` | Savings goal progress |\n| `planned_payments` | Recurring payment schedules |\n| `refresh_tokens` | Auth token lifecycle management |\n\nEvery document carries a `userId` index. Cross-resource references (e.g. transactions → accounts → categories) are stored as IDs and resolved at the service layer.\n\n---\n\n## Security\n\n- JWT access + refresh token pattern — short-lived access tokens, rotated refresh tokens\n- bcrypt password hashing\n- Global `JwtAuthGuard` on all routes by default — public routes explicitly decorated\n- All queries scoped to the authenticated user's ID — no cross-user data leakage\n- CORS origin whitelisting\n- Global `ValidationPipe` with DTO whitelisting (strips unknown properties)\n- Custom `HttpExceptionFilter` for consistent error responses\n\n---\n\n## What I Learned / Built\n\n- Designing a relational-like data model inside MongoDB with proper indexing and user scoping\n- Building a secure auth system with JWT refresh token rotation and Google OAuth\n- Writing a modular NestJS backend with feature modules, each with its own controllers, services, DTOs, and schemas\n- Deploying a NestJS app as a serverless Vercel function with MongoDB Atlas connection pooling\n- Building a Flutter app that targets 5 platforms from a single codebase\n- Implementing an offline-first local database with a custom migration runner\n- Managing secure token storage across different platform targets\n\n---\n\n## Local Development\n\n**Backend**\n```bash\ncd backend\ncp .env.example .env      # fill in your secrets\ndocker-compose up -d      # starts MongoDB locally\nnpm install\nnpm run start:dev\n# API → http://localhost:3000\n# Docs → http://localhost:3000/docs\n```\n\n**Frontend**\n```bash\ncd frontend\ncp .env.example .env      # fill in API URL and Supabase keys\nflutter pub get\nflutter run -d windows    # or android, ios, macos, linux\n```\n\n---\n\n## Links\n\n- **Live API**: _[https://app.keep-track.khesir.com/]_\n- **App Download**: _[https://keep-track.khesir.com/]_\n- **GitHub**: _[https://github.com/Khesir/KeepTrack]_\n\n---\n\n_Built solo · Apache 2.0 · v0.7.4_\n",
+		"pinned": true,
+		"draft": false
 	},
 	{
 		"id": "69d2b4bca2a3fae53640da2a",
@@ -27,17 +31,21 @@
 		"category": "dev",
 		"role": "full-stack",
 		"description": "The AdDU Commission on Audit (CoA) Official Website is a centralized platform designed to support SAMAHAN departments and clusters by providing accessible, transparent, and reliable audit-related information.",
+		"year": 2025,
+		"releasedDate": "2025-11-01",
 		"tags": [
 			"Nest.js",
 			"Next.js",
 			"Supabase",
 			"PostgreSQL"
 		],
-		"year": 2025,
-		"pinned": false,
-		"images": [],
+		"images": [
+			"/img/projects/69d2b4bca2a3fae53640da2a/1784750129925-1775416447458-coa-hub1.webp"
+		],
 		"deployment": "coa-hub.vercel.app",
-		"markdown": "The AdDU Commission on Audit (CoA) Official Website is a centralized platform designed to support SAMAHAN departments and clusters by providing accessible, transparent, and reliable audit-related information. It serves as a hub for official announcements, guidelines, and updates, ensuring efficient communication between CoA and student organizations. Treasurers can securely log in using their AdDU accounts to access relevant resources and streamline financial processes."
+		"markdown": "The AdDU Commission on Audit (CoA) Official Website is a centralized platform designed to support SAMAHAN departments and clusters by providing accessible, transparent, and reliable audit-related information. It serves as a hub for official announcements, guidelines, and updates, ensuring efficient communication between CoA and student organizations. Treasurers can securely log in using their AdDU accounts to access relevant resources and streamline financial processes.",
+		"pinned": false,
+		"draft": false
 	},
 	{
 		"id": "69d2b6e3ee5838c812c5bb6e",
@@ -45,15 +53,19 @@
 		"category": "tech-art",
 		"role": "tech art",
 		"description": "This game is a top-down action RPG where the player controls a main character, supported by AI-driven followers who can attack enemies, use skills, and maintain formation.",
+		"year": 2025,
+		"releasedDate": "2025-10-01",
 		"tags": [
 			"Unity",
 			"C#"
 		],
-		"year": 2025,
-		"pinned": true,
-		"images": [],
+		"images": [
+			"/img/projects/69d2b6e3ee5838c812c5bb6e/1784749102318-1775417129196-588460093_25354171854176464_2412613999604731308_n.png"
+		],
 		"deployment": "https://khesir.itch.io/ctrl-zed",
-		"markdown": "## Game Overview\n\n**Title:** Ctrl-Z\n\n**Genre:** Action RPG / Top-down Shooter\n\n**Platform(s):** PC (Windows)\n\n**Short Description:**\n\nThis game is a top-down action RPG where the player controls a main character, supported by AI-driven followers who can attack enemies, use skills, and maintain formation. The player explores different areas, battles waves of enemies, and unlocks new abilities to survive increasingly difficult challenges.\n\n## Core Gameplay Features\n\n- **Player Character**\n    - Movement with smooth rotation\n    - Primary attack (shooting/projectiles)\n    - Special skills (dash, disable, slow, stun, pushback, etc.)\n    - Cooldown management\n- **Followers (AI Companions)**\n    - States: **Idle**, **Follow**, **Attack**\n    - Maintain distance from player but engage enemies when in range\n    - Can fire weapons at nearby enemies\n    - Dynamic idle movement (wandering around player)\n    - React to enemies (chase + attack)\n- **Enemy AI**\n    - Pathfinding and follow logic\n    - Attack when close\n    - Supports status effects (slow, stun, disable)\n    - Group behaviors (cohesion, separation, alignment / “boids”)\n- **Skills & Effects**\n    - Dash / long movement burst\n    - Area slow (reduces enemy movement speed)\n    - Disable / stun (enemies cannot move/attack)\n    - Pushback effect (enemies repelled from player)\n    - VFX system (attached to player on activation, scales with radius)\n    - Cooldown & duration management\n- **Camera System**\n    - Cinemachine virtual camera\n    - Adjust zoom (Orthographic size change during skills like dash/ultimates)\n\n### Video Updates\n\nhttps://www.youtube.com/watch?v=tgLfIhaIVTg&list=PLXCReNTcG4F5cUaecV-5JYTaHp3d2P0EQ&index=1\n\nhttps://www.youtube.com/watch?v=kF37kYIUxig&list=PLXCReNTcG4F5cUaecV-5JYTaHp3d2P0EQ&index=2\n\nhttps://www.youtube.com/watch?v=vRw2OWZ13_c&list=PLXCReNTcG4F5cUaecV-5JYTaHp3d2P0EQ&index=3\n\nhttps://www.youtube.com/watch?v=VoAxGiqihD8&list=PLXCReNTcG4F5cUaecV-5JYTaHp3d2P0EQ&index=4"
+		"markdown": "## Game Overview\n\n**Title:** Ctrl-Z\n\n**Genre:** Action RPG / Top-down Shooter\n\n**Platform(s):** PC (Windows)\n\n**Short Description:**\n\nThis game is a top-down action RPG where the player controls a main character, supported by AI-driven followers who can attack enemies, use skills, and maintain formation. The player explores different areas, battles waves of enemies, and unlocks new abilities to survive increasingly difficult challenges.\n\n## Core Gameplay Features\n\n- **Player Character**\n    - Movement with smooth rotation\n    - Primary attack (shooting/projectiles)\n    - Special skills (dash, disable, slow, stun, pushback, etc.)\n    - Cooldown management\n- **Followers (AI Companions)**\n    - States: **Idle**, **Follow**, **Attack**\n    - Maintain distance from player but engage enemies when in range\n    - Can fire weapons at nearby enemies\n    - Dynamic idle movement (wandering around player)\n    - React to enemies (chase + attack)\n- **Enemy AI**\n    - Pathfinding and follow logic\n    - Attack when close\n    - Supports status effects (slow, stun, disable)\n    - Group behaviors (cohesion, separation, alignment / “boids”)\n- **Skills & Effects**\n    - Dash / long movement burst\n    - Area slow (reduces enemy movement speed)\n    - Disable / stun (enemies cannot move/attack)\n    - Pushback effect (enemies repelled from player)\n    - VFX system (attached to player on activation, scales with radius)\n    - Cooldown & duration management\n- **Camera System**\n    - Cinemachine virtual camera\n    - Adjust zoom (Orthographic size change during skills like dash/ultimates)\n\n### Video Updates\n\nhttps://www.youtube.com/watch?v=tgLfIhaIVTg&list=PLXCReNTcG4F5cUaecV-5JYTaHp3d2P0EQ&index=1\n\nhttps://www.youtube.com/watch?v=kF37kYIUxig&list=PLXCReNTcG4F5cUaecV-5JYTaHp3d2P0EQ&index=2\n\nhttps://www.youtube.com/watch?v=vRw2OWZ13_c&list=PLXCReNTcG4F5cUaecV-5JYTaHp3d2P0EQ&index=3\n\nhttps://www.youtube.com/watch?v=VoAxGiqihD8&list=PLXCReNTcG4F5cUaecV-5JYTaHp3d2P0EQ&index=4",
+		"pinned": true,
+		"draft": false
 	},
 	{
 		"id": "69d2b56ca2a3fae53640da33",
@@ -61,6 +73,8 @@
 		"category": "dev",
 		"role": "backend",
 		"description": "Architected and led the backend of a production-grade CMS for an official website.",
+		"year": 2025,
+		"releasedDate": "2025-09-01",
 		"tags": [
 			"Nest.js",
 			"Next.js",
@@ -69,11 +83,13 @@
 			"Nginx",
 			"Drizzle"
 		],
-		"year": 2025,
-		"pinned": false,
-		"images": [],
+		"images": [
+			"/img/projects/69d2b56ca2a3fae53640da33/1784750087732-1775416783111-Screenshot2026-04-06031926.png"
+		],
 		"deployment": "https://samahan.addu.edu.ph/sysdev",
-		"markdown": "Architected and led the backend of a production-grade CMS for an official website."
+		"markdown": "Architected and led the backend of a production-grade CMS for an official website.",
+		"pinned": false,
+		"draft": false
 	},
 	{
 		"id": "69d2b501a2a3fae53640da30",
@@ -81,17 +97,21 @@
 		"category": "dev",
 		"role": "full-stack",
 		"description": "The SAMAHAN NewsFeed is an annual publication spearheaded by SAMAHAN Communications, the official public affairs and information arm of SAMAHAN.",
+		"year": 2025,
+		"releasedDate": "2025-08-01",
 		"tags": [
 			"Next.js",
 			"Nest.js",
 			"Docker",
 			"NGINX"
 		],
-		"year": 2025,
-		"pinned": false,
-		"images": [],
+		"images": [
+			"/img/projects/69d2b501a2a3fae53640da30/1784749083836-1775416532814-newsfeed-1.webp"
+		],
 		"deployment": "https://samahan.addu.edu.ph/newsfeed/",
-		"markdown": "The SAMAHAN NewsFeed is an annual publication spearheaded by SAMAHAN Communications, the official public affairs and information arm of SAMAHAN. It serves as a platform where voices carry weight and moments find permanence—woven into compelling narratives that reflect the shared journey of Ateneans throughout the academic year. Through this initiative, the department champions the power of storytelling, fostering meaningful communication and connection within the university.\n\n"
+		"markdown": "The SAMAHAN NewsFeed is an annual publication spearheaded by SAMAHAN Communications, the official public affairs and information arm of SAMAHAN. It serves as a platform where voices carry weight and moments find permanence—woven into compelling narratives that reflect the shared journey of Ateneans throughout the academic year. Through this initiative, the department champions the power of storytelling, fostering meaningful communication and connection within the university.\n\n",
+		"pinned": false,
+		"draft": false
 	},
 	{
 		"id": "69d0cc83037a53a93b125499",
@@ -99,18 +119,22 @@
 		"category": "dev",
 		"role": "full-stack",
 		"description": "Ari Connect is a production Discord bot built in Python that enables real-time cross-server communication through a lobby-based global chat system.",
+		"year": 2024,
+		"releasedDate": "2024-11-01",
 		"tags": [
 			"Python",
 			"MongoDB",
 			"React.js",
 			"Nest.js"
 		],
-		"year": 2024,
-		"pinned": true,
-		"images": [],
+		"images": [
+			"/img/projects/69d0cc83037a53a93b125499/1784750109143-1775647318822-Screenshot2026-04-08192158.png"
+		],
 		"url": "https://github.com/Ari-World/ari-connect-bot",
 		"deployment": "https://ariconnect.vercel.app/",
-		"markdown": "# Ari Connect \n## Overview\n\n**Ari Connect** is a production Discord bot built in Python that enables real-time cross-server communication through a lobby-based global chat system. Users can connect any Discord text channel to a named lobby, instantly bridging conversations across multiple independent servers without any shared infrastructure between them.\n\n---\n\n## Technical Highlights\n\n### Webhook-Based Message Relay\n\nThe core of Ari Connect is a webhook relay engine that mirrors messages across every channel registered under the same lobby. When a user sends a message, the bot:\n\n1. Identifies which lobby the source channel belongs to.\n2. Fans out the message concurrently to every other channel in that lobby via Discord Webhooks, using `asyncio.gather()` for parallel delivery.\n3. Impersonates the original author — name, avatar, and moderator badge — using the webhook's `username` and `avatar_url` parameters, so the message appears native in each destination server.\n\nAll four Discord message lifecycle events are handled:\n\n| Event | Behavior |\n|-------|-----------|\n| `SEND` | Relay message to all lobby channels |\n| `REPLY` | Relay with an embed quoting the referenced message |\n| `UPDATE` | Edit all relayed webhook copies to match the new content |\n| `DELETE` | Replace all relayed webhook copies with a `[message deleted by source]` tombstone |\n\nRate limit responses (`HTTP 429`) are handled gracefully — the bot reads the `Retry-After` header and reschedules the send automatically.\n\n---\n\n### TTL Message Cache\n\nTo support cross-server edit and delete propagation, the bot maintains a **per-lobby in-memory message cache** via `CacheManager`. Each cache entry stores:\n\n- The original source message ID and channel.\n- A list of every webhook-sent copy (`messageId`, `channel`, `author`).\n\nThis mapping is what allows an `UPDATE` or `DELETE` event to locate and modify the correct webhook message in every destination channel.\n\nEntries are **automatically evicted** using a configurable TTL. When a message is cached, an async background task (`schedule_delete_cache_message`) is scheduled with `asyncio.sleep(CACHE_THRESHOLD)`. Once the threshold elapses, the entry is removed from memory — keeping the cache lean and preventing stale lookups on old messages.\n\n```\nSEND message  →  cache entry created  →  asyncio.sleep(TTL)  →  entry evicted\n                                               ↑\n                              edit/delete resolves relay targets from here\n```\n\nThe TTL value is environment-configurable via `CACHE_THRESHOLD`, giving operators control over the edit/delete window without touching the code.\n\n---\n\n### Dual-Layer Data Architecture\n\n| Layer | Technology | Purpose |\n|-------|-----------|---------|\n| Persistent store | MongoDB (Motor async driver) | Source of truth for guilds, lobbies, muted users, mod roles, blocklists |\n| In-memory cache | Python dicts/lists | Fast O(n) lookups on every message event without DB round-trips |\n\nThe **Repository Pattern** (`global_chat_repository.py`) wraps every database operation and keeps both layers in sync atomically — a DB write is immediately reflected in the in-memory `guild_data` and `server_lobbies` structures. This means zero latency on hot paths while retaining full persistence across restarts.\n\n---\n\n### Moderation & Safety\n\n- **Mute system** — muted users have messages silently deleted; they receive a private DM with the reason.\n- **Malicious URL & word detection** — content is checked against a blocklist on every `on_message` and `on_message_edit` event before relay.\n- **Moderator role system** — tiered mod roles with custom icons that appear in the relayed username (e.g., `[MOD] Username || ServerName`).\n- **Mention suppression** — `AllowedMentions(everyone=False, users=False, roles=False)` is enforced on all webhook sends to prevent cross-server mention abuse.\n\n---\n\n### Infrastructure & Design\n\n- **Python 3.12** with `discord.py` and `aiohttp` for fully async I/O.\n- **Motor** for non-blocking MongoDB access.\n- **Cog-based architecture** — features are split into `EventListeners`, `Global` (commands), and `Moderation` cogs, all orchestrated by a parent `GlobalChat` cog.\n- **Hybrid commands** — all user-facing commands support both prefix (`!connect`) and slash command (`/connect`) invocation.\n- **Structured logging** — per-module loggers (`globalchat.listener`, `globalchat.cache_manager`, etc.) with a dedicated Discord channel sink for chat, system, moderation, and player report logs.\n- **Graceful lifecycle management** — defined exit codes (`SHUTDOWN`, `RESTART`, `CRITICAL`, `CONFIGURATION_ERROR`) allow process supervisors to make intelligent restart decisions.\n\n---\n\n## Stack\n\n`Python 3.12` · `discord.py` · `MongoDB` · `Motor` · `aiohttp` · `asyncio`\n"
+		"markdown": "# Ari Connect \n## Overview\n\n**Ari Connect** is a production Discord bot built in Python that enables real-time cross-server communication through a lobby-based global chat system. Users can connect any Discord text channel to a named lobby, instantly bridging conversations across multiple independent servers without any shared infrastructure between them.\n\n---\n\n## Technical Highlights\n\n### Webhook-Based Message Relay\n\nThe core of Ari Connect is a webhook relay engine that mirrors messages across every channel registered under the same lobby. When a user sends a message, the bot:\n\n1. Identifies which lobby the source channel belongs to.\n2. Fans out the message concurrently to every other channel in that lobby via Discord Webhooks, using `asyncio.gather()` for parallel delivery.\n3. Impersonates the original author — name, avatar, and moderator badge — using the webhook's `username` and `avatar_url` parameters, so the message appears native in each destination server.\n\nAll four Discord message lifecycle events are handled:\n\n| Event | Behavior |\n|-------|-----------|\n| `SEND` | Relay message to all lobby channels |\n| `REPLY` | Relay with an embed quoting the referenced message |\n| `UPDATE` | Edit all relayed webhook copies to match the new content |\n| `DELETE` | Replace all relayed webhook copies with a `[message deleted by source]` tombstone |\n\nRate limit responses (`HTTP 429`) are handled gracefully — the bot reads the `Retry-After` header and reschedules the send automatically.\n\n---\n\n### TTL Message Cache\n\nTo support cross-server edit and delete propagation, the bot maintains a **per-lobby in-memory message cache** via `CacheManager`. Each cache entry stores:\n\n- The original source message ID and channel.\n- A list of every webhook-sent copy (`messageId`, `channel`, `author`).\n\nThis mapping is what allows an `UPDATE` or `DELETE` event to locate and modify the correct webhook message in every destination channel.\n\nEntries are **automatically evicted** using a configurable TTL. When a message is cached, an async background task (`schedule_delete_cache_message`) is scheduled with `asyncio.sleep(CACHE_THRESHOLD)`. Once the threshold elapses, the entry is removed from memory — keeping the cache lean and preventing stale lookups on old messages.\n\n```\nSEND message  →  cache entry created  →  asyncio.sleep(TTL)  →  entry evicted\n                                               ↑\n                              edit/delete resolves relay targets from here\n```\n\nThe TTL value is environment-configurable via `CACHE_THRESHOLD`, giving operators control over the edit/delete window without touching the code.\n\n---\n\n### Dual-Layer Data Architecture\n\n| Layer | Technology | Purpose |\n|-------|-----------|---------|\n| Persistent store | MongoDB (Motor async driver) | Source of truth for guilds, lobbies, muted users, mod roles, blocklists |\n| In-memory cache | Python dicts/lists | Fast O(n) lookups on every message event without DB round-trips |\n\nThe **Repository Pattern** (`global_chat_repository.py`) wraps every database operation and keeps both layers in sync atomically — a DB write is immediately reflected in the in-memory `guild_data` and `server_lobbies` structures. This means zero latency on hot paths while retaining full persistence across restarts.\n\n---\n\n### Moderation & Safety\n\n- **Mute system** — muted users have messages silently deleted; they receive a private DM with the reason.\n- **Malicious URL & word detection** — content is checked against a blocklist on every `on_message` and `on_message_edit` event before relay.\n- **Moderator role system** — tiered mod roles with custom icons that appear in the relayed username (e.g., `[MOD] Username || ServerName`).\n- **Mention suppression** — `AllowedMentions(everyone=False, users=False, roles=False)` is enforced on all webhook sends to prevent cross-server mention abuse.\n\n---\n\n### Infrastructure & Design\n\n- **Python 3.12** with `discord.py` and `aiohttp` for fully async I/O.\n- **Motor** for non-blocking MongoDB access.\n- **Cog-based architecture** — features are split into `EventListeners`, `Global` (commands), and `Moderation` cogs, all orchestrated by a parent `GlobalChat` cog.\n- **Hybrid commands** — all user-facing commands support both prefix (`!connect`) and slash command (`/connect`) invocation.\n- **Structured logging** — per-module loggers (`globalchat.listener`, `globalchat.cache_manager`, etc.) with a dedicated Discord channel sink for chat, system, moderation, and player report logs.\n- **Graceful lifecycle management** — defined exit codes (`SHUTDOWN`, `RESTART`, `CRITICAL`, `CONFIGURATION_ERROR`) allow process supervisors to make intelligent restart decisions.\n\n---\n\n## Stack\n\n`Python 3.12` · `discord.py` · `MongoDB` · `Motor` · `aiohttp` · `asyncio`\n",
+		"pinned": true,
+		"draft": false
 	},
 	{
 		"id": "69d2b9bebdd816c8e13f5a74",
@@ -118,15 +142,83 @@
 		"category": "dev",
 		"role": "backend",
 		"description": "Contributed as a backend developer mainly worked on RESTFul Api endpoints handling Documents forms and streamline process of microservices.",
+		"year": 2024,
+		"releasedDate": "2024-09-01",
 		"tags": [
 			"Next.js",
 			"Nest.js",
 			"Docker"
 		],
-		"year": 2024,
-		"pinned": false,
-		"images": [],
+		"images": [
+			"/img/projects/69d2b9bebdd816c8e13f5a74/1784749059123-1775417676992-samahan-11.webp"
+		],
 		"deployment": "https://samahan.addu.edu.ph/",
-		"markdown": "Contributed as a backend developer mainly worked on RESTFul Api endpoints handling Documents forms and streamline process of microservices.\n\nThe SAMAHAN website showcases its advocacies, organizational structure, and various offices and departments. It highlights the organization's branding while providing comprehensive information about SAMAHAN and its initiatives.\n\n"
+		"markdown": "Contributed as a backend developer mainly worked on RESTFul Api endpoints handling Documents forms and streamline process of microservices.\n\nThe SAMAHAN website showcases its advocacies, organizational structure, and various offices and departments. It highlights the organization's branding while providing comprehensive information about SAMAHAN and its initiatives.\n\n",
+		"pinned": false,
+		"draft": false
+	},
+	{
+		"id": "sprite-noelle",
+		"name": "Sprite Noelle",
+		"category": "illustration",
+		"role": "pixelart",
+		"description": "",
+		"year": 2026,
+		"releasedDate": "2026-06-01",
+		"tags": [],
+		"images": [
+			"/img/projects/untitled/1784750264745-FgfpuLtaMAAe_if.png"
+		],
+		"markdown": "",
+		"pinned": false,
+		"draft": false
+	},
+	{
+		"id": "sprite-ayaka-splash-art",
+		"name": "Sprite Ayaka Splash Art",
+		"category": "illustration",
+		"role": "Pixelart",
+		"description": "",
+		"year": 2026,
+		"releasedDate": "2026-06-15",
+		"tags": [],
+		"images": [
+			"/img/projects/untitled/1784750394658-FsOfsXuakAQXj3L.png"
+		],
+		"markdown": "",
+		"pinned": false,
+		"draft": false
+	},
+	{
+		"id": "access-mascot-merlin",
+		"name": "ACCESS - Mascot Merlin",
+		"category": "illustration",
+		"role": "Pixelart",
+		"description": "Initial release character spirte for ACCESS ITWEEK Mascot ",
+		"year": 2026,
+		"releasedDate": "2026-07-01",
+		"tags": [],
+		"images": [
+			"/img/projects/untitled/1784750436793-merlin.png"
+		],
+		"markdown": "",
+		"pinned": false,
+		"draft": false
+	},
+	{
+		"id": "yae-miko-illustration",
+		"name": "Yae Miko Illustration",
+		"category": "illustration",
+		"role": "Pixelart",
+		"description": "Submitted as fan art for Genshin Impact during hoyofest",
+		"year": 2026,
+		"releasedDate": "2026-07-15",
+		"tags": [],
+		"images": [
+			"/img/projects/untitled/1784750616702-FV78pLOakAAHRrp.png"
+		],
+		"markdown": "",
+		"pinned": false,
+		"draft": false
 	}
 ]

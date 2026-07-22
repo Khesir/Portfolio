@@ -3,18 +3,24 @@
 		"title": "Software Development",
 		"badge": "Web & Tools",
 		"description": "Offering systems for businesses — from web apps to internal tools, built for performance and clean architecture.",
-		"available": true
+		"available": true,
+		"id": "software-development",
+		"draft": false
 	},
 	{
 		"title": "Technical Art",
 		"badge": "Shaders & Pipelines",
 		"description": "Building shaders, procedural tools, and pipelines that bring illustration and engineering together in real time.",
-		"available": false
+		"available": false,
+		"id": "technical-art",
+		"draft": false
 	},
 	{
 		"title": "Character Art",
 		"badge": "Illustration & Design",
 		"description": "Character concepts, portraits, and stylized illustration — from rough sketch to finished, polished art.",
-		"available": false
+		"available": false,
+		"id": "character-art",
+		"draft": false
 	}
 ]
