@@ -96,7 +96,7 @@ interface DashboardWorkGridProps {
 }
 
 export default function DashboardWorkGrid({headerControls, isFullscreen = false}: DashboardWorkGridProps) {
-	const [activeCategory, setActiveCategory] = useState<string>('all');
+	const [activeCategory, setActiveCategory] = useState<string>('dev');
 	const navigate = useNavigate();
 	const categoryFilters = getCategoryFilters();
 	const gridRef = useRef<HTMLDivElement>(null);
@@ -120,8 +120,7 @@ export default function DashboardWorkGrid({headerControls, isFullscreen = false}
 	const pinnedIds = new Set(pinnedItems.map((p) => p.id));
 	const deduplicatedNonPinned = getProjects().filter((p) => !pinnedIds.has(p.id));
 	const allItems = [...pinnedItems, ...deduplicatedNonPinned];
-	const filteredItems =
-		activeCategory === 'all' ? allItems : allItems.filter((p) => p.category === activeCategory);
+	const filteredItems = allItems.filter((p) => p.category === activeCategory);
 
 	const columns: Project[][] = Array.from({length: columnCount}, () => []);
 	filteredItems.forEach((p, i) => {

@@ -31,7 +31,6 @@ vi.mock('@/data/projects', () => ({
 
 vi.mock('@/data/categories', () => ({
 	getCategoryFilters: vi.fn(() => [
-		{value: 'all', label: 'All'},
 		{value: 'dev', label: 'Dev'},
 		{value: 'illustration', label: 'Artwork'},
 		{value: 'tech-art', label: 'Tech Art'},
@@ -89,10 +88,10 @@ describe('DashboardWorkGrid', () => {
 	});
 
 	it('renders all pinned and non-pinned projects, synchronously (no fetch)', () => {
-		mockGetFeaturedProjects.mockReturnValue([makeProject('p1', 'Pinned Project', true)]);
+		mockGetFeaturedProjects.mockReturnValue([makeProject('p1', 'Pinned Project', true, 'dev')]);
 		mockGetProjects.mockReturnValue([
-			makeProject('np1', 'Non-Pinned One', false),
-			makeProject('np2', 'Non-Pinned Two', false),
+			makeProject('np1', 'Non-Pinned One', false, 'dev'),
+			makeProject('np2', 'Non-Pinned Two', false, 'dev'),
 		]);
 
 		renderGrid();
@@ -103,8 +102,8 @@ describe('DashboardWorkGrid', () => {
 	});
 
 	it('shows a Favorite badge with the .feat treatment only for pinned projects', () => {
-		mockGetFeaturedProjects.mockReturnValue([makeProject('p1', 'Pinned Project', true)]);
-		mockGetProjects.mockReturnValue([makeProject('np1', 'Non-Pinned One', false)]);
+		mockGetFeaturedProjects.mockReturnValue([makeProject('p1', 'Pinned Project', true, 'dev')]);
+		mockGetProjects.mockReturnValue([makeProject('np1', 'Non-Pinned One', false, 'dev')]);
 
 		renderGrid();
 
@@ -123,9 +122,9 @@ describe('DashboardWorkGrid', () => {
 	it('shows a multi-image badge only for projects with more than one image', () => {
 		mockGetFeaturedProjects.mockReturnValue([]);
 		mockGetProjects.mockReturnValue([
-			makeProject('multi', 'Gallery Project', false, undefined, ['a', 'b', 'c']),
-			makeProject('single', 'Solo Project', false, undefined, ['a']),
-			makeProject('none', 'Empty Project', false, undefined, []),
+			makeProject('multi', 'Gallery Project', false, 'dev', ['a', 'b', 'c']),
+			makeProject('single', 'Solo Project', false, 'dev', ['a']),
+			makeProject('none', 'Empty Project', false, 'dev', []),
 		]);
 
 		renderGrid();
@@ -145,9 +144,9 @@ describe('DashboardWorkGrid', () => {
 		mockResizeObserverWidth = 600;
 		mockGetFeaturedProjects.mockReturnValue([]);
 		mockGetProjects.mockReturnValue([
-			makeProject('a', 'Project A'),
-			makeProject('b', 'Project B'),
-			makeProject('c', 'Project C'),
+			makeProject('a', 'Project A', false, 'dev'),
+			makeProject('b', 'Project B', false, 'dev'),
+			makeProject('c', 'Project C', false, 'dev'),
 		]);
 
 		renderGrid();
@@ -163,9 +162,9 @@ describe('DashboardWorkGrid', () => {
 		mockResizeObserverWidth = 2000; // would fit far more than 3 columns
 		mockGetFeaturedProjects.mockReturnValue([]);
 		mockGetProjects.mockReturnValue([
-			makeProject('a', 'Project A'),
-			makeProject('b', 'Project B'),
-			makeProject('c', 'Project C'),
+			makeProject('a', 'Project A', false, 'dev'),
+			makeProject('b', 'Project B', false, 'dev'),
+			makeProject('c', 'Project C', false, 'dev'),
 		]);
 
 		renderGrid();
@@ -177,9 +176,9 @@ describe('DashboardWorkGrid', () => {
 		mockResizeObserverWidth = 3000; // would fit far more than 5 columns
 		mockGetFeaturedProjects.mockReturnValue([]);
 		mockGetProjects.mockReturnValue([
-			makeProject('a', 'Project A'),
-			makeProject('b', 'Project B'),
-			makeProject('c', 'Project C'),
+			makeProject('a', 'Project A', false, 'dev'),
+			makeProject('b', 'Project B', false, 'dev'),
+			makeProject('c', 'Project C', false, 'dev'),
 		]);
 
 		render(
@@ -196,7 +195,7 @@ describe('DashboardWorkGrid', () => {
 	it('falls back to a single column when the measured width only fits 1', () => {
 		mockResizeObserverWidth = 100;
 		mockGetFeaturedProjects.mockReturnValue([]);
-		mockGetProjects.mockReturnValue([makeProject('a', 'Project A')]);
+		mockGetProjects.mockReturnValue([makeProject('a', 'Project A', false, 'dev')]);
 
 		renderGrid();
 
@@ -205,7 +204,7 @@ describe('DashboardWorkGrid', () => {
 
 	it('navigates to the project detail route when a card is clicked', () => {
 		mockGetFeaturedProjects.mockReturnValue([]);
-		mockGetProjects.mockReturnValue([makeProject('np1', 'Non-Pinned One', false)]);
+		mockGetProjects.mockReturnValue([makeProject('np1', 'Non-Pinned One', false, 'dev')]);
 
 		renderGrid();
 
@@ -227,23 +226,22 @@ describe('DashboardWorkGrid', () => {
 			renderGrid();
 		}
 
-		it('renders filter tabs sourced from data: All, Dev, Artwork, Tech Art', () => {
+		it('renders filter tabs sourced from data: Dev, Artwork, Tech Art', () => {
 			renderMixedGrid();
 
-			expect(screen.getByRole('button', {name: 'All'})).toBeInTheDocument();
 			expect(screen.getByRole('button', {name: 'Dev'})).toBeInTheDocument();
 			expect(screen.getByRole('button', {name: 'Artwork'})).toBeInTheDocument();
 			expect(screen.getByRole('button', {name: 'Tech Art'})).toBeInTheDocument();
 		});
 
-		it('defaults to "All" and shows every project, including uncategorized ones', () => {
+		it('defaults to "Dev" and shows only Dev projects', () => {
 			renderMixedGrid();
 
-			expect(screen.getByRole('button', {name: 'All'})).toHaveClass('active');
+			expect(screen.getByRole('button', {name: 'Dev'})).toHaveClass('active');
 			expect(screen.getByText('Dev Project')).toBeInTheDocument();
-			expect(screen.getByText('Artwork Project')).toBeInTheDocument();
-			expect(screen.getByText('Tech Art Project')).toBeInTheDocument();
-			expect(screen.getByText('Uncategorized Project')).toBeInTheDocument();
+			expect(screen.queryByText('Artwork Project')).not.toBeInTheDocument();
+			expect(screen.queryByText('Tech Art Project')).not.toBeInTheDocument();
+			expect(screen.queryByText('Uncategorized Project')).not.toBeInTheDocument();
 		});
 
 		it('filters to only Dev projects when the Dev tab is selected, hiding uncategorized', () => {
@@ -279,35 +277,34 @@ describe('DashboardWorkGrid', () => {
 			expect(screen.queryByText('Uncategorized Project')).not.toBeInTheDocument();
 		});
 
-		it('returns to showing all projects when switching back to "All"', () => {
+		it('returns to showing only Dev projects when switching back to "Dev"', () => {
 			renderMixedGrid();
 
-			fireEvent.click(screen.getByRole('button', {name: 'Dev'}));
-			expect(screen.queryByText('Uncategorized Project')).not.toBeInTheDocument();
+			fireEvent.click(screen.getByRole('button', {name: 'Artwork'}));
+			expect(screen.queryByText('Dev Project')).not.toBeInTheDocument();
 
-			fireEvent.click(screen.getByRole('button', {name: 'All'}));
-			expect(screen.getByText('Uncategorized Project')).toBeInTheDocument();
+			fireEvent.click(screen.getByRole('button', {name: 'Dev'}));
 			expect(screen.getByText('Dev Project')).toBeInTheDocument();
+			expect(screen.queryByText('Artwork Project')).not.toBeInTheDocument();
 		});
 
 		it('renders the correct role-pill label per category and no pill for uncategorized projects', () => {
 			renderMixedGrid();
 
 			const devCard = screen.getByText('Dev Project').closest('.dash-work-card') as HTMLElement;
+			expect(within(devCard).getByText('Dev')).toBeInTheDocument();
+
+			fireEvent.click(screen.getByRole('button', {name: 'Artwork'}));
 			const artworkCard = screen
 				.getByText('Artwork Project')
 				.closest('.dash-work-card') as HTMLElement;
+			expect(within(artworkCard).getByText('Artwork')).toBeInTheDocument();
+
+			fireEvent.click(screen.getByRole('button', {name: 'Tech Art'}));
 			const techArtCard = screen
 				.getByText('Tech Art Project')
 				.closest('.dash-work-card') as HTMLElement;
-			const uncategorizedCard = screen
-				.getByText('Uncategorized Project')
-				.closest('.dash-work-card') as HTMLElement;
-
-			expect(within(devCard).getByText('Dev')).toBeInTheDocument();
-			expect(within(artworkCard).getByText('Artwork')).toBeInTheDocument();
 			expect(within(techArtCard).getByText('Tech Art')).toBeInTheDocument();
-			expect(uncategorizedCard.querySelector('.dash-work-role-pill')).not.toBeInTheDocument();
 		});
 	});
 });
